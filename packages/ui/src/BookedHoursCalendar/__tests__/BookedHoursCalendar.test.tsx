@@ -14,7 +14,7 @@ import { testId } from "@eisbuk/testing/testIds";
 
 import BookedHoursCalendar from "../BookedHoursCalendar";
 
-import { formatMinutes } from "../utils";
+import { formatHours } from "../utils";
 
 import {
   buildSummary,
@@ -28,12 +28,12 @@ describe("BookedHoursCalendar", () => {
     cleanup();
   });
 
-  describe("formatMinutes", () => {
-    test("should format minutes as hours and minutes of clock time", () => {
-      expect(formatMinutes(0)).toEqual("0 h");
-      expect(formatMinutes(50)).toEqual("50 min");
-      expect(formatMinutes(120)).toEqual("2 h");
-      expect(formatMinutes(435)).toEqual("7 h 15 min");
+  describe("formatHours", () => {
+    test("should format lesson hours", () => {
+      expect(formatHours(0)).toEqual("0 hours");
+      expect(formatHours(1)).toEqual("1 hour");
+      expect(formatHours(1.5)).toEqual("1.5 hours");
+      expect(formatHours(8.5)).toEqual("8.5 hours");
     });
   });
 
@@ -41,7 +41,7 @@ describe("BookedHoursCalendar", () => {
     render(<BookedHoursCalendar summary={octoberSummary} />);
 
     expect(screen.getByTestId(testId("month-total")).textContent).toEqual(
-      "7 h 15 min"
+      "8.5 hours"
     );
     expect(
       screen.getByText(
@@ -53,11 +53,11 @@ describe("BookedHoursCalendar", () => {
       .getAllByTestId(testId("week-total"))
       .map((cell) => cell.textContent);
     expect(weekTotals).toEqual([
-      "1 h 50 min",
-      "2 h 30 min",
-      "1 h 15 min",
-      "50 min",
-      "50 min",
+      "2 hours",
+      "3 hours",
+      "1.5 hours",
+      "1 hour",
+      "1 hour",
     ]);
   });
 
@@ -72,16 +72,7 @@ describe("BookedHoursCalendar", () => {
       .getAllByRole("cell")
       .map((cell) => cell.textContent);
     // October 1st 2026 is a Thursday
-    expect(firstWeekCells).toEqual([
-      "",
-      "",
-      "",
-      "1",
-      "2",
-      "3",
-      "4",
-      "1 h 50 min",
-    ]);
+    expect(firstWeekCells).toEqual(["", "", "", "1", "2", "3", "4", "2 hours"]);
   });
 
   test("should list the booked sessions grouped by week and day", () => {
@@ -178,7 +169,7 @@ describe("BookedHoursCalendar", () => {
       }) as string
     );
     expect(screen.getByTestId(testId("month-total")).textContent).toEqual(
-      "7 h 15 min"
+      "8.5 hours"
     );
   });
 
@@ -186,7 +177,7 @@ describe("BookedHoursCalendar", () => {
     render(<BookedHoursCalendar summary={buildSummary("2026-11", [])} />);
 
     expect(screen.getByTestId(testId("month-total")).textContent).toEqual(
-      "0 h"
+      "0 hours"
     );
     expect(screen.queryAllByTestId(testId("week-section"))).toHaveLength(0);
   });

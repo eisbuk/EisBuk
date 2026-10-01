@@ -99,7 +99,7 @@ describe("Customer area calendar view", () => {
     const store = setupStore();
     renderWithRedux(<CalendarView />, store);
 
-    expect(getMonthTotal().textContent).toEqual("1 h 50 min");
+    expect(getMonthTotal().textContent).toEqual("2 hours");
 
     act(() => {
       store.dispatch(
@@ -108,7 +108,7 @@ describe("Customer area calendar view", () => {
         })
       );
     });
-    expect(getMonthTotal().textContent).toEqual("2 h 40 min");
+    expect(getMonthTotal().textContent).toEqual("3 hours");
     expect(screen.getAllByTestId(testId("booking-calendar-card"))).toHaveLength(
       2
     );
@@ -118,7 +118,7 @@ describe("Customer area calendar view", () => {
         deleteLocalDocuments(BookingSubCollection.BookedSlots, [slotA.id])
       );
     });
-    expect(getMonthTotal().textContent).toEqual("50 min");
+    expect(getMonthTotal().textContent).toEqual("1 hour");
     expect(screen.getAllByTestId(testId("booking-calendar-card"))).toHaveLength(
       1
     );
@@ -178,7 +178,7 @@ describe("Customer area calendar view", () => {
       );
     });
 
-    expect(getMonthTotal().textContent).toEqual("0 h");
+    expect(getMonthTotal().textContent).toEqual("0 hours");
     expect(
       screen.getByTestId(testId("excluded-bookings")).textContent
     ).toContain("2 October");

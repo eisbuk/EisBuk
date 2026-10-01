@@ -1,3 +1,3 @@
 export { default as BookedHoursCalendar } from "./BookedHoursCalendar";
-export { formatMinutes } from "./utils";
+export { formatHours } from "./utils";
 export * from "./types";

@@ -19,7 +19,7 @@ import NotesSection from "../IntervalCard/NotesSection";
 import { IntervalCardState, IntervalCardVariant } from "../IntervalCard/types";
 import { calculateDuration } from "../IntervalCard/utils";
 
-import { formatMinutes } from "./utils";
+import { formatHours } from "./utils";
 
 interface SessionRowProps {
   session: CalendarSession;
@@ -42,15 +42,14 @@ const SessionRow: React.FC<SessionRowProps> = ({
   const { t } = useTranslation();
   const [isEditing, setIsEditing] = useState(false);
 
-  const { date, interval, type, notes, bookingNotes, booked, minutes } =
-    session;
+  const { date, interval, type, notes, bookingNotes, booked, hours } = session;
 
   const timeAndDuration = (
     <p className="text-lg font-semibold text-gray-800">
       {getIntervalString(interval)}
       {booked && (
         <span className="ml-2 text-sm font-normal text-gray-500 whitespace-nowrap">
-          {formatMinutes(minutes)}
+          {formatHours(hours)}
         </span>
       )}
     </p>

@@ -4,6 +4,7 @@ import {
   CustomerBookingEntry,
   OrgSubCollection,
   SlotInterface,
+  calculateIntervalDuration,
   getIntervalMinutes,
 } from "@eisbuk/shared";
 import type {
@@ -20,16 +21,18 @@ import { getCalendarDay } from "@/store/selectors/app";
 import { getAttendedSlots, getBookedSlots } from "./slots";
 
 /**
- * Minutes a booked interval counts for, in every total of the athlete's calendar (session, day, week, month),
+ * Lesson hours a booked interval counts for, in every total of the athlete's calendar (session, day, week, month),
  * or `null` if the interval can't be read (the booking is then reported as excluded).
  *
- * This is the only place that sets the convention: exact clock time.
- * The admin monthly summary currently rounds each interval up to the next half hour instead
- * (`calculateIntervalDuration`); the convention to use for both is pending a decision (#983).
- * If it changes here, update the unit wording of `BookedHours.MonthTotalNote` too.
+ * The club's convention, shared with the admin monthly summary: each booking is rounded up to the next
+ * half hour by `calculateIntervalDuration` (50 or 60 minutes = 1 hour, 61-90 = 1.5, 91-120 = 2, ...),
+ * then the bookings are summed. `getIntervalMinutes` is only used to reject malformed intervals
+ * (for which `calculateIntervalDuration` would return `NaN` or a negative number).
  */
-export const getCountedMinutes = (interval: string): number | null =>
-  getIntervalMinutes(interval);
+export const getCountedHours = (interval: string): number | null =>
+  getIntervalMinutes(interval) === null
+    ? null
+    : calculateIntervalDuration(interval);
 
 /** A calendar session carrying the full slot, as needed by the cancel booking dialog */
 export type CalendarSlotSession = SlotInterface & CalendarSession;
@@ -56,14 +59,15 @@ interface SummarizeMonthParams {
 /**
  * Summarizes the athlete's booked time for a month, from the booked intervals (`bookedSlots`).
  *
- * - Durations are summed as whole minutes (see `getIntervalMinutes`), formatting is left to the view.
- * - The counted minutes come from the booked interval itself, so a booking still counts if its interval
+ * - Each booking counts for its lesson hours (see `getCountedHours`), summed (in steps of half an hour,
+ *   so the sums are exact), formatting is left to the view.
+ * - The counted hours come from the booked interval itself, so a booking still counts if its interval
  *   was later removed from the lesson (the same interval is what the admin summary reads from attendance).
  * - Bookings whose lesson no longer exists on the booked date, or whose interval can't be read, aren't counted
  *   and are returned in `excluded`, so that the view can say so.
  * - Attended-only entries are shown on their day, but never counted.
  * - Weeks start on Monday and contain only the days of the month, so a week spanning two months is split
- *   between them, and the weeks' minutes always add up to the month's minutes.
+ *   between them, and the weeks' hours always add up to the month's hours.
  *
  * Dates are calendar dates without a time zone: the date arithmetic runs in UTC so that
  * daylight saving changes (e.g. the last Sunday of October in Europe/Rome) can't shift a day or a week.
@@ -77,7 +81,7 @@ export const summarizeMonthBookings = ({
   const days = new Map<string, CalendarDay<CalendarSlotSession>>(
     getDaysOfMonth(month).map((date) => [
       date,
-      { date, minutes: 0, sessions: [] },
+      { date, hours: 0, sessions: [] },
     ])
   );
   const excluded: ExcludedBooking[] = [];
@@ -98,8 +102,8 @@ export const summarizeMonthBookings = ({
         return;
       }
 
-      const minutes = getCountedMinutes(interval);
-      if (minutes === null) {
+      const hours = getCountedHours(interval);
+      if (hours === null) {
         excluded.push({ slotId, date, interval, reason: "invalid-interval" });
         return;
       }
@@ -107,11 +111,11 @@ export const summarizeMonthBookings = ({
       day.sessions.push({
         ...slot,
         interval: parseInterval(interval),
-        minutes,
+        hours,
         booked: true,
         bookingNotes,
       });
-      day.minutes += minutes;
+      day.hours += hours;
       bookingsCount++;
     });
 
@@ -128,7 +132,7 @@ export const summarizeMonthBookings = ({
       day.sessions.push({
         ...slot,
         interval: parseInterval(interval),
-        minutes: 0,
+        hours: 0,
         booked: false,
       });
     });
@@ -136,11 +140,11 @@ export const summarizeMonthBookings = ({
   days.forEach((day) => day.sessions.sort(compareSessions));
 
   const weeks = groupIntoWeeks([...days.values()]);
-  const minutes = weeks.reduce((acc, week) => acc + week.minutes, 0);
+  const hours = weeks.reduce((acc, week) => acc + week.hours, 0);
 
   return {
     month,
-    minutes,
+    hours,
     bookingsCount,
     weeks,
     excluded: excluded.sort((a, b) => (a.date < b.date ? -1 : 1)),
@@ -212,14 +216,14 @@ const groupIntoWeeks = <S extends CalendarSession>(
         {
           startDate: day.date,
           endDate: day.date,
-          minutes: day.minutes,
+          hours: day.hours,
           days: [day],
         },
       ];
     }
 
     currentWeek.endDate = day.date;
-    currentWeek.minutes += day.minutes;
+    currentWeek.hours += day.hours;
     currentWeek.days.push(day);
     return weeks;
   }, [] as CalendarWeek<S>[]);

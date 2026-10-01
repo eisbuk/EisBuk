@@ -85,14 +85,15 @@ const parseMinutesOfDay = (hours: string, minutes: string): number | null => {
 /**
  * Validated duration, in whole minutes, of a string interval (e.g. `"16:10-17:00" => 50`).
  *
- * Unlike `calculateIntervalDurationInMinutes`, this doesn't round anything and returns `null`
- * for a missing or malformed interval (not two "HH:mm" times, or end not after start),
- * so that callers summing durations can exclude such entries explicitly instead of adding `NaN` or a negative number.
+ * Unlike `calculateIntervalDurationInMinutes`, this returns `null` for a missing or malformed interval
+ * (not two "HH:mm" times, or end not after start), so that callers can exclude such entries explicitly
+ * instead of adding `NaN` or a negative number.
+ *
+ * Use it to validate an interval. Booked time shown to users is counted in the club's lesson hours,
+ * with `calculateIntervalDuration` (each booking rounded up to the next half hour), not in these minutes.
  *
  * Intervals are wall-clock times on the lesson's date, so the duration is the difference between the two times
  * (this differs from the physically elapsed time only for an interval spanning a daylight saving change, at night).
- *
- * Sum the minutes and convert to hours only when displaying the total.
  */
 export const getIntervalMinutes = (
   interval: string | null | undefined

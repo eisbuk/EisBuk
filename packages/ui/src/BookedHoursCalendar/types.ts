@@ -17,10 +17,10 @@ export type CalendarSession = Pick<
      */
     interval: SlotInterval;
     /**
-     * Minutes counted toward the totals: the booked interval's duration for bookings,
-     * `0` for attended-only entries (those are shown, but aren't bookings).
+     * Lesson hours counted toward the totals, in the club's units (the booked interval rounded up
+     * to the next half hour, e.g. 50 minutes = 1 hour), `0` for attended-only entries (those are shown, but aren't bookings).
      */
-    minutes: number;
+    hours: number;
     /**
      * `true` for a booking, `false` for attendance recorded without a booking.
      */
@@ -30,8 +30,8 @@ export type CalendarSession = Pick<
 export interface CalendarDay<S extends CalendarSession = CalendarSession> {
   /** ISO date, e.g. `"2026-10-05"` */
   date: string;
-  /** Booked minutes on this day */
-  minutes: number;
+  /** Booked hours on this day */
+  hours: number;
   /** Sessions on this day, earliest first */
   sessions: S[];
 }
@@ -41,8 +41,8 @@ export interface CalendarWeek<S extends CalendarSession = CalendarSession> {
   startDate: string;
   /** Last day of the week (Sunday) within the month */
   endDate: string;
-  /** Booked minutes on the days of this week that fall within the month */
-  minutes: number;
+  /** Booked hours on the days of this week that fall within the month */
+  hours: number;
   /** Every day of the week that falls within the month */
   days: CalendarDay<S>[];
 }
@@ -66,9 +66,9 @@ export interface MonthBookingsSummary<
 > {
   /** Month, e.g. `"2026-10"` */
   month: string;
-  /** Booked minutes in the month (always the sum of the weeks' minutes) */
-  minutes: number;
-  /** Number of bookings counted in `minutes` */
+  /** Booked hours in the month (always the sum of the weeks' hours) */
+  hours: number;
+  /** Number of bookings counted in `hours` */
   bookingsCount: number;
   /** Weeks of the month, starting on Monday, each limited to the days of the month */
   weeks: CalendarWeek<S>[];

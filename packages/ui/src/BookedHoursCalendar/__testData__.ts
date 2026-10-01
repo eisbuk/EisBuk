@@ -17,7 +17,7 @@ const session = (
   date: string,
   startTime: string,
   endTime: string,
-  minutes: number,
+  hours: number,
   rest: Partial<CalendarSession> = {}
 ): CalendarSession => ({
   id,
@@ -25,7 +25,7 @@ const session = (
   type: SlotType.Ice,
   notes: "Pista 1",
   interval: { startTime, endTime },
-  minutes,
+  hours,
   booked: true,
   ...rest,
 });
@@ -48,7 +48,7 @@ export const buildSummary = (
       return {
         date,
         sessions: daySessions,
-        minutes: daySessions.reduce((acc, s) => acc + s.minutes, 0),
+        hours: daySessions.reduce((acc, s) => acc + s.hours, 0),
       };
     }
   );
@@ -61,20 +61,20 @@ export const buildSummary = (
         {
           startDate: day.date,
           endDate: day.date,
-          minutes: day.minutes,
+          hours: day.hours,
           days: [day],
         },
       ];
     }
     week.endDate = day.date;
-    week.minutes += day.minutes;
+    week.hours += day.hours;
     week.days.push(day);
     return acc;
   }, [] as CalendarWeek[]);
 
   return {
     month,
-    minutes: weeks.reduce((acc, w) => acc + w.minutes, 0),
+    hours: weeks.reduce((acc, w) => acc + w.hours, 0),
     bookingsCount: sessions.filter((s) => s.booked).length,
     weeks,
     excluded,
@@ -82,17 +82,17 @@ export const buildSummary = (
 };
 
 export const octoberSessions: CalendarSession[] = [
-  session("s1", "2026-10-02", "16:00", "17:50", 110),
-  session("s2", "2026-10-06", "16:10", "17:00", 50),
-  session("s3", "2026-10-06", "17:10", "18:50", 100, {
+  session("s1", "2026-10-02", "16:00", "17:50", 2),
+  session("s2", "2026-10-06", "16:10", "17:00", 1),
+  session("s3", "2026-10-06", "17:10", "18:50", 2, {
     type: SlotType.OffIce,
     notes: "Preparazione atletica, palestra",
     bookingNotes: "Arrivo alle 17:15",
   }),
   session("s4", "2026-10-08", "18:00", "18:50", 0, { booked: false }),
-  session("s5", "2026-10-14", "21:00", "22:15", 75),
-  session("s6", "2026-10-25", "17:00", "17:50", 50),
-  session("s7", "2026-10-26", "17:00", "17:50", 50),
+  session("s5", "2026-10-14", "21:00", "22:15", 1.5),
+  session("s6", "2026-10-25", "17:00", "17:50", 1),
+  session("s7", "2026-10-26", "17:00", "17:50", 1),
 ];
 
 export const octoberSummary = buildSummary("2026-10", octoberSessions);

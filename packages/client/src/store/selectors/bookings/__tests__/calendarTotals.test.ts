@@ -7,6 +7,7 @@ import {
   OrgSubCollection,
   SlotInterface,
   SlotType,
+  calculateIntervalDuration,
 } from "@eisbuk/shared";
 import type { MonthBookingsSummary } from "@eisbuk/ui";
 import {
@@ -18,6 +19,7 @@ import {
 import { getNewStore } from "@/store/createStore";
 
 import {
+  getCountedHours,
   getMonthBookingsSummary,
   summarizeMonthBookings,
 } from "../calendarTotals";
@@ -101,29 +103,65 @@ const getDay = (summary: MonthBookingsSummary, date: string) =>
   summary.weeks.flatMap((w) => w.days).find((day) => day.date === date)!;
 
 const sumOfWeeks = (summary: MonthBookingsSummary) =>
-  summary.weeks.reduce((acc, week) => acc + week.minutes, 0);
+  summary.weeks.reduce((acc, week) => acc + week.hours, 0);
 
 const sumOfDays = (summary: MonthBookingsSummary) =>
   summary.weeks
     .flatMap((week) => week.days)
-    .reduce((acc, day) => acc + day.minutes, 0);
+    .reduce((acc, day) => acc + day.hours, 0);
 // #endregion helpers
 
 describe("Calendar totals", () => {
+  describe("getCountedHours", () => {
+    // Booking duration (minutes) => lesson hours, the club's convention (owner decision, #983)
+    const table: [string, number][] = [
+      ["16:00-16:30", 0.5], // 30
+      ["16:00-16:31", 1], // 31
+      ["16:00-16:50", 1], // 50
+      ["16:00-17:00", 1], // 60
+      ["16:00-17:01", 1.5], // 61
+      ["16:00-17:15", 1.5], // 75
+      ["16:00-17:25", 1.5], // 85
+      ["16:00-17:30", 1.5], // 90
+      ["16:00-17:31", 2], // 91
+      ["16:00-17:40", 2], // 100
+      ["16:00-17:50", 2], // 110
+      ["16:00-18:00", 2], // 120
+      ["16:00-18:30", 2.5], // 150
+      ["16:00-18:40", 3], // 160
+    ];
+
+    test.each(table)(
+      "should count %s as %s lesson hours, the same as the admin summary",
+      (interval, hours) => {
+        expect(getCountedHours(interval)).toEqual(hours);
+        // One source of truth with the admin monthly summary
+        expect(getCountedHours(interval)).toEqual(
+          calculateIntervalDuration(interval)
+        );
+      }
+    );
+
+    test("should return null for a malformed interval", () => {
+      expect(getCountedHours("18:00-17:00")).toBeNull();
+      expect(getCountedHours("not-an-interval")).toBeNull();
+    });
+  });
+
   describe("summarizeMonthBookings", () => {
-    test("should sum the booked intervals of the month as minutes", () => {
+    test("should count each booking in lesson hours (rounded up to the next half hour) and sum them", () => {
       const summary = summarizeMonthBookings({
         month: "2026-10",
         bookedSlots,
         slotsForMonth: slotsByDay["2026-10"],
       });
 
-      // 110 + 50 + 100 + 75 + 50 + 50
-      expect(summary.minutes).toEqual(435);
+      // 110 + 50 + 100 + 75 + 50 + 50 minutes => 2 + 1 + 2 + 1.5 + 1 + 1 lesson hours
+      expect(summary.hours).toEqual(8.5);
       expect(summary.bookingsCount).toEqual(6);
       expect(summary.excluded).toEqual([]);
-      expect(sumOfWeeks(summary)).toEqual(summary.minutes);
-      expect(sumOfDays(summary)).toEqual(summary.minutes);
+      expect(sumOfWeeks(summary)).toEqual(summary.hours);
+      expect(sumOfDays(summary)).toEqual(summary.hours);
     });
 
     test("should split the month into weeks starting on Monday, each limited to the days of the month", () => {
@@ -134,18 +172,18 @@ describe("Calendar totals", () => {
       });
 
       expect(
-        summary.weeks.map(({ startDate, endDate, minutes }) => [
+        summary.weeks.map(({ startDate, endDate, hours }) => [
           startDate,
           endDate,
-          minutes,
+          hours,
         ])
       ).toEqual([
         // October 1st 2026 is a Thursday
-        ["2026-10-01", "2026-10-04", 110],
-        ["2026-10-05", "2026-10-11", 150],
-        ["2026-10-12", "2026-10-18", 75],
-        ["2026-10-19", "2026-10-25", 50],
-        ["2026-10-26", "2026-10-31", 50],
+        ["2026-10-01", "2026-10-04", 2],
+        ["2026-10-05", "2026-10-11", 3],
+        ["2026-10-12", "2026-10-18", 1.5],
+        ["2026-10-19", "2026-10-25", 1],
+        ["2026-10-26", "2026-10-31", 1],
       ]);
       // Every day of the month is included (for the month overview)
       expect(summary.weeks.flatMap((w) => w.days)).toHaveLength(31);
@@ -168,15 +206,15 @@ describe("Calendar totals", () => {
       const septemberWeek = september.weeks[september.weeks.length - 1];
       expect(septemberWeek.startDate).toEqual("2026-09-28");
       expect(septemberWeek.endDate).toEqual("2026-09-30");
-      expect(septemberWeek.minutes).toEqual(50);
+      expect(septemberWeek.hours).toEqual(1);
 
       const octoberWeek = october.weeks[0];
       expect(octoberWeek.startDate).toEqual("2026-10-01");
       expect(octoberWeek.endDate).toEqual("2026-10-04");
-      expect(octoberWeek.minutes).toEqual(110);
+      expect(octoberWeek.hours).toEqual(2);
 
-      expect(september.minutes).toEqual(50);
-      expect(sumOfWeeks(september)).toEqual(september.minutes);
+      expect(september.hours).toEqual(1);
+      expect(sumOfWeeks(september)).toEqual(september.hours);
     });
 
     test("should group several bookings on one day, earliest first, with a day total", () => {
@@ -187,12 +225,12 @@ describe("Calendar totals", () => {
       });
 
       const day = getDay(summary, "2026-10-06");
-      expect(day.minutes).toEqual(150);
+      expect(day.hours).toEqual(3);
       expect(
-        day.sessions.map(({ id, interval, minutes, type, bookingNotes }) => ({
+        day.sessions.map(({ id, interval, hours, type, bookingNotes }) => ({
           id,
           interval,
-          minutes,
+          hours,
           type,
           bookingNotes,
         }))
@@ -200,14 +238,14 @@ describe("Calendar totals", () => {
         {
           id: "slot-oct-06-a",
           interval: { startTime: "16:10", endTime: "17:00" },
-          minutes: 50,
+          hours: 1,
           type: SlotType.Ice,
           bookingNotes: undefined,
         },
         {
           id: "slot-oct-06-b",
           interval: { startTime: "17:10", endTime: "18:50" },
-          minutes: 100,
+          hours: 2,
           type: SlotType.OffIce,
           bookingNotes: "Arrivo alle 17:15",
         },
@@ -226,11 +264,11 @@ describe("Calendar totals", () => {
         slotsForMonth: slotsByDay["2026-10"],
       });
 
-      expect(summary.minutes).toEqual(435 - 50);
+      expect(summary.hours).toEqual(8.5 - 1);
       expect(summary.bookingsCount).toEqual(5);
       expect(getDay(summary, "2026-10-06").sessions).toHaveLength(1);
-      expect(getWeek(summary, "2026-10-05").minutes).toEqual(100);
-      expect(sumOfWeeks(summary)).toEqual(summary.minutes);
+      expect(getWeek(summary, "2026-10-05").hours).toEqual(2);
+      expect(sumOfWeeks(summary)).toEqual(summary.hours);
     });
 
     test("should not count attended-only entries, but show them on their day", () => {
@@ -249,17 +287,17 @@ describe("Calendar totals", () => {
         ]),
       });
 
-      expect(summary.minutes).toEqual(435);
+      expect(summary.hours).toEqual(8.5);
       expect(summary.bookingsCount).toEqual(6);
 
       const day = getDay(summary, "2026-10-08");
-      expect(day.minutes).toEqual(0);
+      expect(day.hours).toEqual(0);
       expect(day.sessions).toHaveLength(1);
       expect(day.sessions[0]).toEqual(
         expect.objectContaining({
           id: "slot-oct-08",
           booked: false,
-          minutes: 0,
+          hours: 0,
         })
       );
       expect(getDay(summary, "2026-10-14").sessions).toHaveLength(1);
@@ -276,7 +314,7 @@ describe("Calendar totals", () => {
         slotsForMonth: slotsByDay["2026-10"],
       });
 
-      expect(summary.minutes).toEqual(435 - 75 - 50);
+      expect(summary.hours).toEqual(8.5 - 1.5 - 1);
       expect(summary.bookingsCount).toEqual(4);
       expect(summary.excluded).toEqual([
         {
@@ -292,8 +330,8 @@ describe("Calendar totals", () => {
           reason: "invalid-interval",
         },
       ]);
-      expect(Number.isInteger(summary.minutes)).toBe(true);
-      expect(sumOfWeeks(summary)).toEqual(summary.minutes);
+      expect(Number.isNaN(summary.hours)).toBe(false);
+      expect(sumOfWeeks(summary)).toEqual(summary.hours);
     });
 
     test("should exclude (and report) bookings whose lesson no longer exists", () => {
@@ -306,7 +344,7 @@ describe("Calendar totals", () => {
         slotsForMonth: slotsByDay["2026-10"],
       });
 
-      expect(summary.minutes).toEqual(435);
+      expect(summary.hours).toEqual(8.5);
       expect(summary.excluded).toEqual([
         {
           slotId: "deleted-slot",
@@ -328,7 +366,7 @@ describe("Calendar totals", () => {
         slotsForMonth: slotsByDay["2026-10"],
       });
 
-      expect(summary.minutes).toEqual(435 - 110 + 50);
+      expect(summary.hours).toEqual(8.5 - 2 + 1);
       expect(summary.excluded).toEqual([]);
       expect(getDay(summary, "2026-10-02").sessions[0].interval).toEqual({
         startTime: "16:00",
@@ -343,7 +381,7 @@ describe("Calendar totals", () => {
         slotsForMonth: undefined,
       });
 
-      expect(summary.minutes).toEqual(0);
+      expect(summary.hours).toEqual(0);
       expect(summary.excluded).toEqual([]);
       expect(summary.weeks).toHaveLength(5);
     });
@@ -364,7 +402,7 @@ describe("Calendar totals", () => {
         expect.objectContaining({
           startDate: "2026-11-01",
           endDate: "2026-11-01",
-          minutes: 50,
+          hours: 1,
         })
       );
       expect(summary.weeks[1].startDate).toEqual("2026-11-02");
@@ -403,10 +441,10 @@ describe("Calendar totals", () => {
             "2026-10-24",
             "2026-10-25",
           ]);
-          expect(getDay(summary, "2026-10-25").minutes).toEqual(50);
+          expect(getDay(summary, "2026-10-25").hours).toEqual(1);
           expect(getWeek(summary, "2026-10-26").days).toHaveLength(6);
-          expect(getDay(summary, "2026-10-26").minutes).toEqual(50);
-          expect(summary.minutes).toEqual(435);
+          expect(getDay(summary, "2026-10-26").hours).toEqual(1);
+          expect(summary.hours).toEqual(8.5);
           expect(summary.weeks.flatMap((w) => w.days)).toHaveLength(31);
         })
       );
@@ -420,7 +458,7 @@ describe("Calendar totals", () => {
         app: { calendarDay: DateTime.fromISO("2026-10-01") },
       });
 
-      expect(getMonthBookingsSummary(store.getState()).minutes).toEqual(0);
+      expect(getMonthBookingsSummary(store.getState()).hours).toEqual(0);
 
       // Booking (as received from the bookedSlots subscription)
       store.dispatch(
@@ -429,7 +467,7 @@ describe("Calendar totals", () => {
           "slot-oct-06-a": bookedSlots["slot-oct-06-a"],
         })
       );
-      expect(getMonthBookingsSummary(store.getState()).minutes).toEqual(160);
+      expect(getMonthBookingsSummary(store.getState()).hours).toEqual(3);
 
       // Cancellation
       store.dispatch(
@@ -438,7 +476,7 @@ describe("Calendar totals", () => {
         ])
       );
       const summary = getMonthBookingsSummary(store.getState());
-      expect(summary.minutes).toEqual(110);
+      expect(summary.hours).toEqual(2);
       expect(summary.bookingsCount).toEqual(1);
     });
 
@@ -449,7 +487,7 @@ describe("Calendar totals", () => {
       });
       const summary = getMonthBookingsSummary(store.getState());
       expect(summary.month).toEqual("2026-09");
-      expect(summary.minutes).toEqual(50);
+      expect(summary.hours).toEqual(1);
     });
 
     describe("Month without a 'slotsByDay' document", () => {
@@ -480,7 +518,7 @@ describe("Calendar totals", () => {
 
         const summary = getMonthBookingsSummary(store.getState());
 
-        expect(summary.minutes).toEqual(0);
+        expect(summary.hours).toEqual(0);
         expect(summary.bookingsCount).toEqual(0);
         expect(summary.excluded.map(({ slotId }) => slotId).sort()).toEqual([
           "slot-oct-02",
@@ -500,7 +538,7 @@ describe("Calendar totals", () => {
 
         const summary = getMonthBookingsSummary(store.getState());
 
-        expect(summary.minutes).toEqual(0);
+        expect(summary.hours).toEqual(0);
         expect(summary.excluded).toEqual([]);
       });
     });

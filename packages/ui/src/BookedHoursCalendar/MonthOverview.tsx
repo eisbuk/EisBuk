@@ -6,12 +6,12 @@ import { testId } from "@eisbuk/testing/testIds";
 
 import { CalendarDay, CalendarWeek } from "./types";
 
-import { formatMinutes } from "./utils";
+import { formatHours } from "./utils";
 
 interface MonthOverviewProps {
   weeks: CalendarWeek[];
   /** Month total, shown below the weekly totals (equal to their sum) */
-  minutes: number;
+  hours: number;
   className?: string;
 }
 
@@ -21,7 +21,7 @@ interface MonthOverviewProps {
  */
 const MonthOverview: React.FC<MonthOverviewProps> = ({
   weeks,
-  minutes,
+  hours,
   className = "",
 }) => {
   const { t } = useTranslation();
@@ -62,7 +62,7 @@ const MonthOverview: React.FC<MonthOverviewProps> = ({
               data-testid={testId("week-total")}
               className="py-1 text-right text-sm font-semibold text-gray-700 whitespace-nowrap"
             >
-              {week.minutes ? formatMinutes(week.minutes) : "–"}
+              {week.hours ? formatHours(week.hours) : "–"}
             </td>
           </tr>
         ))}
@@ -71,7 +71,7 @@ const MonthOverview: React.FC<MonthOverviewProps> = ({
         <tr className="border-t-2 border-gray-200">
           <td colSpan={7} />
           <td className="pt-1 text-right text-sm font-bold text-gray-800 whitespace-nowrap">
-            {formatMinutes(minutes)}
+            {formatHours(hours)}
           </td>
         </tr>
       </tfoot>
@@ -81,7 +81,7 @@ const MonthOverview: React.FC<MonthOverviewProps> = ({
 
 const DayCell: React.FC<{ day: CalendarDay }> = ({ day }) => {
   const dayOfMonth = Number(day.date.substring(8, 10));
-  const hasBookings = day.minutes > 0;
+  const hasBookings = day.hours > 0;
   const hasAttendedOnly = !hasBookings && day.sessions.length > 0;
 
   const className = [
@@ -96,7 +96,7 @@ const DayCell: React.FC<{ day: CalendarDay }> = ({ day }) => {
   return (
     <span
       className={className}
-      title={hasBookings ? formatMinutes(day.minutes) : undefined}
+      title={hasBookings ? formatHours(day.hours) : undefined}
     >
       {dayOfMonth}
     </span>

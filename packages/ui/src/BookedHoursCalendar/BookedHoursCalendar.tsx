@@ -10,7 +10,7 @@ import { CalendarSession, CalendarWeek, MonthBookingsSummary } from "./types";
 import MonthOverview from "./MonthOverview";
 import SessionRow from "./SessionRow";
 
-import { formatMinutes } from "./utils";
+import { formatHours } from "./utils";
 
 interface BookedHoursCalendarProps {
   summary: MonthBookingsSummary;
@@ -51,7 +51,7 @@ const BookedHoursCalendar: React.FC<BookedHoursCalendarProps> = ({
             data-testid={testId("month-total")}
             className="text-4xl font-semibold leading-tight text-gray-800"
           >
-            {formatMinutes(summary.minutes)}
+            {formatHours(summary.hours)}
           </p>
           <p className="text-sm text-gray-500">
             {t(BookedHours.MonthTotalNote, { count: summary.bookingsCount })}
@@ -80,7 +80,7 @@ const BookedHoursCalendar: React.FC<BookedHoursCalendarProps> = ({
         </div>
 
         <div className="mt-4 px-3 py-2 bg-white rounded-lg border-2 border-gray-200 md:mt-0 md:w-[420px]">
-          <MonthOverview weeks={summary.weeks} minutes={summary.minutes} />
+          <MonthOverview weeks={summary.weeks} hours={summary.hours} />
         </div>
       </div>
 
@@ -124,7 +124,7 @@ const WeekSection: React.FC<
             : t(BookedHours.Week, { range })}
         </span>
         <span className="font-semibold whitespace-nowrap">
-          {formatMinutes(week.minutes)}
+          {formatHours(week.hours)}
         </span>
       </h2>
 
@@ -141,9 +141,9 @@ const WeekSection: React.FC<
               <span className="inline-block font-medium first-letter:uppercase">
                 {t(DateFormat.Full, { date: DateTime.fromISO(day.date) })}
               </span>
-              {day.minutes > 0 && (
+              {day.hours > 0 && (
                 <span className="text-sm text-gray-500 whitespace-nowrap md:block">
-                  {formatMinutes(day.minutes)}
+                  {formatHours(day.hours)}
                 </span>
               )}
             </h3>
