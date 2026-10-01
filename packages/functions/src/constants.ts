@@ -1,4 +1,5 @@
 import * as Sentry from "@sentry/serverless";
+import type { Event } from "@sentry/types";
 
 import { scrubPII } from "@eisbuk/shared";
 
@@ -12,21 +13,63 @@ export const __sentryRelease__ = process.env.REACT_APP_SENTRY_RELEASE;
 export const __enableSentry__ =
   !process.env.FUNCTIONS_EMULATOR && Boolean(__sentryDSN__);
 
+/** Request headers kept in Sentry events: none of them identify the caller */
+const sentryRequestHeaders = [
+  "content-type",
+  "content-length",
+  "user-agent",
+  "origin",
+  "host",
+];
+
+/**
+ * The SDK sends request bodies as a JSON string, which 'scrubPII' can't look
+ * into: parse it, scrub it and serialize it again.
+ */
+const scrubRequestData = (data: unknown): unknown => {
+  if (typeof data !== "string") return scrubPII(data);
+  try {
+    return JSON.stringify(scrubPII(JSON.parse(data)));
+  } catch {
+    return "[Filtered]";
+  }
+};
+
+/**
+ * Strip athletes' personal data (callable request bodies, trigger context,
+ * caller IP, ID tokens) before events leave the process. Default server-side
+ * scrubbing only catches key names like 'password', so customer fields (name,
+ * surname, birthday, email, phone - many belonging to minors) would otherwise
+ * be persisted in the error tracker verbatim.
+ */
+const scrubSentryEvent = <E extends Event>(event: E): E => {
+  if (event.request) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { data, headers, cookies, ...request } = event.request;
+    event.request = scrubPII({
+      ...request,
+      ...(headers && {
+        headers: Object.fromEntries(
+          Object.entries(headers).filter(([key]) =>
+            sentryRequestHeaders.includes(key.toLowerCase()),
+          ),
+        ),
+      }),
+      ...(data !== undefined && { data: scrubRequestData(data) }),
+    });
+  }
+  if (event.user) event.user = scrubPII(event.user);
+  if (event.extra) event.extra = scrubPII(event.extra);
+  return event;
+};
+
 if (__enableSentry__) {
   Sentry.init({
     dsn: __sentryDSN__,
     release: __sentryRelease__,
     tracesSampleRate: 1.0,
-    // Strip athletes' personal data (callable request bodies, trigger context,
-    // caller IP) before events leave the process. Default server-side scrubbing
-    // only catches key names like 'password', so customer fields (name,
-    // surname, birthday, email, phone - many belonging to minors) would
-    // otherwise be persisted in the error tracker verbatim.
-    beforeSend: (event) => {
-      if (event.request) event.request = scrubPII(event.request);
-      if (event.user) event.user = scrubPII(event.user);
-      if (event.extra) event.extra = scrubPII(event.extra);
-      return event;
-    },
+    beforeSend: scrubSentryEvent,
+    // Transactions carry the same request data as error events
+    beforeSendTransaction: scrubSentryEvent,
   });
 }
