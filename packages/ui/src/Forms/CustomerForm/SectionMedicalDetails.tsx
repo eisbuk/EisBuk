@@ -39,10 +39,13 @@ const SectionMedicalDetails: React.FC<SectionProps> = ({
     "certificateExpiration",
   );
 
-  // The certificate is valid through its expiration day
+  // The certificate is valid through its expiration day. Only a real
+  // "yyyy-mm-dd" date can be compared with today as a string (`isISODay`
+  // alone accepts other ISO forms, e.g. week dates like "2026-W01-1")
   const status = !certificateExpiration
     ? t(CustomerLabel.CertificateMissing)
-    : !isISODay(certificateExpiration)
+    : !/^\d{4}-\d{2}-\d{2}$/.test(certificateExpiration) ||
+        !isISODay(certificateExpiration)
       ? t(CustomerLabel.CertificateInvalid)
       : certificateExpiration < DateTime.now().toISODate()
         ? t(CustomerLabel.CertificateExpired)

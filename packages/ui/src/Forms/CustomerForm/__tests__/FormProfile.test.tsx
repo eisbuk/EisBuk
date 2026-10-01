@@ -205,6 +205,21 @@ describe("CustomerForm", () => {
       expect(missing()).toBeNull();
     });
 
+    test("should flag a non 'yyyy-mm-dd' ISO date (e.g. an ISO week date) as invalid", () => {
+      // Valid for Luxon (= 2025-12-29), but not the format we store,
+      // and it sorts after any real past date as a string
+      render(
+        <CustomerForm.Profile
+          customer={{ ...saul, certificateExpiration: "2026-W01-1" }}
+        />,
+      );
+      expect(
+        screen.queryByText(i18n.t(CustomerLabel.CertificateInvalid) as string),
+      ).not.toBeNull();
+      expect(expired()).toBeNull();
+      expect(missing()).toBeNull();
+    });
+
     test("should save personal details even if the stored certificate date is malformed", async () => {
       const mockSave = vi.fn();
       // Not a valid date (stored through the old callable, or the rules' loose regex)
