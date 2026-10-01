@@ -23,11 +23,13 @@ jobs:
         fetch-depth: 1
     - name: Test the deploy wrapper
       run: common/scripts/test-deploy-firebase-expect.sh
+      timeout-minutes: 3
     - uses: actions/setup-node@v4
       with:
         node-version: "18"
     - name: Test the deployment verifier
       run: node --test common/scripts/verify-deployment.test.js
+      timeout-minutes: 3
     - name: Cache node modules and firebase emulators
       uses: actions/cache@v4
       with:

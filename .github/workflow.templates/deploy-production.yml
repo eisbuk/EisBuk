@@ -37,11 +37,13 @@ jobs:
       -  #@ checkout()
       - name: Test the deploy wrapper
         run: common/scripts/test-deploy-firebase-expect.sh
+        timeout-minutes: 3
       - uses: actions/setup-node@v4
         with:
           node-version: "18"
       - name: Test the deployment verifier
         run: node --test common/scripts/verify-deployment.test.js
+        timeout-minutes: 3
       -  #@ cache_node()
       -  #@ rush_add_path()
       -  #@ rush_update()

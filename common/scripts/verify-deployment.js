@@ -50,6 +50,8 @@ const REQUEST_TIMEOUT_MS =
   Number(process.env.VERIFY_REQUEST_TIMEOUT_MS) || 30000;
 // ...and the whole verification within this one
 const DEADLINE_MS = Number(process.env.VERIFY_DEADLINE_MS) || 10 * 60 * 1000;
+// Loading the functions bundle to list its exports must finish within this time
+const BUNDLE_TIMEOUT_MS = Number(process.env.VERIFY_BUNDLE_TIMEOUT_MS) || 60000;
 // Only overridden by the tests
 const FUNCTIONS_API =
   process.env.VERIFY_FUNCTIONS_API || "https://cloudfunctions.googleapis.com";
@@ -138,32 +140,41 @@ const getAccessToken = async () => {
 
 /**
  * The functions the deploy should have produced, as "region/name", read from the
- * exports of the built bundle the same way the Firebase CLI discovers them
- * (firebase-functions attaches `__endpoint` to each exported function).
+ * exports of the built bundle with the rules firebase-functions' own loader uses
+ * when the Firebase CLI discovers them (runtime/loader.js extractStack): a
+ * function with an `__endpoint` object is a Cloud Function, any other object is
+ * searched recursively and its functions are named "<key>-<name>".
  * The bundle is loaded in a child process with no credentials and the emulator
- * hosts set, so nothing it initialises can reach a real project.
+ * hosts set, so nothing it initialises can reach a real project. The child is
+ * killed with SIGKILL if it does not answer in time (even if stopped, or
+ * ignoring SIGTERM), and nothing here blocks the event loop meanwhile.
  */
-const loadExpectedFunctions = (bundle) => {
+const loadExpectedFunctions = async (bundle) => {
   if (!fs.existsSync(bundle)) {
     throw new Error(`${bundle} not found: build the functions first`);
   }
   const script = `
     const out = [];
-    for (const [name, fn] of Object.entries(require(process.argv[1]))) {
-      const endpoint = fn && fn.__endpoint;
-      if (!endpoint) continue;
-      for (const region of endpoint.region || ["us-central1"]) out.push(region + "/" + name);
-    }
+    const extract = (mod, prefix) => {
+      for (const [name, val] of Object.entries(mod)) {
+        if (typeof val === "function" && val.__endpoint && typeof val.__endpoint === "object") {
+          for (const region of val.__endpoint.region || ["us-central1"]) {
+            out.push(region + "/" + prefix + name);
+          }
+        } else if (typeof val === "object" && val !== null) {
+          extract(val, prefix + name + "-");
+        }
+      }
+    };
+    extract(require(process.argv[1]), "");
     process.stdout.write(JSON.stringify(out));
     process.exit(0);
   `;
-  const result = childProcess.spawnSync(
+  const child = childProcess.spawn(
     process.execPath,
     ["-e", script, path.resolve(bundle)],
     {
       cwd: path.dirname(path.resolve(bundle)),
-      encoding: "utf8",
-      timeout: 60000,
       env: {
         PATH: process.env.PATH,
         GCLOUD_PROJECT: "demo-verify-deployment",
@@ -172,14 +183,40 @@ const loadExpectedFunctions = (bundle) => {
       },
     },
   );
-  if (result.status !== 0) {
+  // Whatever way this process ends (e.g. the overall deadline), the child must not
+  // outlive it
+  const killChild = () => child.kill("SIGKILL");
+  process.on("exit", killChild);
+  let stdout = "";
+  let stderr = "";
+  child.stdout.on("data", (d) => (stdout += d));
+  child.stderr.on("data", (d) => (stderr += d));
+  let timedOut = false;
+  const timer = setTimeout(() => {
+    timedOut = true;
+    child.kill("SIGKILL");
+  }, BUNDLE_TIMEOUT_MS);
+  const [code, signal] = await new Promise((resolve) => {
+    child.on("error", (err) => {
+      stderr += err.message;
+      resolve([null, null]);
+    });
+    child.on("close", (c, s) => resolve([c, s]));
+  }).finally(() => {
+    clearTimeout(timer);
+    process.removeListener("exit", killChild);
+  });
+  if (timedOut) {
     throw new Error(
-      `Could not list the functions in ${bundle}: ${result.error || ""} ${
-        result.stderr
-      }`,
+      `Listing the functions in ${bundle} took more than ${BUNDLE_TIMEOUT_MS} ms`,
     );
   }
-  const expected = JSON.parse(result.stdout);
+  if (code !== 0) {
+    throw new Error(
+      `Could not list the functions in ${bundle} (exit ${code}, ${signal}): ${stderr}`,
+    );
+  }
+  const expected = JSON.parse(stdout);
   if (!expected.length) throw new Error(`${bundle} exports no functions`);
   return expected;
 };
@@ -258,10 +295,15 @@ const checkFunctions = (functions, expected, { release, since, runtime }) => {
 };
 
 /** Returns a problem string, or undefined if the site serves the expected release */
-const checkClientSite = async (site, release) => {
+const checkClientSite = async (
+  site,
+  release,
+  timeoutMs = REQUEST_TIMEOUT_MS,
+) => {
   const { res, body: html } = await fetchWithDeadline(
     `${site}/?verify-deployment=${Date.now()}`,
     { headers: { "cache-control": "no-cache" } },
+    timeoutMs,
   );
   if (!res.ok) return `${site}: HTTP ${res.status}`;
   const scripts = [...html.matchAll(/<script[^>]+src="([^"]+)"/g)].map(
@@ -273,6 +315,7 @@ const checkClientSite = async (site, release) => {
     const { res: jsRes, body: js } = await fetchWithDeadline(
       new URL(src, site).href,
       { headers: { "cache-control": "no-cache" } },
+      timeoutMs,
     );
     if (!jsRes.ok) return `${site}: ${src} HTTP ${jsRes.status}`;
     if (js.includes(`"${release}"`)) {
@@ -332,7 +375,7 @@ const checkHosting = async (release) => {
 
 const main = async () => {
   const args = parseArgs(process.argv.slice(2));
-  const expected = loadExpectedFunctions(args.functionsBundle);
+  const expected = await loadExpectedFunctions(args.functionsBundle);
   const token = await getAccessToken();
   const problems = [
     ...checkFunctions(await listFunctions(args.project, token), expected, args),
