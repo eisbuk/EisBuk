@@ -15,6 +15,7 @@ import {
 import {
   processAttendances,
   getMonthAttendanceVariance,
+  getMonthAttendanceUnresolved,
 } from "../attendanceVariance";
 
 import { getNewStore } from "@/store/createStore";
@@ -284,6 +285,129 @@ describe("Selectors ->", () => {
 
     expect(() => getMonthAttendanceVariance(store.getState())).not.toThrow();
     expect(getMonthAttendanceVariance(store.getState())).toEqual([]);
+  });
+
+  describe("'getMonthAttendanceVariance' with incomplete store data (#843)", () => {
+    const dateISO = testDateLuxon.toISODate();
+    const monthStr = dateISO.substring(0, 7);
+    const loadedSlot = {
+      ...baseSlot,
+      id: "loaded-slot",
+      date: dateISO,
+      type: SlotType.Ice,
+    };
+    const attendance: Attendance = {
+      [loadedSlot.id]: {
+        date: dateISO,
+        attendances: {
+          [saul.id]: {
+            bookedInterval: "09:00-10:00",
+            attendedInterval: "09:00-10:00",
+          },
+        },
+      },
+      // Attendance doc for a slot not (yet) present in slotsByDay
+      "not-loaded-slot": {
+        date: dateISO,
+        attendances: {
+          [saul.id]: {
+            bookedInterval: "18:00-20:00",
+            attendedInterval: "18:00-20:00",
+          },
+        },
+      },
+    };
+
+    test("should not crash when attendance arrives before the month's slotsByDay doc, and report the entries it can't place", () => {
+      const store = getNewStore({
+        firestore: {
+          data: {
+            attendance,
+            customers: { [saul.id]: saul },
+            // The month's slotsByDay doc hasn't arrived yet
+            slotsByDay: {},
+          },
+        },
+        app: { calendarDay: testDateLuxon },
+      });
+
+      expect(() => getMonthAttendanceVariance(store.getState())).not.toThrow();
+      expect(getMonthAttendanceUnresolved(store.getState())).toEqual([
+        { slotId: loadedSlot.id, customerId: saul.id, date: dateISO },
+        { slotId: "not-loaded-slot", customerId: saul.id, date: dateISO },
+      ]);
+    });
+
+    test("should show the entries it can place and report (not silently drop) those referencing a slot missing from slotsByDay", () => {
+      const store = getNewStore({
+        firestore: {
+          data: {
+            attendance,
+            customers: { [saul.id]: saul },
+            slotsByDay: {
+              [monthStr]: { [dateISO]: { [loadedSlot.id]: loadedSlot } },
+            },
+          },
+        },
+        app: { calendarDay: testDateLuxon },
+      });
+
+      const res = getMonthAttendanceVariance(store.getState());
+      expect(res.length).toEqual(1);
+      expect(res[0][0]).toEqual(`${saul.surname} ${saul.name}`);
+      expect([...res[0][1]]).toEqual([
+        [
+          dateISO,
+          {
+            [SlotType.Ice]: { booked: 1, attended: 1 },
+            [SlotType.OffIce]: { booked: 0, attended: 0 },
+          },
+        ],
+      ]);
+      expect(getMonthAttendanceUnresolved(store.getState())).toEqual([
+        { slotId: "not-loaded-slot", customerId: saul.id, date: dateISO },
+      ]);
+    });
+
+    test("should not crash when an attendance entry references an athlete missing from the store, and report it", () => {
+      const store = getNewStore({
+        firestore: {
+          data: {
+            attendance: { [loadedSlot.id]: attendance[loadedSlot.id] },
+            // Customers not loaded yet
+            customers: {},
+            slotsByDay: {
+              [monthStr]: { [dateISO]: { [loadedSlot.id]: loadedSlot } },
+            },
+          },
+        },
+        app: { calendarDay: testDateLuxon },
+      });
+
+      expect(() => getMonthAttendanceVariance(store.getState())).not.toThrow();
+      expect(getMonthAttendanceVariance(store.getState())).toEqual([]);
+      expect(getMonthAttendanceUnresolved(store.getState())).toEqual([
+        { slotId: loadedSlot.id, customerId: saul.id, date: dateISO },
+      ]);
+    });
+
+    test("should report nothing when all data is loaded", () => {
+      const store = getNewStore({
+        firestore: {
+          data: {
+            attendance: { [loadedSlot.id]: attendance[loadedSlot.id] },
+            customers: { [saul.id]: saul },
+            slotsByDay: {
+              [monthStr]: { [dateISO]: { [loadedSlot.id]: loadedSlot } },
+            },
+          },
+        },
+        app: { calendarDay: testDateLuxon },
+      });
+
+      expect(getMonthAttendanceVariance(store.getState()).length).toEqual(1);
+      expect(getMonthAttendanceUnresolved(store.getState())).toEqual([]);
+    });
   });
 
   describe("Test 'getBookedIntervalsCustomers'", () => {
