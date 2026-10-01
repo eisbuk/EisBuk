@@ -191,6 +191,32 @@ describe("CustomerForm", () => {
       expect(expired()).not.toBeNull();
     });
 
+    test("should save personal details even if the stored certificate date is malformed", async () => {
+      const mockSave = vi.fn();
+      // Not a valid date (stored through the old callable, or the rules' loose regex)
+      render(
+        <CustomerForm.Profile
+          customer={{ ...saul, certificateExpiration: "2026-02-31" }}
+          onSave={mockSave}
+        />,
+      );
+      userEvent.click(screen.getByText(i18n.t(ActionButton.Edit) as string));
+
+      const nameField = screen.getByLabelText(
+        i18n.t(CustomerLabel.Name) as string,
+      ) as HTMLInputElement;
+      userEvent.clear(nameField);
+      userEvent.type(nameField, "Jimmy");
+
+      userEvent.click(screen.getByText(i18n.t(ActionButton.Save) as string));
+      await waitFor(() => {
+        expect(mockSave).toHaveBeenCalledWith(
+          expect.objectContaining({ name: "Jimmy" }),
+          expect.objectContaining({}),
+        );
+      });
+    });
+
     test("should flag a missing certificate", () => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { certificateExpiration, ...saulNoCertificate } = saul;

@@ -12,7 +12,6 @@ import SectionPersonalDetails, {
 import SectionMedicalDetails, {
   MedicalDetailsFields,
   medicalDetailsInitialValues,
-  medicalDetailsValidations,
 } from "./SectionMedicalDetails";
 import FormButton, { FormButtonColor } from "../FormButton";
 
@@ -110,9 +109,10 @@ const FormProfile: React.FC<FormProfile> = ({
   );
 };
 
+// No certificate validation: the athlete can't edit that field (#955), and a
+// malformed stored value must not block saving their other details.
 const validationSchema = Yup.object().shape({
   ...personalDetailsValidations,
-  ...medicalDetailsValidations,
 });
 
 export default FormProfile;
