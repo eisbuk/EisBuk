@@ -473,7 +473,7 @@ const isValidSecret = (received: unknown, expected: string) => {
  */
 export const telegramWebhook = functions
   .runWith({
-    memory: "256MB",
+    memory: "512MB",
   })
   .region(__functionsZone__)
   .https.onRequest(async (req, res) => {
