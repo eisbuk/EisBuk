@@ -435,6 +435,22 @@
     "Total": "Totale"
   },
 
+  "BookedHours": {
+    "MonthTotalTitle": "Ore di lezione prenotate nel mese di {{ month, MMMM }}",
+    "MonthTotalNote_one": "{{ count }} lezione · in ore di lezione del club: una lezione da 50 minuti = 1 ora",
+    "MonthTotalNote_other": "{{ count }} lezioni · in ore di lezione del club: una lezione da 50 minuti = 1 ora",
+    "MonthOverview": "Ore di lezione prenotate per settimana",
+    "Week": "Settimana {{ range }}",
+    "WeekRange": "{{ start, d }}–{{ end, d MMMM }}",
+    "TotalColumn": "Tot.",
+    "Hours_one": "{{ hours }} ora",
+    "Hours_other": "{{ hours }} ore",
+    "AttendedOnly": "Presenza senza prenotazione, non inclusa nel totale",
+    "ExcludedBookings_one": "{{ count }} prenotazione ({{ dates }}) non è inclusa nel totale perché il suo orario non è valido. Contatta il club.",
+    "ExcludedBookings_other": "{{ count }} prenotazioni ({{ dates }}) non sono incluse nel totale perché il loro orario non è valido. Contatta il club.",
+    "BookingNotes": "Note della prenotazione"
+  },
+
   "Forms": {
     "ShowPassword": "Mostra password",
     "HidePassword": "Nascondi password"

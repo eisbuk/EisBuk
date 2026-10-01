@@ -69,4 +69,45 @@ export const getMillisFromMidnight = (time: string) =>
     .split(":")
     .reduce((acc, curr, i) => acc + parseInt(curr) * 1000 * 60 ** (2 - i), 0);
 
+const intervalRegex = /^\s*(\d{1,2}):(\d{2})\s*-\s*(\d{1,2}):(\d{2})\s*$/;
+
+/**
+ * Parses a time of day ("HH:mm", "24:00" allowed as end of day) into minutes from midnight.
+ * Returns `null` if the values are out of range.
+ */
+const parseMinutesOfDay = (hours: string, minutes: string): number | null => {
+  const h = parseInt(hours, 10);
+  const m = parseInt(minutes, 10);
+  if (h > 24 || m > 59 || (h === 24 && m !== 0)) return null;
+  return h * 60 + m;
+};
+
+/**
+ * Validated duration, in whole minutes, of a string interval (e.g. `"16:10-17:00" => 50`).
+ *
+ * Unlike `calculateIntervalDurationInMinutes`, this returns `null` for a missing or malformed interval
+ * (not two "HH:mm" times, or end not after start), so that callers can exclude such entries explicitly
+ * instead of adding `NaN` or a negative number.
+ *
+ * Use it to validate an interval. Booked time shown to users is counted in the club's lesson hours,
+ * with `calculateIntervalDuration` (each booking rounded up to the next half hour), not in these minutes.
+ *
+ * Intervals are wall-clock times on the lesson's date, so the duration is the difference between the two times
+ * (this differs from the physically elapsed time only for an interval spanning a daylight saving change, at night).
+ */
+export const getIntervalMinutes = (
+  interval: string | null | undefined
+): number | null => {
+  if (typeof interval !== "string") return null;
+
+  const match = intervalRegex.exec(interval);
+  if (!match) return null;
+
+  const start = parseMinutesOfDay(match[1], match[2]);
+  const end = parseMinutesOfDay(match[3], match[4]);
+  if (start === null || end === null || end <= start) return null;
+
+  return end - start;
+};
+
 // #endregion CalculateInterval

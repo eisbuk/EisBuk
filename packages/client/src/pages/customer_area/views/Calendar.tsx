@@ -3,24 +3,17 @@ import { useSelector, useStore } from "react-redux";
 import { getFirestore } from "@firebase/firestore";
 
 import i18n, { Alerts } from "@eisbuk/translations";
-import {
-  EmptySpace,
-  IntervalCard,
-  IntervalCardState,
-  IntervalCardVariant,
-} from "@eisbuk/ui";
+import { SlotInterface } from "@eisbuk/shared";
+import { BookedHoursCalendar, CalendarSession, EmptySpace } from "@eisbuk/ui";
 
 import { functions } from "@/setup";
 
-import {
-  getIsBookingAllowed,
-  getBookedAndAttendedSlotsForCalendar,
-} from "@/store/selectors/bookings";
+import { getIsBookingAllowed } from "@/store/selectors/bookings";
+import { getMonthBookingsSummary } from "@/store/selectors/bookings/calendarTotals";
 import { getCalendarDay, getSecretKey } from "@/store/selectors/app";
 import { updateBookingNotes } from "@/store/actions/bookingOperations";
 
 import { createModal } from "@/features/modal/useModal";
-import { ModalPayload } from "@/features/modal/types";
 import { FirestoreVariant } from "@/utils/firestore";
 
 const CalendarView: React.FC = () => {
@@ -30,64 +23,44 @@ const CalendarView: React.FC = () => {
 
   const disabled = !useSelector(getIsBookingAllowed(secretKey, currentDate));
 
-  const bookedAndAttendedSlots = useSelector(
-    getBookedAndAttendedSlotsForCalendar
-  );
-
-  const state = disabled
-    ? IntervalCardState.Disabled
-    : IntervalCardState.Default;
+  const summary = useSelector(getMonthBookingsSummary);
 
   const { openWithProps: openCancelBookingDialog } = useCancelBookingModal();
 
-  const handleCancellation = (
-    props: ModalPayload<"CancelBookingDialog">["props"]
-  ) => openCancelBookingDialog(props);
+  // Sessions passed back by the calendar are the ones from the summary (full slot included)
+  // The dialog uses the slot's `id`, `date` and `interval` to cancel, the lesson's data (if available) only to display it
+  const handleCancellation = (session: CalendarSession) =>
+    openCancelBookingDialog({
+      ...(session as SlotInterface & CalendarSession),
+      secretKey,
+    });
 
-  const handleNotesUpdate = (
-    bookingNotes: string,
-    slotId: string,
-    date: string,
-    interval: string
-  ) =>
+  const handleNotesUpdate = (session: CalendarSession, bookingNotes: string) =>
     // In order to be able to await this update, we're
     // using a bit of a different approach to firing a thunk
     // by runing a thunk explicitly and passing redux' dispatch and get state
     updateBookingNotes({
-      slotId,
+      slotId: session.id,
       secretKey,
       bookingNotes,
-      date,
-      interval,
+      date: session.date,
+      interval: `${session.interval.startTime} - ${session.interval.endTime}`,
     })(dispatch, getState, {
       getFirestore: () => FirestoreVariant.client({ instance: getFirestore() }),
       getFunctions: () => functions,
     });
 
-  const slotsToRender = bookedAndAttendedSlots.map((props) => (
-    <IntervalCard
-      key={props.id}
-      onCancel={() => handleCancellation({ ...props, secretKey })}
-      onNotesEditSave={(bookingNotes) =>
-        handleNotesUpdate(
-          bookingNotes,
-          props.id,
-          props.date,
-          `${props.interval.startTime} - ${props.interval.endTime}`
-        )
-      }
-      state={state}
-      variant={
-        props.booked ? IntervalCardVariant.Calendar : IntervalCardVariant.Simple
-      }
-      {...props}
-    />
-  ));
+  const hasContent =
+    summary.excluded.length > 0 ||
+    summary.weeks.some((week) => week.days.some((day) => day.sessions.length));
 
-  return slotsToRender.length ? (
-    <div className="w-full flex flex-wrap gap-[30px] py-12">
-      {slotsToRender}
-    </div>
+  return hasContent ? (
+    <BookedHoursCalendar
+      summary={summary}
+      disabled={disabled}
+      onCancel={handleCancellation}
+      onNotesEditSave={handleNotesUpdate}
+    />
   ) : (
     <EmptySpace>{i18n.t(Alerts.NoBookings, { currentDate })}</EmptySpace>
   );

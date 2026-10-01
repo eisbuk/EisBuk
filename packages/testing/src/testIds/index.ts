@@ -72,6 +72,15 @@ type TestIDList = [
   "book-button",
   // #endregion BookingCard
 
+  // #region BookedHoursCalendar
+  "month-total",
+  "month-overview",
+  "week-total",
+  "week-section",
+  "calendar-day",
+  "excluded-bookings",
+  // #endregion BookedHoursCalendar
+
   // #region CustomerList
   "customer-list",
   // #endregion CustomerList
