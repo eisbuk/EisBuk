@@ -32,6 +32,10 @@ const storageErrors = {
       "unavailable",
       "Failed to persist write: IndexedDbTransactionError: [code=unavailable]: IndexedDB transaction 'Locally write mutations' failed: UnknownError: Connection to Indexed Database server lost. Refresh the page to try again"
     ),
+  "raw Safari error (not wrapped by Firestore)": new DOMException(
+    "Connection to Indexed Database server lost. Refresh the page to try again",
+    "UnknownError"
+  ),
   "failed internal queue": new Error(
     "FIRESTORE (9.22.1) INTERNAL ASSERTION FAILED: Unexpected state"
   ),
@@ -312,6 +316,20 @@ describe("handleWriteError", () => {
     );
     await vi.runAllTimersAsync();
     expect(reload).toHaveBeenCalledTimes(1);
+  });
+
+  test("reports a DOMException by its name (its numeric code says little)", async () => {
+    const { handleWriteError } = await loadModule();
+    const error = storageErrors["raw Safari error (not wrapped by Firestore)"];
+
+    handleWriteError(error, "bookInterval", vi.fn());
+
+    expect(Sentry.captureMessage).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({
+        tags: expect.objectContaining({ errorCode: "UnknownError" }),
+      })
+    );
   });
 });
 

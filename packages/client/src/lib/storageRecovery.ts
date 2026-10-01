@@ -64,7 +64,8 @@ const getErrorMessage = (error: unknown): string =>
 
 const getErrorCode = (error: unknown): string => {
   const { code, name } = (error || {}) as { code?: unknown; name?: unknown };
-  return String(code || name || "unknown");
+  // DOMExceptions have a numeric `code`: their name says more
+  return String((typeof code === "string" && code) || name || "unknown");
 };
 
 // #region reloadGuard
