@@ -120,9 +120,13 @@ service cloud.firestore {
 
       // #endregion bookings-checks
       match /bookings/{secretKey} {
-        // Anybody with 'secretKey' can read from 'bookings'
+        // Anybody with 'secretKey' can fetch a single 'bookings' document.
+        // Only 'get' (single-document fetch by known secretKey) is allowed, NOT 'list':
+        // in Firestore rules `read` = `get` + `list`, and allowing `list` would let an
+        // unauthenticated client enumerate the whole collection (every athlete's profile
+        // and secret key). Legitimate clients only ever `get` a booking by a known key.
         // No one should be able to write to bookings document (it's done through cloud functions)
-        allow read: if true;
+        allow get: if true;
 
         function checkBookingSlot(slotId, bookingData) {
           let bookedSlot = get(/databases/$(database)/documents/organizations/$(organization)/slots/$(slotId));
