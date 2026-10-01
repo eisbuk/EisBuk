@@ -111,6 +111,24 @@ const BLOCK_FOREVER =
 const bundleProcessLeft = (bundle) =>
   childProcess.spawnSync("pgrep", ["-f", bundle]).status === 0;
 
+/** Direct children of a process (Linux) */
+const childPids = (pid) =>
+  childProcess
+    .spawnSync("pgrep", ["-P", String(pid)], { encoding: "utf8" })
+    .stdout.split("\n")
+    .filter(Boolean)
+    .map(Number);
+
+/** State letter from /proc/<pid>/stat ("T" = stopped), undefined if gone */
+const procState = (pid) => {
+  try {
+    const stat = fs.readFileSync(`/proc/${pid}/stat`, "utf8");
+    return stat.slice(stat.lastIndexOf(")") + 2).split(" ")[0];
+  } catch {
+    return undefined;
+  }
+};
+
 /** Calls loadExpectedFunctions in a child, so VERIFY_* settings apply */
 const loadInChild = (bundle, env) =>
   runNode(
@@ -268,16 +286,27 @@ for (const [signal, expectedStatus] of [
     const closed = new Promise((resolve) =>
       verifier.on("close", (status) => resolve(status)),
     );
-    // Wait for the bundle process to exist (it stops itself right away)
-    for (let i = 0; i < 50 && !bundleProcessLeft(bundle); i++) {
-      await new Promise((r) => setTimeout(r, 100));
+    // Wait until the verifier's own child (the bundle loader) exists and has
+    // stopped itself: by then the verifier's signal handlers are installed
+    let bundlePid;
+    for (let i = 0; i < 100 && !bundlePid; i++) {
+      bundlePid = childPids(verifier.pid).find((pid) => procState(pid) === "T");
+      if (!bundlePid) await new Promise((r) => setTimeout(r, 100));
     }
-    assert.ok(bundleProcessLeft(bundle), "the bundle process never started");
+    assert.ok(bundlePid, "the bundle process never started and stopped");
     verifier.kill(signal);
     const status = await closed;
     assert.strictEqual(status, expectedStatus, stderr);
     assert.match(stderr, new RegExp(`interrupted by ${signal}`));
-    assert.ok(!bundleProcessLeft(bundle), "the bundle process survived");
+    // That very process must be gone (allowing a moment to be reaped)
+    for (let i = 0; i < 30 && procState(bundlePid) !== undefined; i++) {
+      await new Promise((r) => setTimeout(r, 100));
+    }
+    assert.strictEqual(
+      procState(bundlePid),
+      undefined,
+      `the bundle process ${bundlePid} survived`,
+    );
   });
 }
 
