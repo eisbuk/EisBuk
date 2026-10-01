@@ -11,6 +11,8 @@ import {
   where,
 } from "@firebase/firestore";
 
+import { OrgSubCollection } from "@eisbuk/shared";
+
 import {
   FirestoreListener,
   FirestoreThunk,
@@ -28,6 +30,15 @@ import {
 import { getFirestoreListeners } from "../selectors";
 
 import { createGetDocsInStore } from "./utils";
+
+/**
+ * Collections (subscribed with `documents` constraint) for which consumers need to know that a document
+ * is confirmed missing (`listener.receivedDocuments`), and whose document listeners therefore receive
+ * metadata-only snapshots (to get the server's confirmation of a snapshot first served from the cache).
+ */
+const collectionsConfirmingMissingDocuments: string[] = [
+  OrgSubCollection.SlotsByDay,
+];
 
 export type FirestoreListenerConstraint = Pick<FirestoreListener, "range"> &
   Pick<FirestoreListener, "documents">;
@@ -247,8 +258,13 @@ export const updateSubscription: SubscribeFunction =
         const unsubscribe = onSnapshot(
           docRef,
           // Metadata changes are needed to receive the server's confirmation of a snapshot first served
-          // from the cache, when nothing changed (e.g. a document missing from both): see `createDocSnapshotHandler`
-          { includeMetadataChanges: true },
+          // from the cache, when nothing changed (e.g. a document missing from both): see `createDocSnapshotHandler`.
+          // Only for the collections whose receipts are used: for the others, metadata-only snapshots would
+          // re-dispatch unchanged data (e.g. a new `organizations` reference, revalidating the admin's auth, when going offline)
+          {
+            includeMetadataChanges:
+              collectionsConfirmingMissingDocuments.includes(collName),
+          },
           createDocSnapshotHandler(dispatch, collName)
         );
         unsubscribeFunctions.push(unsubscribe);

@@ -8,10 +8,11 @@ import { render, act } from "@testing-library/react";
 import { Provider as ReduxProvider } from "react-redux";
 import { DateTime } from "luxon";
 
-import { OrgSubCollection } from "@eisbuk/shared";
+import { Collection, OrgSubCollection } from "@eisbuk/shared";
 import { useFirestoreSubscribe } from "@eisbuk/react-redux-firebase-firestore";
 
 import { getNewStore } from "@/store/createStore";
+import useConnectAuthToStore from "@/react-redux-firebase-auth/hooks/useConnectAuthToStore";
 
 import { getMonthBookingsSummary } from "../calendarTotals";
 
@@ -56,6 +57,27 @@ const missingDocSnapshot = (id: string, fromCache = false) => ({
   data: () => undefined,
   metadata: { fromCache, hasPendingWrites: false },
 });
+
+/**
+ * Delivers a snapshot whose data didn't change (only `fromCache` did, e.g. going offline or back online).
+ * Like the Firestore SDK (QueryListener), it reaches the handler only if the listener was subscribed
+ * with `includeMetadataChanges: true`.
+ */
+const deliverMetadataOnly = (
+  listener: (typeof snapshotListeners)[number],
+  snapshot: unknown
+) => {
+  if (listener.options?.includeMetadataChanges) listener.handler(snapshot);
+};
+
+// Auth is mocked: only the auth status revalidation triggered by organization updates is observed
+vi.mock("@firebase/auth", () => ({
+  onAuthStateChanged: () => () => {},
+}));
+const updateAuthUser = vi.hoisted(() =>
+  vi.fn(() => ({ type: "test/updateAuthUser" }))
+);
+vi.mock("@/store/actions/authOperations", () => ({ updateAuthUser }));
 // #endregion firestoreMock
 
 const SlotsByDaySubscriber: React.FC = () => {
@@ -71,6 +93,7 @@ const getSlotsByDayListener = (store: ReturnType<typeof getNewStore>) =>
 describe("Firestore listener lifecycle (slotsByDay, as subscribed by the customer area)", () => {
   beforeEach(() => {
     snapshotListeners.length = 0;
+    updateAuthUser.mockClear();
     vi.useFakeTimers();
   });
   afterEach(() => {
@@ -150,6 +173,64 @@ describe("Firestore listener lifecycle (slotsByDay, as subscribed by the custome
     snapshotListeners.forEach(({ unsubscribe }) =>
       expect(unsubscribe).toHaveBeenCalledTimes(1)
     );
+  });
+
+  test("unchanged organization snapshots across online -> offline -> online don't revalidate the admin's auth", async () => {
+    const store = getNewStore(
+      { app: { calendarDay: DateTime.fromISO("2026-10-01") } },
+      { getFirestore: vi.fn(), getFunctions: vi.fn() } as any
+    );
+    const AdminApp: React.FC = () => {
+      useConnectAuthToStore({} as any, store);
+      useFirestoreSubscribe("test-organization", [
+        { collection: Collection.Organizations },
+      ]);
+      return null;
+    };
+    render(
+      <ReduxProvider store={store}>
+        <AdminApp />
+      </ReduxProvider>
+    );
+
+    const organizationListener = snapshotListeners.find(({ path }) =>
+      path.endsWith("organizations/test-organization")
+    )!;
+    // Only the listeners whose missing documents need confirming receive metadata-only snapshots
+    expect(organizationListener.options).toEqual({
+      includeMetadataChanges: false,
+    });
+
+    // Each snapshot returns a new (equal) data object, as the SDK does
+    const organizationSnapshot = (fromCache: boolean) => ({
+      id: "test-organization",
+      data: () => ({ admins: ["admin@example.com"] }),
+      metadata: { fromCache, hasPendingWrites: false },
+    });
+
+    // Online: the organization is received, the auth status is checked once
+    act(() => {
+      organizationListener.handler(organizationSnapshot(false));
+    });
+    const organizations = store.getState().firestore.data.organizations;
+    expect(organizations).toEqual({
+      "test-organization": { admins: ["admin@example.com"] },
+    });
+    expect(updateAuthUser).toHaveBeenCalledTimes(1);
+
+    // Offline, then online again: unchanged data
+    const dispatchSpy = vi.spyOn(store, "dispatch");
+    act(() => {
+      deliverMetadataOnly(organizationListener, organizationSnapshot(true));
+    });
+    act(() => {
+      deliverMetadataOnly(organizationListener, organizationSnapshot(false));
+    });
+
+    // No extra dispatch, same reference, no new auth status request
+    expect(dispatchSpy).not.toHaveBeenCalled();
+    expect(store.getState().firestore.data.organizations).toBe(organizations);
+    expect(updateAuthUser).toHaveBeenCalledTimes(1);
   });
 
   test("cached absence of the month's document -> server confirmation", async () => {
