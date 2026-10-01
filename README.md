@@ -84,7 +84,9 @@ To remove a dependency, simply remove it from `package.json` and run `rush updat
 
 ### Monorepo debugging
 
-The recommended node version for the monorepo is (as stated in `.nvmrc`) `14.18.1`. If you're using nvm (and have the given node version installed), it's sufficient to run `nvm use` anywhere in the repo to switch to appropriate version.
+The tooling of the monorepo (rush, pnpm, vite, vitest, the Firebase CLI and emulators) runs on Node 18, as stated in `.nvmrc` and in `nodeSupportedVersionRange` in `rush.json`. Newer Node versions do not work with the pinned pnpm 6 (installs fail with `ERR_INVALID_THIS`). If you're using nvm (and have the given node version installed), it's sufficient to run `nvm use` anywhere in the repo to switch to appropriate version.
+
+The deployed Cloud Functions run on a different Node version: the one in the `engines` field of `packages/functions/package.json` (currently Node 22). The Firebase CLI reads that field to choose the runtime in the cloud. The two versions don't need to change together.
 
 Some unexpected and cryptic errors might arise from a corrupt shrinkwrap file, at which point running the following might prove useful:
 
@@ -136,9 +138,9 @@ cd packages/client
 rushx storybook
 ```
 
-#### JEST tests
+#### Vitest tests
 
-To run JEST (unit) tests, run
+To run the (unit) tests with Vitest, run
 
 ```bash
 cd packages/client
@@ -194,7 +196,7 @@ The functions package contains the code for "serverless" cloud functions. The fu
 
 ### @eisbuk/client
 
-The client package contains our main (browser) app. Currently all of our unit tests are contained within this package as well. The scripts connected to this package have already been explained above. The build/serve is handled by Vite, while unit tests are implemented using jest + react-testing-library.
+The client package contains our main (browser) app. Currently all of our unit tests are contained within this package as well. The scripts connected to this package have already been explained above. The build/serve is handled by Vite, while unit tests are implemented using vitest + react-testing-library.
 
 _Please note: client build process is a bit lengthier than that of the shared, functions, etc.. packages. Therefore, `build` script in client package does nothing, not to slow down the bulk `rush build` command. If you wish to build the `@eisbuk/client` package for production, `rushx build:prod` should be ran instead (from `packages/client`)_
 
