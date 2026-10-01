@@ -27,8 +27,8 @@ jobs:
     - uses: actions/setup-node@v4
       with:
         node-version: "18"
-    - name: Test the deployment verifier
-      run: node --test common/scripts/verify-deployment.test.js
+    - name: Test the deployment verifier and preflight
+      run: node --test common/scripts/verify-deployment.test.js common/scripts/preflight-deploy.test.js
       timeout-minutes: 3
     - name: Cache node modules and firebase emulators
       uses: actions/cache@v4
@@ -44,6 +44,9 @@ jobs:
       run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
     - name: Install dependencies
       run: rush update
+    - name: Preflight, deploy toolchain
+      run: node common/scripts/preflight-deploy.js
+      timeout-minutes: 3
     - name: Build eisbuk packages
       run: rush build
     - name: Inject slug/short variables

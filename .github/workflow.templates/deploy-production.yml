@@ -41,12 +41,17 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "18"
-      - name: Test the deployment verifier
-        run: node --test common/scripts/verify-deployment.test.js
+      - name: Test the deployment verifier and preflight
+        run: node --test common/scripts/verify-deployment.test.js common/scripts/preflight-deploy.test.js
         timeout-minutes: 3
       -  #@ cache_node()
       -  #@ rush_add_path()
       -  #@ rush_update()
+      #! Stop here, before anything is built or released, if the deploy would not
+      #! use firebase-tools 13 (>= 13.11) and Node 22 functions (#986).
+      - name: Preflight, deploy toolchain
+        run: node common/scripts/preflight-deploy.js
+        timeout-minutes: 3
       -  #@ rush_build()
       - name: Inject slug/short variables
         uses: rlespinasse/github-slug-action@v4
