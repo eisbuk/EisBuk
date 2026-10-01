@@ -13,3 +13,5 @@ export * from "./checks/https";
 
 export * from "./sendEmail";
 export * from "./sendSMS";
+
+export * from "./telegram";
