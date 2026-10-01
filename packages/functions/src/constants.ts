@@ -1,5 +1,6 @@
 import * as Sentry from "@sentry/serverless";
 import type { Event } from "@sentry/types";
+import * as functions from "firebase-functions";
 
 import { scrubPII } from "@eisbuk/shared";
 
@@ -10,8 +11,6 @@ export const __isEmulator__ = process.env.FUNCTIONS_EMULATOR === "true";
 
 export const __sentryDSN__ = process.env.FUNCTIONS_SENTRY_DSN;
 export const __sentryRelease__ = process.env.REACT_APP_SENTRY_RELEASE;
-export const __enableSentry__ =
-  !process.env.FUNCTIONS_EMULATOR && Boolean(__sentryDSN__);
 
 /** Request headers kept in Sentry events: none of them identify the caller */
 const sentryRequestHeaders = [
@@ -63,13 +62,31 @@ const scrubSentryEvent = <E extends Event>(event: E): E => {
   return event;
 };
 
-if (__enableSentry__) {
-  Sentry.init({
-    dsn: __sentryDSN__,
-    release: __sentryRelease__,
-    tracesSampleRate: 1.0,
-    beforeSend: scrubSentryEvent,
-    // Transactions carry the same request data as error events
-    beforeSendTransaction: scrubSentryEvent,
-  });
-}
+/**
+ * Initialises Sentry when a DSN is configured (not in the emulators) and
+ * returns whether error reporting is enabled. This runs when the functions are
+ * loaded: if the initialisation throws (e.g. a malformed proxy setting), error
+ * reporting is disabled, rather than preventing every function from loading.
+ */
+const initSentry = (): boolean => {
+  if (process.env.FUNCTIONS_EMULATOR || !__sentryDSN__) return false;
+  try {
+    Sentry.init({
+      dsn: __sentryDSN__,
+      release: __sentryRelease__,
+      tracesSampleRate: 1.0,
+      beforeSend: scrubSentryEvent,
+      // Transactions carry the same request data as error events
+      beforeSendTransaction: scrubSentryEvent,
+    });
+    return true;
+  } catch (err) {
+    functions.logger.warn(
+      "Sentry: initialisation failed, error reporting is disabled",
+      err,
+    );
+    return false;
+  }
+};
+
+export const __enableSentry__ = initSentry();

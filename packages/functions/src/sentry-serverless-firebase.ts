@@ -83,12 +83,31 @@ function wrap<A, B, C>(
       return fn(a, b);
     }
 
-    // Each invocation gets a scope of its own: the event processor added below
-    // is dropped when the invocation ends, instead of piling up (with this
-    // invocation's request data) on the scope shared by later invocations.
-    return sentry.withScope((scope) =>
-      runWithSentry(sentry, scope, type, name, fn, a, b),
-    );
+    // Each invocation runs in an async context of its own (a hub with a clone
+    // of the current scope): the event processor and transaction added below
+    // stay with this invocation, instead of piling up on a scope shared with
+    // later invocations, or mixing with invocations running at the same time.
+    let started = false;
+    try {
+      return await sentry.runWithAsyncContext(() => {
+        started = true;
+        return runWithSentry(
+          sentry,
+          sentry.getCurrentScope(),
+          type,
+          name,
+          fn,
+          a,
+          b,
+        );
+      });
+    } catch (err) {
+      // 'runWithSentry' never throws synchronously and returns the function's
+      // own outcome: only a failure before it started is Sentry's own
+      if (started) throw err;
+      logReportingFailure(name, "setting up error reporting", err);
+      return fn(a, b);
+    }
   };
 }
 

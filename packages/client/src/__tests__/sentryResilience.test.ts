@@ -158,6 +158,24 @@ const settle = async <T>(p: () => Promise<T>) => {
     return { value: undefined, error, ms: Date.now() - start };
   }
 };
+const deferred = () => {
+  let resolve: () => void = () => {};
+  const promise = new Promise<void>((_resolve) => (resolve = _resolve));
+  return { promise, resolve };
+};
+
+/** Error and transaction events from the envelopes received by a fake Sentry */
+const parseEvents = (envelopes: string[]): any[] =>
+  envelopes
+    .flatMap((envelope) => envelope.split("\n"))
+    .map((line) => {
+      try {
+        return JSON.parse(line);
+      } catch {
+        return null;
+      }
+    })
+    .filter((item) => item && (item.exception || item.type === "transaction"));
 // #endregion helpers
 
 const sentryStates: [string, () => Promise<FakeSentry>][] = [
@@ -283,6 +301,59 @@ describe("Sentry wrapper for cloud functions (#944)", () => {
       await sentry.close();
     });
 
+    test.each([
+      ["A", "B"],
+      ["B", "A"],
+    ])(
+      "overlapping invocations keep their own metadata (%s finishes first)",
+      async (first, second) => {
+        const runs = { A: deferred(), B: deferred() };
+        const invoke = (id: "A" | "B") =>
+          settle(() =>
+            wrapper.wrapHttpsOnCallHandler(`testCallable${id}`, async () => {
+              await runs[id].promise;
+              throw new Error(`failure-${id}`);
+            })(
+              { organization: `org-${id}` },
+              callableContext({ organization: `org-${id}` }),
+            ),
+          );
+
+        // A starts, then B starts while A is still running
+        const settled = { A: invoke("A"), B: invoke("B") };
+        await new Promise((resolve) => setTimeout(resolve, 20));
+
+        runs[first as "A" | "B"].resolve();
+        await settled[first as "A" | "B"];
+        runs[second as "A" | "B"].resolve();
+        await settled[second as "A" | "B"];
+
+        const events = parseEvents(sentry.received);
+        (["A", "B"] as const).forEach((id) => {
+          const other = id === "A" ? "B" : "A";
+
+          const error = events.find(
+            (e) => e.exception?.values?.[0]?.value === `failure-${id}`,
+          );
+          const transaction = events.find(
+            (e) =>
+              e.type === "transaction" && e.transaction === `testCallable${id}`,
+          );
+          expect(error).toBeDefined();
+          expect(transaction).toBeDefined();
+
+          expect(error.transaction).toEqual(`testCallable${id}`);
+          expect(error.contexts.trace.trace_id).toEqual(
+            transaction.contexts.trace.trace_id,
+          );
+          expect(JSON.stringify(error.request)).toContain(`org-${id}`);
+          expect(JSON.stringify(error)).not.toContain(`org-${other}`);
+          expect(JSON.stringify(transaction.request)).toContain(`org-${id}`);
+          expect(JSON.stringify(transaction)).not.toContain(`org-${other}`);
+        });
+      },
+    );
+
     test("errors are still reported", async () => {
       const handler = wrapper.wrapHttpsOnCallHandler("testCallable", () => {
         throw new Error("reported failure");
@@ -366,6 +437,42 @@ describe("Sentry wrapper for cloud functions (#944)", () => {
       const sent = sentry.received.join("\n");
       expect(sent).toContain("trigger failure");
       expectNoPII(sent);
+    });
+  });
+
+  describe("when Sentry can't be initialised", () => {
+    let wrapper: WrapperModule;
+    let sentry: FakeSentry;
+
+    beforeAll(async () => {
+      sentry = await answeringSentry(200);
+      // A malformed proxy makes the SDK's transport (created in 'init') throw
+      process.env.http_proxy = "http://[";
+      wrapper = await loadWrapper(sentry.dsn);
+    });
+    afterAll(async () => {
+      delete process.env.http_proxy;
+      await sentry.close();
+    });
+
+    test("a callable returns its own result", async () => {
+      const handler = wrapper.wrapHttpsOnCallHandler(
+        "testCallable",
+        async () => "result",
+      );
+      expect(await handler({}, callableContext({}))).toEqual("result");
+    });
+
+    test("a callable failing rejects with its own error", async () => {
+      const original = new Error("own failure");
+      const handler = wrapper.wrapHttpsOnCallHandler(
+        "testCallable",
+        async () => {
+          throw original;
+        },
+      );
+      const res = await settle(() => handler({}, callableContext({})));
+      expect(res.error).toBe(original);
     });
   });
 });
