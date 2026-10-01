@@ -1,6 +1,9 @@
 {
-  "!(.eslintrc*).js": ["eslint --fix --max-warnings=0", "prettier --write"],
-  "!(vite.config).{ts,tsx}": [
+  "!(.eslintrc*|install-run*).js": [
+    "eslint --fix --max-warnings=0",
+    "prettier --write"
+  ],
+  "!(vite.config|vitest.config).{ts,tsx}": [
     "eslint --fix --max-warnings=0",
     "prettier --write"
   ],

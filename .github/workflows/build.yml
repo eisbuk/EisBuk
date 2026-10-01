@@ -4,20 +4,25 @@ name: OnPush
 env:
   BROWSERSLIST_IGNORE_OLD_DATA: "1"
 jobs:
-  build_v18:
+  build_v24:
     name: Build and deploy to preview channel
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
         submodules: recursive
         fetch-depth: 1
-    - uses: actions/setup-node@v4
+    - uses: actions/setup-java@v5
       with:
-        node-version: "18"
+        distribution: temurin
+        java-version: "21"
+    - uses: actions/setup-node@v6
+      with:
+        node-version-file: .nvmrc
+        package-manager-cache: false
     - name: Cache node modules and firebase emulators
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: |
           ~/.rush
@@ -25,11 +30,11 @@ jobs:
           common/temp
           **/node_modules
           ~/.cache/firebase/emulators
-        key: ${{ runner.os }}-modules-emulators-node18-v2-${{ hashFiles('**/pnpm-lock.yaml') }}
+        key: ${{ runner.os }}-modules-emulators-node24-pnpm10-v1-${{ hashFiles('rush.json', 'common/config/rush/pnpm-config.json', 'common/config/rush/.npmrc', '**/pnpm-lock.yaml') }}
     - name: Add rush directory to PATH
       run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
     - name: Install dependencies
-      run: rush update
+      run: rush install
     - name: Build eisbuk packages
       run: rush build
     - name: Inject slug/short variables
@@ -105,20 +110,25 @@ jobs:
         echo Preview channels deployed: >> $GITHUB_STEP_SUMMARY
         echo $igoriceteam >> $GITHUB_STEP_SUMMARY
         echo $eisbuk >> $GITHUB_STEP_SUMMARY
-  test_v18:
+  test_v24:
     name: Run tests
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
         submodules: recursive
         fetch-depth: 1
-    - uses: actions/setup-node@v4
+    - uses: actions/setup-java@v5
       with:
-        node-version: "18"
+        distribution: temurin
+        java-version: "21"
+    - uses: actions/setup-node@v6
+      with:
+        node-version-file: .nvmrc
+        package-manager-cache: false
     - name: Cache node modules and firebase emulators
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: |
           ~/.rush
@@ -126,11 +136,11 @@ jobs:
           common/temp
           **/node_modules
           ~/.cache/firebase/emulators
-        key: ${{ runner.os }}-modules-emulators-node18-v2-${{ hashFiles('**/pnpm-lock.yaml') }}
+        key: ${{ runner.os }}-modules-emulators-node24-pnpm10-v1-${{ hashFiles('rush.json', 'common/config/rush/pnpm-config.json', 'common/config/rush/.npmrc', '**/pnpm-lock.yaml') }}
     - name: Add rush directory to PATH
       run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
     - name: Install dependencies
-      run: rush update
+      run: rush install
     - name: Build eisbuk packages
       run: rush build
     - name: Run tests
@@ -189,15 +199,20 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
         submodules: recursive
         fetch-depth: 1
-    - uses: actions/setup-node@v4
+    - uses: actions/setup-java@v5
       with:
-        node-version: "18"
+        distribution: temurin
+        java-version: "21"
+    - uses: actions/setup-node@v6
+      with:
+        node-version-file: .nvmrc
+        package-manager-cache: false
     - name: Cache node modules and firebase emulators
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: |
           ~/.rush
@@ -205,11 +220,11 @@ jobs:
           common/temp
           **/node_modules
           ~/.cache/firebase/emulators
-        key: ${{ runner.os }}-modules-emulators-node18-v2-${{ hashFiles('**/pnpm-lock.yaml') }}
+        key: ${{ runner.os }}-modules-emulators-node24-pnpm10-v1-${{ hashFiles('rush.json', 'common/config/rush/pnpm-config.json', 'common/config/rush/.npmrc', '**/pnpm-lock.yaml') }}
     - name: Add rush directory to PATH
       run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
     - name: Install dependencies
-      run: rush update
+      run: rush install
     - name: Build eisbuk packages
       run: rush build
     - name: Lint all the packages
@@ -220,15 +235,20 @@ jobs:
     name: Cypress browser tests
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
         submodules: recursive
         fetch-depth: 1
-    - uses: actions/setup-node@v4
+    - uses: actions/setup-java@v5
       with:
-        node-version: "18"
+        distribution: temurin
+        java-version: "21"
+    - uses: actions/setup-node@v6
+      with:
+        node-version-file: .nvmrc
+        package-manager-cache: false
     - name: Cache node modules, firebase emulators and cypress
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: |
           ~/.rush
@@ -237,11 +257,11 @@ jobs:
           **/node_modules
           ~/.cache/firebase/emulators
           ~/.cache/Cypress
-        key: ${{ runner.os }}-modules-emulators-cypress-node18-v2-${{ hashFiles('**/pnpm-lock.yaml', '**/package.json', 'common/config/rush/repo-state.json') }}
+        key: ${{ runner.os }}-modules-emulators-cypress-node24-pnpm10-v1-${{ hashFiles('rush.json', 'common/config/rush/pnpm-config.json', 'common/config/rush/.npmrc', '**/pnpm-lock.yaml', '**/package.json', 'common/config/rush/repo-state.json') }}
     - name: Add rush directory to PATH
       run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
     - name: Install dependencies
-      run: rush update
+      run: rush install
     - name: Build eisbuk packages
       run: rush build
     - name: Build app
@@ -310,7 +330,7 @@ jobs:
     name: Coveralls finish
     needs:
     - cypress-run
-    - test_v18
+    - test_v24
     runs-on: ubuntu-latest
     steps:
     - name: Check if secrets are available
@@ -328,15 +348,20 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
         submodules: recursive
         fetch-depth: 1
-    - uses: actions/setup-node@v4
+    - uses: actions/setup-java@v5
       with:
-        node-version: "18"
+        distribution: temurin
+        java-version: "21"
+    - uses: actions/setup-node@v6
+      with:
+        node-version-file: .nvmrc
+        package-manager-cache: false
     - name: Cache node modules and firebase emulators
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: |
           ~/.rush
@@ -344,11 +369,11 @@ jobs:
           common/temp
           **/node_modules
           ~/.cache/firebase/emulators
-        key: ${{ runner.os }}-modules-emulators-node18-v2-${{ hashFiles('**/pnpm-lock.yaml') }}
+        key: ${{ runner.os }}-modules-emulators-node24-pnpm10-v1-${{ hashFiles('rush.json', 'common/config/rush/pnpm-config.json', 'common/config/rush/.npmrc', '**/pnpm-lock.yaml') }}
     - name: Add rush directory to PATH
       run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
     - name: Install dependencies
-      run: rush update
+      run: rush install
     - name: Check dependency consistency
       run: ./.github/check-rush.sh
   client_storybook:
@@ -356,15 +381,20 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
         submodules: recursive
         fetch-depth: 0
-    - uses: actions/setup-node@v4
+    - uses: actions/setup-java@v5
       with:
-        node-version: "18"
+        distribution: temurin
+        java-version: "21"
+    - uses: actions/setup-node@v6
+      with:
+        node-version-file: .nvmrc
+        package-manager-cache: false
     - name: Cache node modules and firebase emulators
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: |
           ~/.rush
@@ -372,11 +402,11 @@ jobs:
           common/temp
           **/node_modules
           ~/.cache/firebase/emulators
-        key: ${{ runner.os }}-modules-emulators-node18-v2-${{ hashFiles('**/pnpm-lock.yaml') }}
+        key: ${{ runner.os }}-modules-emulators-node24-pnpm10-v1-${{ hashFiles('rush.json', 'common/config/rush/pnpm-config.json', 'common/config/rush/.npmrc', '**/pnpm-lock.yaml') }}
     - name: Add rush directory to PATH
       run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
     - name: Install dependencies
-      run: rush update
+      run: rush install
     - name: Build eisbuk packages
       run: rush build
     - name: Check if secrets are available
@@ -419,15 +449,20 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
         submodules: recursive
         fetch-depth: 0
-    - uses: actions/setup-node@v4
+    - uses: actions/setup-java@v5
       with:
-        node-version: "18"
+        distribution: temurin
+        java-version: "21"
+    - uses: actions/setup-node@v6
+      with:
+        node-version-file: .nvmrc
+        package-manager-cache: false
     - name: Cache node modules and firebase emulators
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: |
           ~/.rush
@@ -435,11 +470,11 @@ jobs:
           common/temp
           **/node_modules
           ~/.cache/firebase/emulators
-        key: ${{ runner.os }}-modules-emulators-node18-v2-${{ hashFiles('**/pnpm-lock.yaml') }}
+        key: ${{ runner.os }}-modules-emulators-node24-pnpm10-v1-${{ hashFiles('rush.json', 'common/config/rush/pnpm-config.json', 'common/config/rush/.npmrc', '**/pnpm-lock.yaml') }}
     - name: Add rush directory to PATH
       run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
     - name: Install dependencies
-      run: rush update
+      run: rush install
     - name: Build eisbuk packages
       run: rush build
     - name: Check if secrets are available

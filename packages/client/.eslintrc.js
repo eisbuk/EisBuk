@@ -9,6 +9,9 @@ module.exports = useTSConfig(
     ignorePatterns: [
       ...scaffold.ignorePatterns,
       "coverage",
+      "html",
+      "instrumented",
+      "storybook-static",
       "setupTests.js",
       "nyc-config.js",
       "postcss.config.js",
