@@ -2,16 +2,17 @@
  * @vitest-environment jsdom
  */
 
-import React from "react";
+import React, { useEffect } from "react";
 import { describe, vi, expect, test, beforeEach, afterEach } from "vitest";
 import { render, act } from "@testing-library/react";
-import { Provider as ReduxProvider } from "react-redux";
+import { Provider as ReduxProvider, useSelector } from "react-redux";
 import { DateTime } from "luxon";
 
 import { Collection, OrgSubCollection } from "@eisbuk/shared";
 import { useFirestoreSubscribe } from "@eisbuk/react-redux-firebase-firestore";
 
 import { getNewStore } from "@/store/createStore";
+import { getAdminSlots } from "@/store/selectors/slots";
 import useConnectAuthToStore from "@/react-redux-firebase-auth/hooks/useConnectAuthToStore";
 
 import { getMonthBookingsSummary } from "../calendarTotals";
@@ -219,7 +220,11 @@ describe("Firestore listener lifecycle (slotsByDay, as subscribed by the custome
     expect(updateAuthUser).toHaveBeenCalledTimes(1);
 
     // Offline, then online again: unchanged data
-    const dispatchSpy = vi.spyOn(store, "dispatch");
+    // Every dispatch reaching the store notifies its subscribers (and re-runs the selectors)
+    let dispatches = 0;
+    store.subscribe(() => {
+      dispatches++;
+    });
     act(() => {
       deliverMetadataOnly(organizationListener, organizationSnapshot(true));
     });
@@ -228,9 +233,100 @@ describe("Firestore listener lifecycle (slotsByDay, as subscribed by the custome
     });
 
     // No extra dispatch, same reference, no new auth status request
-    expect(dispatchSpy).not.toHaveBeenCalled();
+    expect(dispatches).toEqual(0);
     expect(store.getState().firestore.data.organizations).toBe(organizations);
     expect(updateAuthUser).toHaveBeenCalledTimes(1);
+  });
+
+  test("metadata-only slotsByDay snapshots dispatch nothing (the slots page's paste lock isn't reset)", async () => {
+    const store = getNewStore(
+      { app: { calendarDay: DateTime.fromISO("2026-10-01") } },
+      { getFirestore: vi.fn(), getFunctions: vi.fn() } as any
+    );
+
+    // Same pattern as the slots page: the paste controls are re-enabled
+    // by an effect running whenever 'getAdminSlots' returns a new value
+    let slotsEffectRuns = 0;
+    const SlotsPageLike: React.FC = () => {
+      useFirestoreSubscribe("test-organization", [
+        { collection: OrgSubCollection.SlotsByDay },
+      ]);
+      const slotsToShow = useSelector(getAdminSlots);
+      useEffect(() => {
+        slotsEffectRuns++;
+      }, [slotsToShow]);
+      return null;
+    };
+    render(
+      <ReduxProvider store={store}>
+        <SlotsPageLike />
+      </ReduxProvider>
+    );
+
+    const octoberListener = snapshotListeners.find(({ path }) =>
+      path.endsWith("/2026-10")
+    )!;
+    // Each snapshot returns a new (equal) data object, as the SDK does
+    const monthSnapshot = (fromCache: boolean, notes = "Pista 1") => ({
+      id: "2026-10",
+      data: () => ({
+        "2026-10-01": {
+          "slot-1": {
+            id: "slot-1",
+            date: "2026-10-01",
+            type: "ice",
+            categories: [],
+            notes,
+            intervals: {
+              "16:00-16:50": { startTime: "16:00", endTime: "16:50" },
+            },
+          },
+        },
+      }),
+      metadata: { fromCache, hasPendingWrites: false },
+    });
+
+    // Server snapshot: data and receipt are stored
+    act(() => {
+      octoberListener.handler(monthSnapshot(false));
+    });
+    const slotsByDay = store.getState().firestore.data.slotsByDay;
+    expect(slotsByDay?.["2026-10"]["2026-10-01"]["slot-1"].notes).toEqual(
+      "Pista 1"
+    );
+    expect(getSlotsByDayListener(store)?.receivedDocuments).toEqual([
+      "2026-10",
+    ]);
+
+    // Going offline, then back online: metadata-only snapshots with unchanged data
+    const effectRunsBefore = slotsEffectRuns;
+    // Every dispatch reaching the store notifies its subscribers (and re-runs the selectors)
+    let dispatches = 0;
+    store.subscribe(() => {
+      dispatches++;
+    });
+    act(() => {
+      deliverMetadataOnly(octoberListener, monthSnapshot(true));
+    });
+    act(() => {
+      deliverMetadataOnly(octoberListener, monthSnapshot(false));
+    });
+
+    // Nothing dispatched: same references, the effect (paste lock reset) doesn't run
+    expect(dispatches).toEqual(0);
+    expect(store.getState().firestore.data.slotsByDay).toBe(slotsByDay);
+    expect(slotsEffectRuns).toEqual(effectRunsBefore);
+
+    // A real change is still dispatched
+    act(() => {
+      octoberListener.handler(monthSnapshot(false, "Pista 2"));
+    });
+    expect(
+      store.getState().firestore.data.slotsByDay?.["2026-10"]["2026-10-01"][
+        "slot-1"
+      ].notes
+    ).toEqual("Pista 2");
+    expect(slotsEffectRuns).toBeGreaterThan(effectRunsBefore);
   });
 
   test("cached absence of the month's document -> server confirmation", async () => {

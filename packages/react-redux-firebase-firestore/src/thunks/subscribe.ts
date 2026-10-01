@@ -253,6 +253,9 @@ export const updateSubscription: SubscribeFunction =
       // exit early if there are no new docs to subscribe to
       if (!trimmedDocs.length) return;
 
+      const includeMetadataChanges =
+        collectionsConfirmingMissingDocuments.includes(collName);
+
       trimmedDocs.forEach((docId) => {
         const docRef = doc(collRef, docId);
         const unsubscribe = onSnapshot(
@@ -261,11 +264,11 @@ export const updateSubscription: SubscribeFunction =
           // from the cache, when nothing changed (e.g. a document missing from both): see `createDocSnapshotHandler`.
           // Only for the collections whose receipts are used: for the others, metadata-only snapshots would
           // re-dispatch unchanged data (e.g. a new `organizations` reference, revalidating the admin's auth, when going offline)
-          {
-            includeMetadataChanges:
-              collectionsConfirmingMissingDocuments.includes(collName),
-          },
-          createDocSnapshotHandler(dispatch, collName)
+          { includeMetadataChanges },
+          // Metadata-only snapshots carry no data change: don't dispatch them
+          createDocSnapshotHandler(dispatch, collName, {
+            skipUnchanged: includeMetadataChanges,
+          })
         );
         unsubscribeFunctions.push(unsubscribe);
       });
@@ -345,23 +348,68 @@ export const createCollSnapshotHandler: OnSnapshotHandlerHOF<"coll"> =
  * `firestore.data.[storeAs]` collection, keyed by doc's id
  * @param dispatch `store.dispatch`
  * @param storeAs name of collection in local store's `firestore.data`
+ * @param options.skipUnchanged for listeners receiving metadata-only snapshots (`includeMetadataChanges`):
+ * dispatch nothing when neither the data nor the receipt changed, so that e.g. going offline doesn't
+ * create new references in the store (every dispatch re-runs the selectors and the effects depending on them)
  */
-export const createDocSnapshotHandler: OnSnapshotHandlerHOF<"doc"> =
-  (dispatch, storeAs) => (docSnapshot) => {
+export const createDocSnapshotHandler = (
+  dispatch: Parameters<FirestoreThunk>[0],
+  storeAs: string,
+  { skipUnchanged = false } = {}
+): ((docSnapshot: DocumentSnapshot<DocumentData>) => void) => {
+  // Data of the last snapshot (`null` if the document doesn't exist), `undefined` before the first snapshot
+  let lastData: DocumentData | null | undefined;
+  let receiptRecorded = false;
+
+  return (docSnapshot) => {
     const docId = docSnapshot.id;
     const docData = docSnapshot.data();
 
-    if (docData) {
-      dispatch(updateLocalDocuments(storeAs, { [docId]: docData }));
-    } else {
-      // if `docData` is undefined the document has been deleted from firestore
-      dispatch(deleteLocalDocuments(storeAs, [docId]));
+    const isUnchanged =
+      skipUnchanged &&
+      lastData !== undefined &&
+      isDeepEqual(lastData, docData ?? null);
+    lastData = docData ?? null;
+
+    if (!isUnchanged) {
+      if (docData) {
+        dispatch(updateLocalDocuments(storeAs, { [docId]: docData }));
+      } else {
+        // if `docData` is undefined the document has been deleted from firestore
+        dispatch(deleteLocalDocuments(storeAs, [docId]));
+      }
     }
 
     // Record the first snapshot confirmed by the server, so that a missing document can be told apart from one
     // still loading. A snapshot from the cache doesn't prove a document is missing (e.g. offline, or the document
     // was evicted from the cache): until the server confirms it, the document is treated as still loading.
-    if (!docSnapshot.metadata.fromCache) {
+    if (
+      !docSnapshot.metadata.fromCache &&
+      !(skipUnchanged && receiptRecorded)
+    ) {
       dispatch(markDocumentsReceived(storeAs, [docId]));
+      receiptRecorded = true;
     }
   };
+};
+
+/**
+ * Compares document data (plain values, arrays, maps, and Firestore values with `isEqual`, e.g. `Timestamp`)
+ */
+const isDeepEqual = (a: unknown, b: unknown): boolean => {
+  if (a === b) return true;
+  if (typeof a !== "object" || typeof b !== "object" || !a || !b) return false;
+  if (typeof (a as any).isEqual === "function") return (a as any).isEqual(b);
+  if (Array.isArray(a) !== Array.isArray(b)) return false;
+
+  const aKeys = Object.keys(a);
+  const bKeys = Object.keys(b);
+  return (
+    aKeys.length === bKeys.length &&
+    aKeys.every(
+      (key) =>
+        Object.prototype.hasOwnProperty.call(b, key) &&
+        isDeepEqual((a as any)[key], (b as any)[key])
+    )
+  );
+};
