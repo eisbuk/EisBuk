@@ -35,6 +35,20 @@ export const getAttendedSlots = (
 ): Record<string, Omit<CustomerBookingEntry, "bookingNotes">> =>
   state.firestore.data?.attendedSlots || {};
 
+/**
+ * Returns `{ startTime, endTime }` of a booked (or attended) interval of a slot.
+ * The interval might no longer exist in `slot.intervals` (removed after it was booked): in that case
+ * it's parsed from the interval key (e.g. "16:00-17:00"), so that the booking is still shown with its booked times.
+ */
+const getBookedInterval = (
+  slot: SlotInterface,
+  intervalKey: string,
+): SlotInterval => {
+  if (slot.intervals?.[intervalKey]) return slot.intervals[intervalKey];
+  const [startTime, endTime] = intervalKey.split("-");
+  return { startTime, endTime };
+};
+
 type SlotsForBooking = {
   date: string;
   slots: (SlotInterface & { interval?: string })[];
@@ -167,7 +181,7 @@ export const getBookingsForCalendar = (state: LocalStore): BookingsList => {
         // instead of crashing on `bookedSlot.intervals`.
         const bookedSlot = slotsForAMonth[date][slotId];
         if (!bookedSlot) return acc;
-        const interval = bookedSlot.intervals[bookedInterval];
+        const interval = getBookedInterval(bookedSlot, bookedInterval);
         return [
           ...acc,
           {
@@ -216,7 +230,7 @@ export const getBookedAndAttendedSlotsForCalendar = (
       const attendedSlot = dayOfAttendedSlot[slotId];
       // Skip if the slot no longer exists on that day (deleted/changed slot)
       if (!attendedSlot) return acc;
-      const interval = attendedSlot.intervals[attendedInterval];
+      const interval = getBookedInterval(attendedSlot, attendedInterval);
       const completeAttendanceEntry = {
         ...attendedSlot,
         interval,
@@ -237,7 +251,7 @@ export const getBookedAndAttendedSlotsForCalendar = (
       const bookedSlot = dayOfBookedSlot[slotId];
       // Skip if the slot no longer exists on that day (deleted/changed slot)
       if (!bookedSlot) return acc;
-      const interval = bookedSlot.intervals[bookedInterval];
+      const interval = getBookedInterval(bookedSlot, bookedInterval);
       const completeBookingEntry = {
         ...bookedSlot,
         interval,

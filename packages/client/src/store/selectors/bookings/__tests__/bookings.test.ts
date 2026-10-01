@@ -371,6 +371,87 @@ describe("Selectors ->", () => {
       expect(ids).toEqual([liveSlot.id]);
     });
 
+    test("should keep (with the booked times) bookings and attendances whose interval was removed from the slot (regression: #816)", () => {
+      const monthStr = "2022-01";
+      const day = "2022-01-01";
+
+      // The slot still exists, but its "08:00-09:00" interval was removed after it was booked/attended
+      const intervals = {
+        "08:00-09:30": { startTime: "08:00", endTime: "09:30" },
+      };
+      const [bookedSlot, otherBookedSlot, attendedSlot] = [
+        "booked-slot",
+        "other-booked-slot",
+        "attended-slot",
+      ].map((id) => ({
+        ...baseSlot,
+        id,
+        intervals,
+        categories: [Category.Competitive],
+        date: day,
+      }));
+
+      const store = setupBookingsTest({
+        category: Category.Competitive,
+        date: DateTime.fromISO(day),
+        slotsByDay: {
+          [monthStr]: {
+            [day]: {
+              [bookedSlot.id]: bookedSlot,
+              [otherBookedSlot.id]: otherBookedSlot,
+              [attendedSlot.id]: attendedSlot,
+            },
+          },
+        },
+      });
+
+      store.dispatch(
+        updateLocalDocuments(BookingSubCollection.BookedSlots, {
+          [bookedSlot.id]: { date: day, interval: "08:00-09:00" },
+          [otherBookedSlot.id]: { date: day, interval: "08:00-09:30" },
+        }),
+      );
+      store.dispatch(
+        updateLocalDocuments(BookingSubCollection.AttendedSlots, {
+          [attendedSlot.id]: { date: day, interval: "07:00-08:00" },
+        }),
+      );
+
+      const removedInterval = { startTime: "08:00", endTime: "09:00" };
+
+      const res = getBookedAndAttendedSlotsForCalendar(store.getState());
+      expect(res).toHaveLength(3);
+      // Sorted by start time (the two bookings start at the same time, so their order isn't defined)
+      expect(res[0]).toEqual({
+        ...attendedSlot,
+        interval: { startTime: "07:00", endTime: "08:00" },
+        booked: false,
+      });
+      expect(res).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            id: otherBookedSlot.id,
+            interval: intervals["08:00-09:30"],
+            booked: true,
+          }),
+          expect.objectContaining({
+            id: bookedSlot.id,
+            interval: removedInterval,
+            booked: true,
+          }),
+        ]),
+      );
+
+      // Same for the bookings used for the ICS calendar export
+      expect(
+        getBookingsForCalendar(store.getState()).find(
+          ({ id }) => id === bookedSlot.id,
+        ),
+      ).toEqual(
+        expect.objectContaining({ interval: removedInterval, booked: true }),
+      );
+    });
+
     test("should sort the slots (by date, and by time intraday)", () => {
       const monthStr = "2022-01";
       const date = "2022-01-01";
