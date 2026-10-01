@@ -26,6 +26,8 @@ jobs:
     - uses: actions/setup-node@v4
       with:
         node-version: "18"
+    - name: Test the deployment verifier
+      run: node --test common/scripts/verify-deployment.test.js
     - name: Cache node modules and firebase emulators
       uses: actions/cache@v4
       with:
@@ -96,7 +98,7 @@ jobs:
         REACT_APP_SENTRY_RELEASE: ${{ env.SENTRY_RELEASE }}
         GOOGLE_APPLICATION_CREDENTIALS: /tmp/key.json
     - name: Verify that production runs this release
-      run: node common/scripts/verify-deployment.js --release "$SENTRY_RELEASE" --runtime "nodejs$(node -p 'require("./packages/functions/package.json").engines.node')" --ignore-function europe-west3/queryAuthStatus --ignore-function europe-west6/queryAuthStatus2 --ignore-function europe-west6/sentryTestDataTrigger
+      run: node common/scripts/verify-deployment.js --release "$SENTRY_RELEASE" --runtime "nodejs$(node -p 'require("./packages/functions/package.json").engines.node')"
       env:
         GOOGLE_APPLICATION_CREDENTIALS: /tmp/key.json
     - name: debug

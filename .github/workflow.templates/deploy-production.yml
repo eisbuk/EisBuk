@@ -40,6 +40,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "18"
+      - name: Test the deployment verifier
+        run: node --test common/scripts/verify-deployment.test.js
       -  #@ cache_node()
       -  #@ rush_add_path()
       -  #@ rush_update()
@@ -98,9 +100,8 @@ jobs:
           REACT_APP_SENTRY_RELEASE: ${{ env.SENTRY_RELEASE }}
           GOOGLE_APPLICATION_CREDENTIALS: /tmp/key.json
       #! A green deploy step is not proof that production changed (#986): check the
-      #! release id in the served bundle and in every function's environment.
-      #! The ignored functions exist in production but not in the source: the deploy
-      #! answers N to deleting them, so they keep their old release.
+      #! release id in the served bundle and in the environment of every function
+      #! exported by packages/functions/dist/index.js (built by the predeploy hook).
       #! No --since: firebase-tools skips functions whose source and env are
       #! unchanged (same commit redeployed the same day), the release id still matches.
       - name: Verify that production runs this release
@@ -108,9 +109,6 @@ jobs:
           node common/scripts/verify-deployment.js
           --release "$SENTRY_RELEASE"
           --runtime "nodejs$(node -p 'require("./packages/functions/package.json").engines.node')"
-          --ignore-function europe-west3/queryAuthStatus
-          --ignore-function europe-west6/queryAuthStatus2
-          --ignore-function europe-west6/sentryTestDataTrigger
         env:
           GOOGLE_APPLICATION_CREDENTIALS: /tmp/key.json
       - name: debug
