@@ -431,6 +431,23 @@
     "Total": "Total"
   },
 
+  "BookedHours": {
+    "MonthTotalTitle": "Hours booked in {{ month, MMMM }}",
+    "MonthTotalNote_one": "{{ count }} lesson · actual time, 60-minute hours",
+    "MonthTotalNote_other": "{{ count }} lessons · actual time, 60-minute hours",
+    "MonthOverview": "Booked hours by week",
+    "Week": "Week {{ range }}",
+    "WeekRange": "{{ start, d }}–{{ end, d MMMM }}",
+    "TotalColumn": "Total",
+    "HoursAndMinutes": "{{ hours }} h {{ minutes }} min",
+    "Hours": "{{ hours }} h",
+    "Minutes": "{{ minutes }} min",
+    "AttendedOnly": "Attended without a booking, not included in the total",
+    "ExcludedBookings_one": "{{ count }} booking ({{ dates }}) is not included in the total because its lesson or time no longer exists. Please contact the club.",
+    "ExcludedBookings_other": "{{ count }} bookings ({{ dates }}) are not included in the total because their lesson or time no longer exists. Please contact the club.",
+    "BookingNotes": "Booking notes"
+  },
+
   "Forms": {
     "ShowPassword": "show password",
     "HidePassword": "hide password"

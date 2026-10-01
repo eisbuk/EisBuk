@@ -465,6 +465,23 @@ export enum AttendanceVarianceHeaders {
 }
 // #endregion tables
 
+// #region booked_hours
+export enum BookedHours {
+  MonthTotalTitle = "BookedHours.MonthTotalTitle",
+  MonthTotalNote = "BookedHours.MonthTotalNote",
+  MonthOverview = "BookedHours.MonthOverview",
+  Week = "BookedHours.Week",
+  WeekRange = "BookedHours.WeekRange",
+  TotalColumn = "BookedHours.TotalColumn",
+  HoursAndMinutes = "BookedHours.HoursAndMinutes",
+  Hours = "BookedHours.Hours",
+  Minutes = "BookedHours.Minutes",
+  AttendedOnly = "BookedHours.AttendedOnly",
+  ExcludedBookings = "BookedHours.ExcludedBookings",
+  BookingNotes = "BookedHours.BookingNotes",
+}
+// #endregion booked_hours
+
 // #region forms
 export enum Forms {
   ShowPassword = "Forms.ShowPassword",

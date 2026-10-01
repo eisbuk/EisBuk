@@ -42,6 +42,7 @@ export * from "./Layout";
 export * from "./IconButton";
 export * from "./Table";
 export * from "./AttendanceVarianceTable";
+export * from "./BookedHoursCalendar";
 export * from "./Forms/CustomerForm";
 export * from "./Forms";
 export * from "./CustomerList";
