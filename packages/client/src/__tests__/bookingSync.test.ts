@@ -1,0 +1,630 @@
+/**
+ * @vitest-environment node
+ */
+
+import { v4 as uuid } from "uuid";
+import { describe, expect } from "vitest";
+
+import {
+  Category,
+  Collection,
+  CustomerAttendance,
+  CustomerBookingEntry,
+  CustomerFull,
+  OrgSubCollection,
+  SlotInterface,
+  SlotType,
+} from "@eisbuk/shared";
+
+import { adminDb } from "@/__testSetup__/firestoreSetup";
+import { setUpOrganization } from "@/__testSetup__/node";
+
+import {
+  getAttendanceDocPath,
+  getBookedSlotDocPath,
+  getBookingsDocPath,
+  getCustomerDocPath,
+  getSlotDocPath,
+} from "@/utils/firestore";
+
+import { waitFor } from "@/__testUtils__/helpers";
+import { testWithEmulator } from "@/__testUtils__/envUtils";
+import { deliverFirestoreWriteEvent } from "@/__testUtils__/firestoreEvents";
+
+/**
+ * Regression tests for #987 (booking counts drifting from the number of bookings) and
+ * #988 (attendance contradicting the booking it derives from).
+ *
+ * First generation Firestore triggers are delivered at least once, in no particular order, and
+ * can run concurrently. The emulator delivers each write once and in order, so duplicate and
+ * out-of-order delivery is simulated by delivering a recorded event again, after the data has moved on.
+ */
+
+// #region fixtures
+const date = "2030-02-11";
+const month = date.substring(0, 7);
+
+const intervals = {
+  short: "16:00-17:00",
+  long: "16:00-18:00",
+  late: "17:00-18:00",
+};
+
+const createSlot = (id: string): SlotInterface => ({
+  id,
+  date,
+  type: SlotType.Ice,
+  categories: [Category.Competitive],
+  intervals: Object.fromEntries(
+    Object.values(intervals).map((interval) => {
+      const [startTime, endTime] = interval.split("-");
+      return [interval, { startTime, endTime }];
+    })
+  ),
+  notes: "",
+});
+
+const createAthlete = (i: number): CustomerFull => ({
+  id: `athlete-${i}-${uuid().slice(0, 8)}`,
+  secretKey: uuid(),
+  name: "Athlete",
+  surname: String(i),
+  categories: [Category.Competitive],
+  certificateExpiration: "2031-01-01",
+  birthday: "2000-01-01",
+  subscriptionNumber: "",
+});
+// #endregion fixtures
+
+// #region helpers
+/**
+ * Sets up an organization with the given slots and athletes and waits for the derived documents
+ * (slot attendance, athletes' bookings documents) to be created by the data triggers.
+ */
+const setUp = async (slotIds: string[], athleteCount: number) => {
+  const { organization } = await setUpOrganization({ doLogin: false });
+  const athletes = Array.from({ length: athleteCount }, (_, i) =>
+    createAthlete(i)
+  );
+
+  await Promise.all([
+    ...slotIds.map((id) =>
+      adminDb.doc(getSlotDocPath(organization, id)).set(createSlot(id))
+    ),
+    ...athletes.map((athlete) =>
+      adminDb.doc(getCustomerDocPath(organization, athlete.id)).set(athlete)
+    ),
+  ]);
+
+  await waitFor(async () => {
+    const docs = await Promise.all([
+      ...slotIds.map((id) =>
+        adminDb.doc(getAttendanceDocPath(organization, id)).get()
+      ),
+      ...athletes.map(({ secretKey }) =>
+        adminDb.doc(getBookingsDocPath(organization, secretKey)).get()
+      ),
+    ]);
+    expect(docs.every((doc) => doc.exists)).toEqual(true);
+    // Allow for the emulator starting up the functions on the first run
+  }, 20000);
+
+  return { organization, athletes };
+};
+
+const bookingPath = (
+  organization: string,
+  athlete: CustomerFull,
+  slotId: string
+) => getBookedSlotDocPath(organization, athlete.secretKey, slotId);
+
+const book = (
+  organization: string,
+  athlete: CustomerFull,
+  slotId: string,
+  interval: string
+) =>
+  adminDb
+    .doc(bookingPath(organization, athlete, slotId))
+    .set({ date, interval } as CustomerBookingEntry);
+
+const cancel = (organization: string, athlete: CustomerFull, slotId: string) =>
+  adminDb.doc(bookingPath(organization, athlete, slotId)).delete();
+
+const getCount = async (organization: string, slotId: string) => {
+  const snap = await adminDb
+    .collection(Collection.Organizations)
+    .doc(organization)
+    .collection(OrgSubCollection.SlotBookingsCounts)
+    .doc(month)
+    .get();
+  return snap.data()?.[slotId];
+};
+
+const getAttendance = async (
+  organization: string,
+  slotId: string,
+  athlete: CustomerFull
+): Promise<CustomerAttendance | undefined> => {
+  const snap = await adminDb
+    .doc(getAttendanceDocPath(organization, slotId))
+    .get();
+  return snap.data()?.attendances?.[athlete.id];
+};
+
+/**
+ * Writes the athlete's attendance entry as the admin attendance screen does
+ * (`markAttendance` in `attendanceOperations.ts`): the whole entry, merged into the slot's attendance.
+ */
+const adminWriteAttendance = (
+  organization: string,
+  slotId: string,
+  athlete: CustomerFull,
+  entry: CustomerAttendance
+) =>
+  adminDb
+    .doc(getAttendanceDocPath(organization, slotId))
+    .set({ attendances: { [athlete.id]: entry } }, { merge: true });
+
+const deliverBookingEvent = (
+  functionName: "countSlotsBookings" | "createAttendanceForBooking",
+  path: string,
+  before: CustomerBookingEntry | null,
+  after: CustomerBookingEntry | null
+) => deliverFirestoreWriteEvent(functionName, path, before, after);
+// #endregion helpers
+
+describe("Booking derived data under at-least-once, unordered trigger delivery", () => {
+  describe("countSlotsBookings", () => {
+    testWithEmulator(
+      "counts every booking when athletes book two slots of the same day concurrently",
+      async () => {
+        const slotIds = ["slot-a", "slot-b"];
+        const { organization, athletes } = await setUp(slotIds, 12);
+
+        // Each athlete books both lessons of the day at the same time (the pattern seen in production)
+        await Promise.all(
+          athletes.flatMap((athlete) =>
+            slotIds.map((slotId) =>
+              book(organization, athlete, slotId, intervals.short)
+            )
+          )
+        );
+
+        await waitFor(async () => {
+          expect(await getCount(organization, "slot-a")).toEqual(12);
+          expect(await getCount(organization, "slot-b")).toEqual(12);
+        }, 20000);
+      },
+      { timeout: 40000 }
+    );
+
+    testWithEmulator(
+      "counts correctly when bookings and cancellations happen concurrently",
+      async () => {
+        const slotId = "slot-a";
+        const { organization, athletes } = await setUp([slotId], 12);
+        const [staying, leaving, joining] = [
+          athletes.slice(0, 4),
+          athletes.slice(4, 8),
+          athletes.slice(8),
+        ];
+
+        await Promise.all(
+          [...staying, ...leaving].map((athlete) =>
+            book(organization, athlete, slotId, intervals.short)
+          )
+        );
+        await waitFor(async () =>
+          expect(await getCount(organization, slotId)).toEqual(8)
+        );
+
+        await Promise.all([
+          ...leaving.map((athlete) => cancel(organization, athlete, slotId)),
+          ...joining.map((athlete) =>
+            book(organization, athlete, slotId, intervals.long)
+          ),
+        ]);
+
+        await waitFor(async () => {
+          expect(await getCount(organization, slotId)).toEqual(8);
+        }, 20000);
+      },
+      { timeout: 40000 }
+    );
+
+    testWithEmulator(
+      "doesn't count a booking twice when its create event is processed twice",
+      async () => {
+        const slotId = "slot-a";
+        const {
+          organization,
+          athletes: [athlete],
+        } = await setUp([slotId], 1);
+        const booking = { date, interval: intervals.short };
+
+        await book(organization, athlete, slotId, booking.interval);
+        await waitFor(async () =>
+          expect(await getCount(organization, slotId)).toEqual(1)
+        );
+
+        await deliverBookingEvent(
+          "countSlotsBookings",
+          bookingPath(organization, athlete, slotId),
+          null,
+          booking
+        );
+
+        expect(await getCount(organization, slotId)).toEqual(1);
+      }
+    );
+
+    testWithEmulator(
+      "doesn't subtract a cancellation twice when its delete event is processed twice",
+      async () => {
+        const slotId = "slot-a";
+        const {
+          organization,
+          athletes: [leaving, staying],
+        } = await setUp([slotId], 2);
+        const booking = { date, interval: intervals.short };
+
+        await book(organization, leaving, slotId, booking.interval);
+        await book(organization, staying, slotId, booking.interval);
+        await waitFor(async () =>
+          expect(await getCount(organization, slotId)).toEqual(2)
+        );
+        await cancel(organization, leaving, slotId);
+        await waitFor(async () =>
+          expect(await getCount(organization, slotId)).toEqual(1)
+        );
+
+        await deliverBookingEvent(
+          "countSlotsBookings",
+          bookingPath(organization, leaving, slotId),
+          booking,
+          null
+        );
+
+        expect(await getCount(organization, slotId)).toEqual(1);
+      }
+    );
+
+    testWithEmulator(
+      "doesn't count a cancelled booking when its create event is processed after the delete event",
+      async () => {
+        const slotId = "slot-a";
+        const {
+          organization,
+          athletes: [athlete],
+        } = await setUp([slotId], 1);
+        const booking = { date, interval: intervals.short };
+
+        await book(organization, athlete, slotId, booking.interval);
+        await waitFor(async () =>
+          expect(await getCount(organization, slotId)).toEqual(1)
+        );
+        await cancel(organization, athlete, slotId);
+        await waitFor(async () =>
+          expect(await getCount(organization, slotId)).toEqual(0)
+        );
+
+        // The create event arrives late
+        await deliverBookingEvent(
+          "countSlotsBookings",
+          bookingPath(organization, athlete, slotId),
+          null,
+          booking
+        );
+
+        expect(await getCount(organization, slotId)).toEqual(0);
+      }
+    );
+  });
+
+  describe("createAttendanceForBooking", () => {
+    const slotId = "slot-a";
+
+    testWithEmulator(
+      "keeps the current booking when the create event of a cancelled booking arrives after the rebooking",
+      async () => {
+        const {
+          organization,
+          athletes: [athlete],
+        } = await setUp([slotId], 1);
+
+        // Book, cancel and book a different interval (the sequence seen in production on #988)
+        await book(organization, athlete, slotId, intervals.short);
+        await waitFor(async () =>
+          expect(await getAttendance(organization, slotId, athlete)).toEqual({
+            bookedInterval: intervals.short,
+            attendedInterval: intervals.short,
+          })
+        );
+        await cancel(organization, athlete, slotId);
+        await waitFor(async () =>
+          expect(await getAttendance(organization, slotId, athlete)).toEqual(
+            undefined
+          )
+        );
+        await book(organization, athlete, slotId, intervals.long);
+        const want = {
+          bookedInterval: intervals.long,
+          attendedInterval: intervals.long,
+        };
+        await waitFor(async () =>
+          expect(await getAttendance(organization, slotId, athlete)).toEqual(
+            want
+          )
+        );
+
+        // The first create event is processed last
+        await deliverBookingEvent(
+          "createAttendanceForBooking",
+          bookingPath(organization, athlete, slotId),
+          null,
+          { date, interval: intervals.short }
+        );
+
+        expect(await getAttendance(organization, slotId, athlete)).toEqual(
+          want
+        );
+      }
+    );
+
+    testWithEmulator(
+      "keeps the current booking when the delete event of a cancelled booking arrives after the rebooking",
+      async () => {
+        const {
+          organization,
+          athletes: [athlete],
+        } = await setUp([slotId], 1);
+
+        await book(organization, athlete, slotId, intervals.short);
+        await cancel(organization, athlete, slotId);
+        await book(organization, athlete, slotId, intervals.long);
+        const want = {
+          bookedInterval: intervals.long,
+          attendedInterval: intervals.long,
+        };
+        await waitFor(async () =>
+          expect(await getAttendance(organization, slotId, athlete)).toEqual(
+            want
+          )
+        );
+
+        await deliverBookingEvent(
+          "createAttendanceForBooking",
+          bookingPath(organization, athlete, slotId),
+          { date, interval: intervals.short },
+          null
+        );
+
+        expect(await getAttendance(organization, slotId, athlete)).toEqual(
+          want
+        );
+      }
+    );
+
+    testWithEmulator(
+      "keeps the latest interval when interval change events are processed in reverse order",
+      async () => {
+        const {
+          organization,
+          athletes: [athlete],
+        } = await setUp([slotId], 1);
+
+        await book(organization, athlete, slotId, intervals.short);
+        await book(organization, athlete, slotId, intervals.long);
+        const want = {
+          bookedInterval: intervals.long,
+          attendedInterval: intervals.long,
+        };
+        await waitFor(async () =>
+          expect(await getAttendance(organization, slotId, athlete)).toEqual(
+            want
+          )
+        );
+
+        await deliverBookingEvent(
+          "createAttendanceForBooking",
+          bookingPath(organization, athlete, slotId),
+          null,
+          { date, interval: intervals.short }
+        );
+
+        expect(await getAttendance(organization, slotId, athlete)).toEqual(
+          want
+        );
+      }
+    );
+
+    testWithEmulator(
+      "doesn't overwrite the admin's attended interval when a booking event is processed twice",
+      async () => {
+        const {
+          organization,
+          athletes: [athlete],
+        } = await setUp([slotId], 1);
+        const booking = { date, interval: intervals.long };
+
+        await book(organization, athlete, slotId, booking.interval);
+        await waitFor(async () =>
+          expect(
+            (
+              await getAttendance(organization, slotId, athlete)
+            )?.bookedInterval
+          ).toEqual(intervals.long)
+        );
+        // Admin records that the athlete left early
+        const want = {
+          bookedInterval: intervals.long,
+          attendedInterval: intervals.short,
+        };
+        await adminWriteAttendance(organization, slotId, athlete, want);
+
+        await deliverBookingEvent(
+          "createAttendanceForBooking",
+          bookingPath(organization, athlete, slotId),
+          null,
+          booking
+        );
+
+        expect(await getAttendance(organization, slotId, athlete)).toEqual(
+          want
+        );
+      }
+    );
+
+    testWithEmulator(
+      "updates the booked interval and keeps the admin's attended interval when the booking changes after an admin edit",
+      async () => {
+        const {
+          organization,
+          athletes: [late, absent],
+        } = await setUp([slotId], 2);
+
+        await book(organization, late, slotId, intervals.long);
+        await book(organization, absent, slotId, intervals.long);
+        await waitFor(async () => {
+          expect(
+            (await getAttendance(organization, slotId, late))?.bookedInterval
+          ).toEqual(intervals.long);
+          expect(
+            (await getAttendance(organization, slotId, absent))?.bookedInterval
+          ).toEqual(intervals.long);
+        });
+        await adminWriteAttendance(organization, slotId, late, {
+          bookedInterval: intervals.long,
+          attendedInterval: intervals.late,
+        });
+        await adminWriteAttendance(organization, slotId, absent, {
+          bookedInterval: intervals.long,
+          attendedInterval: null,
+        });
+
+        await book(organization, late, slotId, intervals.short);
+        await book(organization, absent, slotId, intervals.short);
+
+        await waitFor(async () => {
+          expect(await getAttendance(organization, slotId, late)).toEqual({
+            bookedInterval: intervals.short,
+            attendedInterval: intervals.late,
+          });
+          expect(await getAttendance(organization, slotId, absent)).toEqual({
+            bookedInterval: intervals.short,
+            attendedInterval: null,
+          });
+        });
+      }
+    );
+
+    testWithEmulator(
+      "moves both intervals when the booking changes before any admin edit",
+      async () => {
+        const {
+          organization,
+          athletes: [athlete],
+        } = await setUp([slotId], 1);
+
+        await book(organization, athlete, slotId, intervals.long);
+        await waitFor(async () =>
+          expect(
+            (
+              await getAttendance(organization, slotId, athlete)
+            )?.bookedInterval
+          ).toEqual(intervals.long)
+        );
+        await book(organization, athlete, slotId, intervals.short);
+
+        await waitFor(async () =>
+          expect(await getAttendance(organization, slotId, athlete)).toEqual({
+            bookedInterval: intervals.short,
+            attendedInterval: intervals.short,
+          })
+        );
+      }
+    );
+
+    testWithEmulator(
+      "keeps recorded attendance (without the booking) when the booking is cancelled after the admin edit",
+      async () => {
+        const {
+          organization,
+          athletes: [attended, absent, untouched],
+        } = await setUp([slotId], 3);
+
+        await Promise.all(
+          [attended, absent, untouched].map((athlete) =>
+            book(organization, athlete, slotId, intervals.long)
+          )
+        );
+        await waitFor(async () => {
+          const entries = await Promise.all(
+            [attended, absent, untouched].map((athlete) =>
+              getAttendance(organization, slotId, athlete)
+            )
+          );
+          expect(entries.map((entry) => entry?.bookedInterval)).toEqual([
+            intervals.long,
+            intervals.long,
+            intervals.long,
+          ]);
+        });
+        await adminWriteAttendance(organization, slotId, attended, {
+          bookedInterval: intervals.long,
+          attendedInterval: intervals.short,
+        });
+        await adminWriteAttendance(organization, slotId, absent, {
+          bookedInterval: intervals.long,
+          attendedInterval: null,
+        });
+
+        await Promise.all(
+          [attended, absent, untouched].map((athlete) =>
+            cancel(organization, athlete, slotId)
+          )
+        );
+
+        await waitFor(async () => {
+          // The attended interval recorded by the admin stays, the booking is gone
+          expect(await getAttendance(organization, slotId, attended)).toEqual({
+            bookedInterval: null,
+            attendedInterval: intervals.short,
+          });
+          // Absent and not booked: nothing to record
+          expect(await getAttendance(organization, slotId, absent)).toEqual(
+            undefined
+          );
+          // No admin edit: the entry goes with the booking
+          expect(await getAttendance(organization, slotId, untouched)).toEqual(
+            undefined
+          );
+        });
+      }
+    );
+
+    testWithEmulator(
+      "keeps the admin's attended interval when an athlete marked as attended (without booking) books the slot",
+      async () => {
+        const {
+          organization,
+          athletes: [athlete],
+        } = await setUp([slotId], 1);
+
+        await adminWriteAttendance(organization, slotId, athlete, {
+          bookedInterval: null,
+          attendedInterval: intervals.late,
+        });
+        await book(organization, athlete, slotId, intervals.long);
+
+        await waitFor(async () =>
+          expect(await getAttendance(organization, slotId, athlete)).toEqual({
+            bookedInterval: intervals.long,
+            attendedInterval: intervals.late,
+          })
+        );
+      }
+    );
+  });
+});
