@@ -4,7 +4,7 @@
 
 import { v4 as uuid } from "uuid";
 import { describe, expect } from "vitest";
-import { FieldValue } from "@google-cloud/firestore";
+import { Firestore } from "@google-cloud/firestore";
 
 import {
   Category,
@@ -18,9 +18,6 @@ import {
   sanitizeCustomer,
 } from "@eisbuk/shared";
 
-import { adminDb } from "@/__testSetup__/firestoreSetup";
-import { setUpOrganization } from "@/__testSetup__/node";
-
 import {
   getAttendanceDocPath,
   getBookedSlotDocPath,
@@ -28,23 +25,39 @@ import {
   getSlotDocPath,
 } from "@/utils/firestore";
 
-import { waitFor } from "@/__testUtils__/helpers";
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 
 // The functions behind the `dbBookingDerivedDataReconcile` and `dbBookedSlotsAttendanceAutofix` callables, called
 // directly: in this test environment, the callables don't receive the signed in user (the bundled functions
 // don't get the emulator's callable auth), so admin-only callables can't be called.
-import { reconcileBookingDerivedData } from "../../../functions/src/checks/bookingDerivedData";
+import {
+  reconcileBookingDerivedData,
+  summarizeReport,
+  BookingDerivedDataReport,
+} from "../../../functions/src/checks/bookingDerivedData";
 import { bookedSlotsAttendanceAutofix } from "../../../functions/src/checks/bookingsAttendance";
+import {
+  syncAttendanceEntry,
+  syncSlotBookingsCount,
+} from "../../../functions/src/bookingSync";
 
 /**
  * Tests for the reconciliation of the data derived from bookings (#987, #988): `reconcileBookingDerivedData`
  * (`dbBookingDerivedDataReconcile`) and `bookedSlotsAttendanceAutofix` (`dbBookedSlotsAttendanceAutofix`).
  *
- * The athletes here have a bookings document but no customer document. The data triggers keep their derived data
- * in sync on booking writes, but can't find their bookings on attendance writes (`syncAttendanceWithBookings` looks
- * them up from the customer), so the inconsistencies set up below stay until reconciled, as historical ones do.
+ * The data lives in a project of the Firestore emulator no functions are registered for: no data trigger repairs
+ * the inconsistencies set up here (as with historical data), and where a test needs a trigger's work, it runs it
+ * explicitly.
  */
+const db = new Firestore({
+  projectId: "demo-no-functions",
+  host: "localhost",
+  port: 8081,
+  ssl: false,
+  customHeaders: {
+    Authorization: "Bearer owner",
+  },
+});
 
 // #region fixtures
 const intervals = {
@@ -85,6 +98,10 @@ const entry = (
   bookedInterval: string | null,
   attendedInterval: string | null
 ): CustomerAttendance => ({ bookedInterval, attendedInterval });
+const booked = entry(intervals.long, intervals.long);
+/** Booking notes are free text: they must not reach the logs */
+const bookingNotes = "A private note";
+const bookedWithNotes = { ...booked, bookingNotes };
 // #endregion fixtures
 
 interface Report {
@@ -98,7 +115,6 @@ interface Report {
   attendance: {
     slotId: string;
     customerId: string;
-    secretKey?: string;
     date: string;
     booking?: CustomerBookingEntry;
     before?: CustomerAttendance;
@@ -109,13 +125,11 @@ interface Report {
 }
 
 const reconcile = (organization: string, apply = false) =>
-  reconcileBookingDerivedData(adminDb, organization, {
+  reconcileBookingDerivedData(db, organization, {
     from: past.month,
     to: future.month,
     apply,
   }) as Promise<Report>;
-
-const settle = () => new Promise((resolve) => setTimeout(resolve, 3000));
 
 const byEntry = (a: { slotId: string; customerId: string }) =>
   `${a.slotId}/${a.customerId}`;
@@ -124,16 +138,16 @@ const sortByEntry = <T extends { slotId: string; customerId: string }>(
 ) => [...entries].sort((a, b) => byEntry(a).localeCompare(byEntry(b)));
 
 /**
- * Sets up an organization with a future and a past slot, and bookings whose derived data is then made inconsistent
- * in every way the reconciliation distinguishes.
+ * Sets up an organization with a future and a past slot, and bookings whose derived data is inconsistent in every
+ * way the reconciliation distinguishes.
  */
 const setUpInconsistentData = async () => {
-  const { organization } = await setUpOrganization({ doLogin: false });
-  const orgRef = adminDb.collection(Collection.Organizations).doc(organization);
+  const organization = uuid();
+  const orgRef = db.collection(Collection.Organizations).doc(organization);
   const countsRef = (month: string) =>
     orgRef.collection(OrgSubCollection.SlotBookingsCounts).doc(month);
   const attendanceRef = (slotId: string) =>
-    adminDb.doc(getAttendanceDocPath(organization, slotId));
+    db.doc(getAttendanceDocPath(organization, slotId));
   const getAttendance = async (slotId: string) =>
     (await attendanceRef(slotId).get()).data()!.attendances as Record<
       string,
@@ -153,90 +167,55 @@ const setUpInconsistentData = async () => {
   };
   const ghost = "unknown-athlete-id";
 
+  const book = (
+    athlete: CustomerFull,
+    slot: typeof future,
+    extra: Partial<CustomerBookingEntry> = {}
+  ) =>
+    db
+      .doc(getBookedSlotDocPath(organization, athlete.secretKey, slot.id))
+      .set({ date: slot.date, interval: intervals.long, ...extra });
+
   await Promise.all([
     ...[future, past].map((slot) =>
-      adminDb.doc(getSlotDocPath(organization, slot.id)).set(createSlot(slot))
+      db.doc(getSlotDocPath(organization, slot.id)).set(createSlot(slot))
     ),
     ...Object.values(athletes).map((athlete) =>
-      adminDb
+      db
         .doc(getBookingsDocPath(organization, athlete.secretKey))
         .set(sanitizeCustomer(athlete))
     ),
-  ]);
-  await waitFor(async () => {
-    const docs = await Promise.all(
-      [future, past].map(({ id }) => attendanceRef(id).get())
-    );
-    expect(docs.every((doc) => doc.exists)).toEqual(true);
-  }, 20000);
-
-  const book = (athlete: CustomerFull, slot: typeof future) =>
-    adminDb
-      .doc(getBookedSlotDocPath(organization, athlete.secretKey, slot.id))
-      .set({ date: slot.date, interval: intervals.long });
-
-  await Promise.all([
-    ...[
-      athletes.kv5Shape,
-      athletes.adminEdited,
-      athletes.consistent,
-      athletes.missing,
-    ].map((athlete) => book(athlete, future)),
+    book(athletes.kv5Shape, future, { bookingNotes }),
+    ...[athletes.adminEdited, athletes.consistent, athletes.missing].map(
+      (athlete) => book(athlete, future)
+    ),
     ...[athletes.pastMismatch, athletes.pastMissing].map((athlete) =>
       book(athlete, past)
     ),
+    countsRef(future.month).set({ [future.id]: 3, "deleted-slot": -2 }),
+    countsRef(past.month).set({ [past.id]: 2 }),
+    attendanceRef(future.id).set({
+      date: future.date,
+      attendances: {
+        // The shape seen in production on #988
+        [athletes.kv5Shape.id]: entry(intervals.short, intervals.short),
+        // Admin recorded a late arrival
+        [athletes.adminEdited.id]: entry(intervals.short, intervals.late),
+        [athletes.consistent.id]: booked,
+        // athletes.missing: no entry
+        [athletes.stray.id]: booked,
+        [ghost]: booked,
+      },
+    }),
+    attendanceRef(past.id).set({
+      date: past.date,
+      attendances: {
+        [athletes.pastMismatch.id]: entry(intervals.short, intervals.short),
+        // athletes.pastMissing: no entry
+        [athletes.pastStray.id]: booked,
+      },
+    }),
   ]);
-  await waitFor(async () => {
-    expect((await countsRef(future.month).get()).data()?.[future.id]).toEqual(
-      4
-    );
-    expect((await countsRef(past.month).get()).data()?.[past.id]).toEqual(2);
-    expect(Object.keys(await getAttendance(future.id))).toHaveLength(4);
-    expect(Object.keys(await getAttendance(past.id))).toHaveLength(2);
-  }, 15000);
-
-  // Let the data triggers finish: a recount or sync still running (e.g. retrying after contention) would
-  // otherwise repair the inconsistencies set up below before the reconciliation sees them
-  await settle();
-
-  // Make the derived data inconsistent
-  await countsRef(future.month).set(
-    { [future.id]: 3, "deleted-slot": -2 },
-    { merge: true }
-  );
-  await attendanceRef(future.id).update({
-    // The shape seen in production on #988
-    [`attendances.${athletes.kv5Shape.id}`]: entry(
-      intervals.short,
-      intervals.short
-    ),
-    // Admin recorded a late arrival
-    [`attendances.${athletes.adminEdited.id}`]: entry(
-      intervals.short,
-      intervals.late
-    ),
-    [`attendances.${athletes.missing.id}`]: FieldValue.delete(),
-    [`attendances.${athletes.stray.id}`]: entry(intervals.long, intervals.long),
-    [`attendances.${ghost}`]: entry(intervals.long, intervals.long),
-  });
-  await attendanceRef(past.id).update({
-    [`attendances.${athletes.pastMismatch.id}`]: entry(
-      intervals.short,
-      intervals.short
-    ),
-    [`attendances.${athletes.pastMissing.id}`]: FieldValue.delete(),
-    [`attendances.${athletes.pastStray.id}`]: entry(
-      intervals.long,
-      intervals.long
-    ),
-  });
-
-  await settle();
-  // The inconsistencies are still there
-  expect((await countsRef(future.month).get()).data()?.[future.id]).toEqual(3);
-  expect((await getAttendance(future.id))[athletes.kv5Shape.id]).toEqual(
-    entry(intervals.short, intervals.short)
-  );
 
   return {
     organization,
@@ -274,22 +253,16 @@ describe("Reconciliation of data derived from bookings", () => {
       ]);
 
       const booking = (date: string) => ({ date, interval: intervals.long });
-      const booked = entry(intervals.long, intervals.long);
-      expect(
-        sortByEntry(
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          report.attendance.map(({ secretKey, ...difference }) => difference)
-        )
-      ).toEqual(
+      expect(sortByEntry(report.attendance)).toEqual(
         sortByEntry([
           {
             slotId: future.id,
             customerId: athletes.kv5Shape.id,
             date: future.date,
-            booking: booking(future.date),
+            booking: { ...booking(future.date), bookingNotes },
             before: entry(intervals.short, intervals.short),
-            expected: booked,
-            after: booked,
+            expected: bookedWithNotes,
+            after: bookedWithNotes,
           },
           {
             slotId: future.id,
@@ -355,8 +328,7 @@ describe("Reconciliation of data derived from bookings", () => {
       );
       expect(await getAttendance(future.id)).toEqual(before.future);
       expect(await getAttendance(past.id)).toEqual(before.past);
-    },
-    { timeout: 60000 }
+    }
   );
 
   testWithEmulator(
@@ -365,34 +337,57 @@ describe("Reconciliation of data derived from bookings", () => {
       const { organization, athletes, ghost, countsRef, getAttendance, book } =
         await setUpInconsistentData();
 
-      // A booking is made while the repair runs
+      // A booking is made while the repair runs, and its data triggers run (as they would) after it's written
       const [report] = await Promise.all([
         reconcile(organization, true),
-        book(athletes.newcomer, future),
+        book(athletes.newcomer, future).then(() =>
+          Promise.all([
+            syncSlotBookingsCount(db, organization, future.id, future.date),
+            syncAttendanceEntry(db, organization, future.id, [
+              athletes.newcomer.secretKey,
+            ]),
+          ])
+        ),
       ]);
       expect(report.applied).toEqual(true);
 
-      const booked = entry(intervals.long, intervals.long);
-      await waitFor(async () => {
-        const counts = (await countsRef(future.month).get()).data()!;
-        expect(counts[future.id]).toEqual(5);
-        expect(counts["deleted-slot"]).toEqual(0);
-
-        const attendance = await getAttendance(future.id);
-        expect(attendance).toEqual({
-          [athletes.kv5Shape.id]: booked,
-          [athletes.adminEdited.id]: entry(intervals.long, intervals.late),
-          [athletes.consistent.id]: booked,
-          [athletes.missing.id]: booked,
-          [athletes.newcomer.id]: booked,
-          // Unknown athlete: left as it was
-          [ghost]: booked,
-        });
+      const counts = (await countsRef(future.month).get()).data()!;
+      expect(counts[future.id]).toEqual(5);
+      expect(counts["deleted-slot"]).toEqual(0);
+      expect(await getAttendance(future.id)).toEqual({
+        [athletes.kv5Shape.id]: bookedWithNotes,
+        [athletes.adminEdited.id]: entry(intervals.long, intervals.late),
+        [athletes.consistent.id]: booked,
+        [athletes.missing.id]: booked,
+        [athletes.newcomer.id]: booked,
+        // Unknown athlete: left as it was
+        [ghost]: booked,
       });
       expect(await getAttendance(past.id)).toEqual({
         [athletes.pastMismatch.id]: entry(intervals.long, intervals.short),
         // Past lesson, no booking: left for the club to review
         [athletes.pastStray.id]: booked,
+      });
+
+      // The summary logged by the callable: no secret keys, no booking notes
+      const summary = summarizeReport(
+        report as unknown as BookingDerivedDataReport
+      );
+      const logged = JSON.stringify(summary);
+      for (const { secretKey } of Object.values(athletes)) {
+        expect(logged).not.toContain(secretKey);
+      }
+      expect(logged).not.toContain(bookingNotes);
+      expect(summary.attendance).toContainEqual({
+        slotId: future.id,
+        customerId: athletes.kv5Shape.id,
+        date: future.date,
+        before: entry(intervals.short, intervals.short),
+        after: booked,
+      });
+      expect(summary.skipped).toEqual({
+        "unknown-athlete": 1,
+        "past-lesson": 2,
       });
 
       // Converged: only the differences the repair leaves for review remain
@@ -418,8 +413,7 @@ describe("Reconciliation of data derived from bookings", () => {
           },
         ]).map(({ customerId, skipped }) => ({ customerId, skipped }))
       );
-    },
-    { timeout: 60000 }
+    }
   );
 
   testWithEmulator(
@@ -428,17 +422,15 @@ describe("Reconciliation of data derived from bookings", () => {
       const { organization, athletes, ghost, getAttendance } =
         await setUpInconsistentData();
 
-      await bookedSlotsAttendanceAutofix(adminDb, organization);
+      await bookedSlotsAttendanceAutofix(db, organization);
 
-      const booked = entry(intervals.long, intervals.long);
       expect(await getAttendance(future.id)).toEqual({
-        [athletes.kv5Shape.id]: booked,
+        [athletes.kv5Shape.id]: bookedWithNotes,
         [athletes.adminEdited.id]: entry(intervals.long, intervals.late),
         [athletes.consistent.id]: booked,
         [athletes.missing.id]: booked,
         [ghost]: booked,
       });
-    },
-    { timeout: 60000 }
+    }
   );
 });

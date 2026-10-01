@@ -23,17 +23,48 @@ import {
   Customer,
   CustomerBookings,
   SlotsByDay,
-  SlotBookingsCounts,
 } from "@eisbuk/shared";
 
 import { getCustomerStats } from "./utils";
-import { syncAttendanceEntry, syncSlotBookingsCount } from "./bookingSync";
+import {
+  getSecretKeys,
+  syncAttendanceEntry,
+  syncSlotBookingsCount,
+} from "./bookingSync";
 
 /**
  * A type alias for Customer with `secretKey` and `id` optional
  */
 type CustomerWithOptionalIDs = Omit<Customer, "id" | "secretKey"> &
   Partial<{ secretKey: string; id: string }>;
+
+/**
+ * Runtime options of the triggers keeping booking-derived data in sync (`countSlotsBookings`,
+ * `createAttendanceForBooking`, `syncAttendanceWithBookings`).
+ *
+ * Their handlers derive the data from the current bookings, so running them again is safe: a failed run (a
+ * transaction that ran out of attempts, the recount's index still building after a deploy) is retried instead of
+ * leaving the data wrong.
+ */
+const bookingSyncRuntimeOptions: functions.RuntimeOptions = {
+  memory: "512MB",
+  failurePolicy: true,
+};
+
+/**
+ * Events are retried for up to 7 days. Past this age, a still failing event is dropped (and logged): the next write
+ * or the reconciliation brings the data in line, and a persistent error shouldn't be retried for a week.
+ */
+const maxRetriedEventAge = 24 * 60 * 60 * 1000;
+const isTooOldToRetry = (name: string, context: functions.EventContext) => {
+  const age = Date.now() - Date.parse(context.timestamp);
+  if (age <= maxRetriedEventAge) return false;
+  functions.logger.warn(`${name}: dropping event older than 24 hours`, {
+    eventId: context.eventId,
+    timestamp: context.timestamp,
+  });
+  return true;
+};
 
 export const addIdToSlot = functions
   .runWith({
@@ -318,9 +349,7 @@ export const aggregateSlots = functions
   );
 
 export const countSlotsBookings = functions
-  .runWith({
-    memory: "512MB",
-  })
+  .runWith(bookingSyncRuntimeOptions)
   .region(__functionsZone__)
   .firestore.document(
     `${Collection.Organizations}/{organization}/${OrgSubCollection.Bookings}/{secretKey}/${BookingSubCollection.BookedSlots}/{bookingId}`
@@ -329,6 +358,8 @@ export const countSlotsBookings = functions
     wrapFirestoreOnWriteHandler(
       "countSlotsBookings",
       async (change, context) => {
+        if (isTooOldToRetry("countSlotsBookings", context)) return;
+
         const { organization, bookingId } = context.params as Record<
           string,
           string
@@ -349,35 +380,10 @@ export const countSlotsBookings = functions
         // Recount instead of applying +1/-1 from the event: events are delivered at least once and
         // unordered, so a redelivered or late event used to count a booking twice or count a
         // cancelled one (#987). See `syncSlotBookingsCount`.
-        try {
-          await syncSlotBookingsCount(db, organization, bookingId, date);
-        } catch (err) {
-          // FAILED_PRECONDITION: the collection group index the recount needs isn't (yet) available.
-          // Keep counting (as before, transactional +1/-1) rather than not counting at all.
-          if ((err as { code?: number }).code !== 9) throw err;
-          functions.logger.error(
-            "countSlotsBookings: recount failed (missing index?), applying delta",
-            err
-          );
-
-          const bookingCountsDocRef = db
-            .collection(Collection.Organizations)
-            .doc(organization)
-            .collection(OrgSubCollection.SlotBookingsCounts)
-            .doc(date.substring(0, 7));
-          const delta = change.after.exists ? 1 : -1;
-
-          await db.runTransaction(async (tx) => {
-            const doc = await tx.get(bookingCountsDocRef);
-            const data = doc.data() || ({} as SlotBookingsCounts);
-            const updatedCount = Math.max(0, (data[bookingId] || 0) + delta);
-            tx.set(
-              bookingCountsDocRef,
-              { [bookingId]: updatedCount },
-              { merge: true }
-            );
-          });
-        }
+        //
+        // Until the collection group index the recount needs is ready (right after a deploy), this fails and
+        // is retried (`failurePolicy`).
+        await syncSlotBookingsCount(db, organization, bookingId, date);
       }
     )
   );
@@ -392,9 +398,7 @@ export const countSlotsBookings = functions
  * newer one, #988), and an attended interval recorded by the admin is preserved. See `syncAttendanceEntry`.
  */
 export const createAttendanceForBooking = functions
-  .runWith({
-    memory: "512MB",
-  })
+  .runWith(bookingSyncRuntimeOptions)
   .region(__functionsZone__)
   .firestore.document(
     `${Collection.Organizations}/{organization}/${OrgSubCollection.Bookings}/{secretKey}/${BookingSubCollection.BookedSlots}/{bookingId}`
@@ -403,17 +407,31 @@ export const createAttendanceForBooking = functions
     wrapFirestoreOnWriteHandler(
       "createAttendanceForBooking",
       async (_change, context) => {
+        if (isTooOldToRetry("createAttendanceForBooking", context)) return;
+
         const { organization, secretKey, bookingId } = context.params as Record<
           string,
           string
         >;
+        const db = admin.firestore();
 
-        await syncAttendanceEntry(
-          admin.firestore(),
-          organization,
-          bookingId,
-          secretKey
-        );
+        // A booking under any of the athlete's bookings documents counts
+        const bookings = await db
+          .collection(Collection.Organizations)
+          .doc(organization)
+          .collection(OrgSubCollection.Bookings)
+          .doc(secretKey)
+          .get();
+        const customerId = (bookings.data() as CustomerBookings | undefined)
+          ?.id;
+        const secretKeys = customerId
+          ? await getSecretKeys(db, organization, customerId)
+          : [];
+
+        await syncAttendanceEntry(db, organization, bookingId, [
+          secretKey,
+          ...secretKeys,
+        ]);
       }
     )
   );
@@ -527,14 +545,12 @@ export const createPublicOrgInfo = functions
  * entry from the athlete's current booking. Changes to `attendedInterval` alone are not checked. `syncAttendanceEntry`
  * writes only when the entry differs, so the write it may cause is followed by a check that finds nothing to do.
  *
- * Only athletes with a booking are corrected (entry restored, booked interval updated): the booking is looked up with
- * the customer's current secret key, and bookings kept under an older key would look cancelled. Removing entries on
- * cancellation is left to `createAttendanceForBooking`, which knows where the booking was.
+ * The booking is looked up under all of the athlete's bookings documents. Athletes without a bookings document are
+ * left as they are. Each athlete is synced independently: if some fail, the others are still written and the
+ * function then fails, to be retried (`failurePolicy`).
  */
 export const syncAttendanceWithBookings = functions
-  .runWith({
-    memory: "512MB",
-  })
+  .runWith(bookingSyncRuntimeOptions)
   .region(__functionsZone__)
   .firestore.document(
     `${Collection.Organizations}/{organization}/${OrgSubCollection.Attendance}/{slotId}`
@@ -545,6 +561,7 @@ export const syncAttendanceWithBookings = functions
       async (change, context) => {
         // Attendance document deleted with the slot: nothing to keep in sync
         if (!change.after.exists) return;
+        if (isTooOldToRetry("syncAttendanceWithBookings", context)) return;
 
         const { organization, slotId } = context.params as Record<
           string,
@@ -568,23 +585,32 @@ export const syncAttendanceWithBookings = functions
             !isEqual(getBookedPart(before?.[id]), getBookedPart(after?.[id]))
         );
 
-        await Promise.all(
+        const results = await Promise.allSettled(
           customerIds.map(async (customerId) => {
-            const customer = await db
-              .collection(Collection.Organizations)
-              .doc(organization)
-              .collection(OrgSubCollection.Customers)
-              .doc(customerId)
-              .get();
-            const { secretKey } = (customer.data() || {}) as Partial<Customer>;
-            // Unknown athlete: we can't find the booking, leave the entry as it is
-            if (!secretKey) return;
-
-            await syncAttendanceEntry(db, organization, slotId, secretKey, {
-              onlyIfBooked: true,
-            });
+            const secretKeys = await getSecretKeys(
+              db,
+              organization,
+              customerId
+            );
+            // Unknown athlete (no bookings document): leave the entry as it is
+            await syncAttendanceEntry(db, organization, slotId, secretKeys);
           })
         );
+
+        const failed = results.filter(
+          (r): r is PromiseRejectedResult => r.status === "rejected"
+        );
+        if (failed.length) {
+          // Error codes only: Firestore error messages can contain document paths, with secret keys
+          const codes = failed.map(
+            ({ reason }) => (reason as { code?: unknown })?.code ?? "unknown"
+          );
+          throw new Error(
+            `syncAttendanceWithBookings: ${failed.length} of ${
+              results.length
+            } entries failed (codes: ${codes.join(", ")})`
+          );
+        }
       }
     )
   );
@@ -594,7 +620,10 @@ export const syncAttendanceWithBookings = functions
  * available for the client to see (in their calendar) that they have been marked present for a certain slot.
  *
  * Note: We're only creating attended slot entries for customers who haven't booked the same slot
- * (as the booking is displayed in their calendar in that case)
+ * (as the booking is displayed in their calendar in that case).
+ *
+ * The attended slot is derived from the current attendance entry: it exists while the entry has an attended interval
+ * and no booked interval. That includes an athlete who cancelled the booking after the admin recorded attendance.
  */
 export const createAttendedSlotOnAttendance = functions
   .runWith({
@@ -614,84 +643,66 @@ export const createAttendedSlotOnAttendance = functions
         >;
 
         const db = admin.firestore();
+        const orgRef = db
+          .collection(Collection.Organizations)
+          .doc(organization);
 
-        const currentAttendanceData = (change.after.data() ||
-          {}) as SlotAttendnace;
-        const previousAttendanceData = (change.before.data() ||
-          {}) as SlotAttendnace;
+        /** The interval of the attended slot an entry calls for (attended without booking), `null` for none */
+        const getAttendedSlotInterval = (entry?: CustomerAttendance) =>
+          (entry && !entry.bookedInterval && entry.attendedInterval) || null;
 
-        const currentAttendances = currentAttendanceData?.attendances || {};
-        const previousAttendances = previousAttendanceData?.attendances || {};
+        const previousAttendances =
+          (change.before.data() as SlotAttendnace | undefined)?.attendances ||
+          {};
+        const eventAttendances =
+          (change.after.data() as SlotAttendnace | undefined)?.attendances ||
+          {};
 
+        // Customers whose attended slot this write changes
         const ids = [
           ...new Set([
-            ...Object.keys(currentAttendances),
+            ...Object.keys(eventAttendances),
             ...Object.keys(previousAttendances),
           ]),
-        ];
+        ].filter(
+          (id) =>
+            getAttendedSlotInterval(previousAttendances[id]) !==
+            getAttendedSlotInterval(eventAttendances[id])
+        );
+        if (!ids.length) return;
 
-        const updates = ids.map((id) => {
-          const previousAttendance = previousAttendances[id];
-          const currentAttendance = currentAttendances[id];
-
-          const hasBooked =
-            previousAttendance?.bookedInterval ||
-            currentAttendance?.bookedInterval;
-
-          const interval = currentAttendance?.attendedInterval || null;
-
-          return {
-            customerId: id,
-            // If updating the interval (in the next step), we're updating with respect to the currently attended interval
-            interval,
-            // We don't update if customer has bookings (in that case, no attended interval is ever created)
-            // or if attended interval from previous attendance is the same as the current one.
-            //
-            // For all other cases we're preforming some form of update, be it update or delete (determined by existance of the interval)
-            update: !(
-              hasBooked || previousAttendance?.attendedInterval === interval
-            ),
-          };
-        });
+        // Write the attended slots from the current attendance (this event may not be the latest)
+        const current = (await change.after.ref.get()).data() as
+          | SlotAttendnace
+          | undefined;
 
         const batch = db.batch();
 
-        // Schedule the updates
         await Promise.all(
-          updates.map(async ({ customerId, interval, update }) => {
-            // Exit early if no update
-            if (!update) {
-              return;
-            }
+          ids.map(async (customerId) => {
+            const customer = (
+              await orgRef
+                .collection(OrgSubCollection.Customers)
+                .doc(customerId)
+                .get()
+            ).data() as Customer | undefined;
+            // Unknown customer: no bookings document to write to
+            if (!customer?.secretKey) return;
 
-            const { secretKey } = await db
-              .collection(Collection.Organizations)
-              .doc(organization)
-              .collection(OrgSubCollection.Customers)
-              .doc(customerId)
-              .get()
-              .then((doc) => doc.data() as Customer);
-
-            const attendedSlotRef = db
-              .collection(Collection.Organizations)
-              .doc(organization)
+            const attendedSlotRef = orgRef
               .collection(OrgSubCollection.Bookings)
-              .doc(secretKey)
+              .doc(customer.secretKey)
               .collection(BookingSubCollection.AttendedSlots)
               .doc(slotId);
 
-            // If interval exists, we're updating (or creating) the attended slot
+            const interval = getAttendedSlotInterval(
+              current?.attendances?.[customerId]
+            );
             if (interval) {
-              batch.set(attendedSlotRef, {
-                date: currentAttendanceData.date,
-                interval,
-              });
-              return;
+              batch.set(attendedSlotRef, { date: current!.date, interval });
+            } else {
+              batch.delete(attendedSlotRef);
             }
-
-            // Finally, if interval doesn't exist, we're deleting the attended slot
-            batch.delete(attendedSlotRef);
-            return;
           })
         );
 

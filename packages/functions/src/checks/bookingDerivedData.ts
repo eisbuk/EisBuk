@@ -59,8 +59,6 @@ export interface CountDifference {
 export interface AttendanceDifference {
   slotId: string;
   customerId: string;
-  /** The athlete's bookings document holding the booking (any of theirs, if not booked) */
-  secretKey?: string;
   /** Lesson date */
   date: string;
   booking?: CustomerBookingEntry;
@@ -124,12 +122,11 @@ const readMonths = async (
     .get()
     .then(({ docs }) => docs);
 
-  // An athlete can have more than one bookings document (secret key changed): bookings are always looked up
-  // under the document holding them, this is only used for athletes without a booking for the slot
-  const secretKeys = new Map<string, string>();
+  // An athlete can have more than one bookings document (secret key changed): a booking under any of them counts
+  const secretKeys = new Map<string, string[]>();
   for (const doc of bookingsDocs) {
     const { id } = doc.data() as CustomerBookings;
-    if (id) secretKeys.set(id, doc.id);
+    if (id) secretKeys.set(id, [...(secretKeys.get(id) || []), doc.id]);
   }
 
   const bookings = await Promise.all(
@@ -206,7 +203,7 @@ const findCountDifferences = (
 const findAttendanceDifferences = (
   bookings: Booking[],
   attendance: Map<string, SlotAttendnace>,
-  secretKeys: Map<string, string>,
+  secretKeys: Map<string, string[]>,
   today: string
 ): AttendanceDifference[] => {
   const bookingsByEntry = new Map(
@@ -224,8 +221,7 @@ const findAttendanceDifferences = (
   const differences: AttendanceDifference[] = [];
   for (const key of [...entries].sort()) {
     const [slotId, customerId] = key.split("/");
-    const { booking, secretKey = secretKeys.get(customerId) } =
-      bookingsByEntry.get(key) || {};
+    const booking = bookingsByEntry.get(key)?.booking;
     const before = attendance.get(slotId)?.attendances?.[customerId];
     const date = (attendance.get(slotId)?.date || booking?.date)!;
 
@@ -236,10 +232,10 @@ const findAttendanceDifferences = (
       slotId,
       customerId,
       date,
-      ..._.omitBy({ secretKey, booking, before, expected }, _.isUndefined),
+      ..._.omitBy({ booking, before, expected }, _.isUndefined),
     };
 
-    if (!secretKey) {
+    if (!secretKeys.has(customerId)) {
       differences.push({ ...difference, skipped: "unknown-athlete" });
       continue;
     }
@@ -314,12 +310,12 @@ export const reconcileBookingDerivedData = async (
     report.attendance.map(async (difference) => {
       if (difference.skipped) return difference;
 
-      const { slotId, date } = difference;
+      const { slotId, customerId, date } = difference;
       const result = await syncAttendanceEntry(
         db,
         organization,
         slotId,
-        difference.secretKey!,
+        secretKeys.get(customerId)!,
         { bookedPartOnly: date < today }
       );
 
@@ -338,4 +334,34 @@ export const reconcileBookingDerivedData = async (
   );
 
   return report;
+};
+
+/**
+ * A summary of a report safe to log: ids, intervals and totals, without booking notes (free text).
+ */
+export const summarizeReport = ({
+  attendance,
+  ...report
+}: BookingDerivedDataReport) => {
+  const intervals = (entry?: CustomerAttendance) =>
+    entry && {
+      bookedInterval: entry.bookedInterval,
+      attendedInterval: entry.attendedInterval,
+    };
+  return {
+    ...report,
+    attendance: attendance
+      .filter(({ skipped }) => !skipped)
+      .map(({ slotId, customerId, date, before, after }) => ({
+        slotId,
+        customerId,
+        date,
+        before: intervals(before) || null,
+        after: intervals(after) || null,
+      })),
+    skipped: _.countBy(
+      attendance.filter(({ skipped }) => skipped),
+      ({ skipped }) => skipped
+    ),
+  };
 };

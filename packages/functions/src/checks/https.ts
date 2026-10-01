@@ -16,7 +16,10 @@ import {
 } from "./slotAttendance";
 import { slotsSlotsByDayAutofix } from "./slotSlotsByDay";
 import { bookedSlotsAttendanceAutofix } from "./bookingsAttendance";
-import { reconcileBookingDerivedData } from "./bookingDerivedData";
+import {
+  reconcileBookingDerivedData,
+  summarizeReport,
+} from "./bookingDerivedData";
 
 /**
  * Goes through all 'slotsByDay' entries, checks each date to see if there are no slots in the day and deletes the day if empty.
@@ -276,9 +279,11 @@ export const dbBookingDerivedDataReconcile = functions
           { from, to, apply: apply === true }
         );
         if (report.applied) {
-          functions.logger.info("dbBookingDerivedDataReconcile: applied", {
-            report,
-          });
+          // Record of the repair: ids, intervals and totals only (no booking notes)
+          functions.logger.info(
+            "dbBookingDerivedDataReconcile: applied",
+            summarizeReport(report)
+          );
         }
         return report;
       }
