@@ -2,7 +2,7 @@
  * @vitest-environment node
  */
 
-import { describe, vi, expect, beforeEach } from "vitest";
+import { describe, vi, expect, beforeEach, test } from "vitest";
 import { DateTime } from "luxon";
 
 import i18n, { NotificationMessage } from "@eisbuk/translations";
@@ -31,7 +31,6 @@ import {
   customerSelfRegister,
   acceptPrivacyPolicy,
   getUpdatedBooking,
-  BookingConflictError,
 } from "../bookingOperations";
 import { enqueueNotification } from "@/features/notifications/actions";
 
@@ -45,6 +44,8 @@ import {
   getDocs,
   setDoc,
   setDocInTransaction,
+  FirestoreDocVariant,
+  TransactionNotRetriedError,
 } from "@/utils/firestore";
 
 // The transaction helper runs the real implementation, but a test can make it fail (e.g. as if offline)
@@ -400,6 +401,12 @@ describe("Booking operations", () => {
       },
     );
 
+    const unconfirmedNotification = () =>
+      enqueueNotification({
+        message: i18n.t(NotificationMessage.BookingUnconfirmed),
+        variant: NotifVariant.Error,
+      });
+
     testWithEmulator(
       "should book exactly one interval when two intervals of a lesson not booked yet are clicked in quick succession",
       async () => {
@@ -412,14 +419,19 @@ describe("Booking operations", () => {
         expect([intervalA, intervalB]).toContain(booking?.interval);
         const otherInterval =
           booking?.interval === intervalA ? intervalB : intervalA;
-        // One click booked, the other one was refused (didn't replace the first one)
+        // One click booked, the other one was refused (didn't replace the first one): either it read the
+        // first booking, or its commit failed on contention and wasn't retried (outcome reported as unconfirmed)
         expect(mockDispatch).toHaveBeenCalledTimes(2);
         expect(mockDispatch).toHaveBeenCalledWith(
           successNotification(booking!.interval),
         );
-        expect(mockDispatch).toHaveBeenCalledWith(
+        const refusal = mockDispatch.mock.calls
+          .map(([action]) => action)
+          .find((action) => action.payload.variant === NotifVariant.Error);
+        expect([
           alreadyBookedNotification(booking!.interval),
-        );
+          unconfirmedNotification(),
+        ]).toContainEqual(refusal);
         expect(mockDispatch).not.toHaveBeenCalledWith(
           successNotification(otherInterval),
         );
@@ -451,7 +463,7 @@ describe("Booking operations", () => {
     );
 
     testWithEmulator(
-      "should not recreate a booking cancelled while the replacement transaction runs (the retry sees it's gone)",
+      "should not recreate a booking cancelled while the replacement transaction runs (the failed commit isn't retried)",
       async () => {
         const { db, bookingPath, deleteServerBooking, getServerBooking } =
           await setup({
@@ -475,13 +487,12 @@ describe("Booking operations", () => {
           },
         );
 
-        await expect(replacement).rejects.toEqual(
-          new BookingConflictError(null),
+        await expect(replacement).rejects.toBeInstanceOf(
+          TransactionNotRetriedError,
         );
-        // First attempt saw the booking, the commit failed, the retry saw it deleted (and refused)
+        // Only one attempt: it saw the booking, its commit failed (the booking changed), and it wasn't retried
         expect(seenBookings).toEqual([
           { date: testSlot.date, interval: intervalA, bookingNotes },
-          undefined,
         ]);
         expect(await getServerBooking()).toBeUndefined();
       },
@@ -494,7 +505,7 @@ describe("Booking operations", () => {
       });
 
     testWithEmulator(
-      "without a connection (transaction fails as 'unavailable') nothing is written, not even after reconnecting, and the athlete is told",
+      "when the transaction fails as 'unavailable', nothing else is written (not even after reconnecting) and the booking is reported as unconfirmed",
       async () => {
         const { book, db, getServerBooking, mockDispatch } = await setup();
         const client = (db as any).instance;
@@ -510,7 +521,7 @@ describe("Booking operations", () => {
         await book(intervalA);
 
         expect(mockDispatch).toHaveBeenCalledTimes(1);
-        expect(mockDispatch).toHaveBeenCalledWith(offlineNotification());
+        expect(mockDispatch).toHaveBeenCalledWith(unconfirmedNotification());
 
         // Connection back: nothing was queued, so nothing reaches the server
         await client.enableNetwork();
@@ -547,6 +558,90 @@ describe("Booking operations", () => {
         });
       },
     );
+
+    testWithEmulator(
+      "when the commit is applied but the connection drops before the response, the booking is reported as unconfirmed (not as 'not saved')",
+      async () => {
+        const { book, getServerBooking, mockDispatch } = await setup();
+
+        const { setDocInTransaction: actualSetDocInTransaction } =
+          await vi.importActual<typeof import("@/utils/firestore")>(
+            "@/utils/firestore",
+          );
+        vi.mocked(setDocInTransaction).mockImplementationOnce(
+          async (bookingRef, update) => {
+            // The commit reaches the server...
+            await actualSetDocInTransaction(bookingRef, update);
+            // ...but the response is lost
+            throw Object.assign(new Error("connection lost"), {
+              code: "unavailable",
+            });
+          },
+        );
+
+        await book(intervalA);
+
+        expect(await getServerBooking()).toEqual({
+          date: testSlot.date,
+          interval: intervalA,
+        });
+        expect(mockDispatch.mock.calls).toEqual([[unconfirmedNotification()]]);
+        expect(mockDispatch).not.toHaveBeenCalledWith(offlineNotification());
+      },
+    );
+  });
+
+  describe("'setDocInTransaction' with an ambiguous commit (#982)", () => {
+    test("commit applied, response lost, booking cancelled elsewhere: the SDK's retry must not recreate the booking", async () => {
+      const [interval] = intervals;
+      // A fake Firestore document, behaving as the SDK would on a lost commit response (if it retried):
+      // attempt 1 commits, the response is lost, another device cancels the booking, then the transaction is retried.
+      let stored: CustomerBookingEntry | undefined = undefined;
+      let options: { maxAttempts?: number } | undefined;
+      const fakeRef: any = {
+        firestore: {
+          runTransaction: async (
+            updateFunction: (tx: any) => Promise<void>,
+            opts?: { maxAttempts?: number },
+          ) => {
+            options = opts;
+            /** Runs one attempt and commits its write (if any) */
+            const attempt = async () => {
+              const writes: CustomerBookingEntry[] = [];
+              await updateFunction({
+                get: async () => ({ data: () => stored }),
+                set: (_: unknown, data: CustomerBookingEntry) =>
+                  writes.push(data),
+              });
+              stored = writes[0] ?? stored;
+            };
+            // Attempt 1 commits
+            await attempt();
+            // The response is lost; meanwhile the booking is cancelled from another device
+            stored = undefined;
+            // Retry, ignoring `maxAttempts` (like the compat SDK): the helper must refuse it itself
+            await attempt();
+          },
+        },
+      };
+
+      const firstBooking = setDocInTransaction(
+        FirestoreDocVariant.server({ instance: fakeRef }),
+        (booking) =>
+          getUpdatedBooking(booking as CustomerBookingEntry, {
+            interval,
+            date: testSlot.date,
+          }),
+      );
+
+      await expect(firstBooking).rejects.toBeInstanceOf(
+        TransactionNotRetriedError,
+      );
+      // The cancellation stands: the booking wasn't recreated
+      expect(stored).toBeUndefined();
+      // SDKs supporting it are told not to retry at all
+      expect(options).toEqual({ maxAttempts: 1 });
+    });
   });
 
   describe("'cancelBooking'", () => {

@@ -24,6 +24,7 @@ import {
   doc,
   setDoc,
   setDocInTransaction,
+  TransactionNotRetriedError,
 } from "@/utils/firestore";
 import { getOrganization } from "@/lib/getters";
 
@@ -85,9 +86,15 @@ export const getUpdatedBooking = (
 const isBrowserOffline = () =>
   typeof navigator !== "undefined" && navigator.onLine === false;
 
-/** `true` if a Firestore operation failed because the server couldn't be reached */
-const isUnavailableError = (err: unknown) =>
-  (err as { code?: string } | null)?.code === "unavailable";
+/**
+ * `true` if the booking transaction failed in a way that doesn't tell whether the booking was saved:
+ * connection lost (the commit might have been applied before it dropped), or a failed attempt that wasn't retried.
+ */
+const isUnconfirmedError = (err: unknown) =>
+  err instanceof TransactionNotRetriedError ||
+  ["unavailable", "deadline-exceeded"].includes(
+    (err as { code?: string } | null)?.code || "",
+  );
 
 /**
  * Dispatches booked interval to firestore.
@@ -100,8 +107,10 @@ const isUnavailableError = (err: unknown) =>
  * (page still loading, another device, a second click while the first write is in flight) can't replace,
  * or recreate, a booking.
  *
- * The transaction needs the server: without a connection nothing is written (no queued write, which couldn't
- * be checked against the stored booking) and the athlete is told the booking wasn't saved.
+ * The transaction needs the server: if the browser is offline nothing is written (no queued write, which couldn't
+ * be checked against the stored booking) and the athlete is told the booking wasn't saved. If the transaction fails
+ * in a way that leaves its outcome unknown (connection lost during the commit), it isn't retried and the athlete
+ * is told the booking couldn't be confirmed.
  */
 export const bookInterval: UpdateBooking<{ replacedInterval?: string }> =
   ({ slotId, secretKey, interval, date, replacedInterval }): FirestoreThunk =>
@@ -161,8 +170,14 @@ export const bookInterval: UpdateBooking<{ replacedInterval?: string }> =
         return;
       }
 
-      if (isUnavailableError(err)) {
-        notifyOffline();
+      // The booking might have been saved: don't say it wasn't (the bookings subscription shows what's stored)
+      if (isUnconfirmedError(err)) {
+        dispatch(
+          enqueueNotification({
+            message: i18n.t(NotificationMessage.BookingUnconfirmed),
+            variant: NotifVariant.Error,
+          }),
+        );
         return;
       }
 

@@ -317,6 +317,7 @@ export enum NotificationMessage {
   BookingAlreadyExists = "Notification.BookingAlreadyExists",
   BookingChangedMeanwhile = "Notification.BookingChangedMeanwhile",
   BookingOffline = "Notification.BookingOffline",
+  BookingUnconfirmed = "Notification.BookingUnconfirmed",
 
   SlotAdded = "Notification.SlotAdded",
   SlotAddError = "Notification.SlotAddError",

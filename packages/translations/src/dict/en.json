@@ -294,6 +294,7 @@
     "BookingAlreadyExists": "You already have a booking for this lesson: {{ date, EEEE d MMMM }}, {{ interval }}. Nothing was changed.",
     "BookingChangedMeanwhile": "Your booking for this lesson ({{ date, EEEE d MMMM }}) was changed or cancelled in the meantime. Nothing was changed: check your bookings and try again.",
     "BookingOffline": "No connection: the booking was not saved. Try again when you are online.",
+    "BookingUnconfirmed": "Connection lost: the booking could not be confirmed. Check your Calendar when you are back online.",
 
     "CopyPasteErrorWeek": "Error copying slots week",
     "CopyPasteErrorDay": "Error copying slots day",

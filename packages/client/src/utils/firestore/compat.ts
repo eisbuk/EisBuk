@@ -213,12 +213,26 @@ export const getDocs = async (collection: FirestoreCollectionVariant) => {
 };
 
 /**
+ * Thrown by `setDocInTransaction` when the transaction would be run a second time: the first attempt failed
+ * to commit, and its outcome might be unknown (e.g. the commit was applied but the response was lost).
+ */
+export class TransactionNotRetriedError extends Error {
+  // eslint-disable-next-line require-jsdoc
+  constructor() {
+    super("Transaction attempt failed, not retried: outcome unconfirmed");
+  }
+}
+
+/**
  * Reads a document and (conditionally) writes it in a single transaction, on all Firestore variants.
  *
  * `update` receives the current document data (`undefined` if the document doesn't exist) and returns the data to set,
  * or `undefined` to leave the document as it is. Throwing from `update` aborts the transaction (the error is rethrown).
  *
- * _Note: `update` can run more than once (the transaction is retried if the document changes while it runs), so it should be pure._
+ * The transaction is attempted only once: a failed commit might still have been applied (response lost), and a retry
+ * would decide again on data that changed in the meantime (e.g. recreate a document deleted after that commit).
+ * The SDK's retries are disabled (`maxAttempts: 1`) and, for SDKs ignoring that option, a second attempt is refused
+ * with `TransactionNotRetriedError`.
  * @param doc document to read/write in form of a FirestoreDocVariant (used to match with correct behaviour)
  * @param update function returning the new document data
  */
@@ -228,17 +242,30 @@ export const setDocInTransaction = async (
     data: DocumentData | undefined,
   ) => DocumentData | undefined | Promise<DocumentData | undefined>,
 ): Promise<void> => {
+  let attempts = 0;
+  const assertFirstAttempt = () => {
+    attempts++;
+    if (attempts > 1) throw new TransactionNotRetriedError();
+  };
+  const options = { maxAttempts: 1 };
+
   await match(doc, {
     [FirestoreEnv.Client]: ({ instance }) =>
-      clientRunTransaction(instance.firestore, async (tx) => {
-        const data = await update((await tx.get(instance)).data());
-        if (data) tx.set(instance, data);
-      }),
+      clientRunTransaction(
+        instance.firestore,
+        async (tx) => {
+          assertFirstAttempt();
+          const data = await update((await tx.get(instance)).data());
+          if (data) tx.set(instance, data);
+        },
+        options,
+      ),
     [FirestoreEnv.Server]: ({ instance }) =>
       instance.firestore.runTransaction(async (tx) => {
+        assertFirstAttempt();
         const data = await update((await tx.get(instance)).data());
         if (data) tx.set(instance, data);
-      }),
+      }, options),
   });
 };
 

@@ -295,6 +295,7 @@
     "BookingAlreadyExists": "Hai già una prenotazione per questa lezione: {{ date, EEEE d MMMM }}, {{ interval }}. Non è stato modificato nulla.",
     "BookingChangedMeanwhile": "La tua prenotazione per questa lezione ({{ date, EEEE d MMMM }}) è stata modificata o cancellata nel frattempo. Non è stato modificato nulla: controlla le tue prenotazioni e riprova.",
     "BookingOffline": "Nessuna connessione: la prenotazione non è stata salvata. Riprova quando sei online.",
+    "BookingUnconfirmed": "Connessione persa: non è stato possibile confermare la prenotazione. Controlla il Riepilogo quando sei di nuovo online.",
 
     "CopyPasteErrorWeek": "Errore nella copia della settimana",
     "CopyPasteErrorDay": "Errore nella copia del giorno",
