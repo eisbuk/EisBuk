@@ -440,6 +440,7 @@ export enum Alerts {
   NoSlots = "Alerts.NoSlots",
   NoBookings = "Alerts.NoBookings",
   NoAttendance = "Alerts.NoAttendance",
+  IncompleteAttendance = "Alerts.IncompleteAttendance",
   NoCategories = "Alerts.NoCategories",
   ContactEmail = "Alerts.ContactEmail",
   ErrorBoundary = "Alerts.ErrorBoundary",
