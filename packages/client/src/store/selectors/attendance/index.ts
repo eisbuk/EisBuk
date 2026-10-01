@@ -2,10 +2,14 @@ import {
   getSlotsWithAttendance,
   getBookedIntervalsCustomers,
 } from "./slotAttendance";
-import { getMonthAttendanceVariance } from "./attendanceVariance";
+import {
+  getMonthAttendanceVariance,
+  getMonthAttendanceUnresolved,
+} from "./attendanceVariance";
 
 export {
   getSlotsWithAttendance,
   getMonthAttendanceVariance,
+  getMonthAttendanceUnresolved,
   getBookedIntervalsCustomers,
 };

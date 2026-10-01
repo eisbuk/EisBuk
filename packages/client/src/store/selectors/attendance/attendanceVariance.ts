@@ -33,21 +33,38 @@ type Attendance = NonNullable<LocalStore["firestore"]["data"]["attendance"]>;
 type Customers = NonNullable<LocalStore["firestore"]["data"]["customers"]>;
 type Slots = Record<string, SlotInterface>;
 
+/**
+ * An attendance entry that can't be placed in the month summary because its slot
+ * (needed for the slot type) or its customer (needed for the name) isn't in the store:
+ * either it hasn't been loaded yet, or the data is inconsistent.
+ */
+export interface UnresolvedAttendanceEntry {
+  slotId: string;
+  customerId: string;
+  date: string;
+}
+
 export const processAttendances = (
   attendance: Attendance,
   slots: Slots,
   customers: Customers,
-  month: string
+  month: string,
 ) =>
   wrapIter(Object.entries(attendance))
     // Get only current month's attendance
     .filter(([, attendance]) => filterAttendanceByMonth(month)(attendance))
     // Flatten the slot attendances so that we end up with iterable of { customerId => attendanceIntervalsWithSlotMeta } pairs
     .flatMap(([slotId, { date, attendances }]) =>
-      // { customerId => attendanceIntervals } pairs
-      Object.entries(attendances).map(
-        valueMapper(mergeMapper({ date, slotType: slots[slotId].type }))
-      )
+      // Entries we can't place (slot or customer not in store) are left out here
+      // and reported by 'findUnresolvedAttendances' instead
+      !slots[slotId]
+        ? []
+        : // { customerId => attendanceIntervals } pairs
+          Object.entries(attendances)
+            .filter(([customerId]) => customers[customerId])
+            .map(
+              valueMapper(mergeMapper({ date, slotType: slots[slotId].type })),
+            ),
     )
     // { customerId => attendanceDurations } pairs
     .map(valueMapper(convertIntervalsToDurations))
@@ -65,9 +82,26 @@ export const processAttendances = (
     // After sorting, we can join customer name tuple into a string -> { name => Iterable<attendance> } pairs
     .map(keyMapper(joinCustomerName));
 
-export const getMonthAttendanceVariance = (
-  state: LocalStore
-): AthleteAttendanceMonth[] => {
+/**
+ * Returns the attendance entries (for the given month) that 'processAttendances' leaves out
+ * because their slot or customer isn't in the store, so that they can be shown as missing
+ * instead of silently vanishing from the summary.
+ */
+export const findUnresolvedAttendances = (
+  attendance: Attendance,
+  slots: Slots,
+  customers: Customers,
+  month: string,
+): UnresolvedAttendanceEntry[] =>
+  Object.entries(attendance)
+    .filter(([, attendance]) => filterAttendanceByMonth(month)(attendance))
+    .flatMap(([slotId, { date, attendances }]) =>
+      Object.keys(attendances)
+        .filter((customerId) => !slots[slotId] || !customers[customerId])
+        .map((customerId) => ({ slotId, customerId, date })),
+    );
+
+const getMonthData = (state: LocalStore) => {
   const { app, firestore } = state;
   const { calendarDay } = app;
   const { attendance = {}, customers = {}, slotsByDay = {} } = firestore.data;
@@ -80,12 +114,21 @@ export const getMonthAttendanceVariance = (
       // (month not loaded yet, or no slots that month), in which case
       // `Object.values(undefined)` would throw.
       Object.values(slotsByDay?.[currentMonth] || {}),
-      (slots) => Object.entries(slots)
-    )
+      (slots) => Object.entries(slots),
+    ),
   );
 
-  return processAttendances(attendance, slots, customers, currentMonth);
+  return [attendance, slots, customers, currentMonth] as const;
 };
+
+export const getMonthAttendanceVariance = (
+  state: LocalStore,
+): AthleteAttendanceMonth[] => processAttendances(...getMonthData(state));
+
+export const getMonthAttendanceUnresolved = (
+  state: LocalStore,
+): UnresolvedAttendanceEntry[] =>
+  findUnresolvedAttendances(...getMonthData(state));
 
 /**
  * Filters an array of SlotAttendance documents
@@ -98,12 +141,14 @@ export const filterAttendanceByMonth =
 
 export const replaceCustomerIdWithName =
   (customerLookup: Customers) =>
-  (id: string): CustomerNameTuple =>
-    [customerLookup[id].surname, customerLookup[id].name];
+  (id: string): CustomerNameTuple => [
+    customerLookup[id].surname,
+    customerLookup[id].name,
+  ];
 
 const compareCustomerNames = (
   [[a]]: [CustomerNameTuple, any],
-  [[b]]: [CustomerNameTuple, any]
+  [[b]]: [CustomerNameTuple, any],
 ) => (a > b ? 1 : -1);
 
 const joinCustomerName = (customer: CustomerNameTuple) => customer.join(" ");
@@ -130,7 +175,7 @@ const datePairFromAttendance = <A extends { date: string }>({
 
 const aggregateAttendance = (
   acc: AttendanceBySlotType,
-  { slotType, booked, attended }: AttendanceDurationsWithType
+  { slotType, booked, attended }: AttendanceDurationsWithType,
 ) => ({
   ...acc,
   [slotType]: {
@@ -140,7 +185,7 @@ const aggregateAttendance = (
 });
 
 const aggregateAttendanceEntries = (
-  attendances: Iterable<AttendanceDurationsWithType>
+  attendances: Iterable<AttendanceDurationsWithType>,
 ): AttendanceBySlotType =>
   _reduce(attendances, aggregateAttendance, {
     [SlotType.Ice]: { booked: 0, attended: 0 },
@@ -148,7 +193,7 @@ const aggregateAttendanceEntries = (
   });
 
 const aggregateAttendanceByDate = (
-  attendances: Iterable<DateAttendancePair<AttendanceDurationsWithType>>
+  attendances: Iterable<DateAttendancePair<AttendanceDurationsWithType>>,
 ): AttendanceByDate =>
   wrapIter(attendances)
     // Group each pair by date:

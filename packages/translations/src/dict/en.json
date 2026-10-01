@@ -413,6 +413,7 @@
     "NoSlots": "No slots are currently available for the month of {{ currentDate, MMMM }}",
     "NoBookings": "You have no active bookings for the month of {{ currentDate, MMMM }}",
     "NoAttendance": "No attendance data for the month of {{ currentDate, MMMM }}",
+    "IncompleteAttendance": "{{ count }} booking/attendance entries for this month can't be shown because their slot or athlete data is missing or still loading. The hours in this table may be incomplete.",
     "NoCategories": "You haven't been assigned a category yet. The admins will review your registration shortly and assign one to you.",
     "ContactEmail": "For more info, contact us at: <a href=\"mailto:{{ email }}\"><strong>{{ email }}</strong></a>",
     "ErrorBoundary": "Something went wrong! Try contacting: <a href=\"mailto:{{ email }}\"><strong>{{ email }}</strong></a>"
