@@ -191,6 +191,20 @@ describe("CustomerForm", () => {
       expect(expired()).not.toBeNull();
     });
 
+    test("should flag a malformed certificate date, even one that looks like a future date", () => {
+      // Sorts after today as a string, but isn't a valid date
+      render(
+        <CustomerForm.Profile
+          customer={{ ...saul, certificateExpiration: "2099-02-31" }}
+        />,
+      );
+      expect(
+        screen.queryByText(i18n.t(CustomerLabel.CertificateInvalid) as string),
+      ).not.toBeNull();
+      expect(expired()).toBeNull();
+      expect(missing()).toBeNull();
+    });
+
     test("should save personal details even if the stored certificate date is malformed", async () => {
       const mockSave = vi.fn();
       // Not a valid date (stored through the old callable, or the rules' loose regex)

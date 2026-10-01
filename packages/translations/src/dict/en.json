@@ -122,6 +122,7 @@
     "CertificateManagedByAdmins": "The club updates the expiration date of your medical certificate. If it is wrong, contact the club.",
     "CertificateExpired": "Expired",
     "CertificateMissing": "Missing",
+    "CertificateInvalid": "Invalid date",
     "PersonalDetails": "Personal Details",
     "ManagePersonalDetails": "Manage your personal details",
     "RegistrationCode": "Registration code",

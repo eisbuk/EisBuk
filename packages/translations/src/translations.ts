@@ -128,6 +128,7 @@ export enum CustomerLabel {
   CertificateManagedByAdmins = "CustomerLabel.CertificateManagedByAdmins",
   CertificateExpired = "CustomerLabel.CertificateExpired",
   CertificateMissing = "CustomerLabel.CertificateMissing",
+  CertificateInvalid = "CustomerLabel.CertificateInvalid",
   PersonalDetails = "CustomerLabel.PersonalDetails",
   ManagePersonalDetails = "CustomerLabel.ManagePersonalDetails",
 

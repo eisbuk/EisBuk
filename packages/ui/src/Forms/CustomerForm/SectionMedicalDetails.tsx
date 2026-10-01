@@ -42,9 +42,11 @@ const SectionMedicalDetails: React.FC<SectionProps> = ({
   // The certificate is valid through its expiration day
   const status = !certificateExpiration
     ? t(CustomerLabel.CertificateMissing)
-    : certificateExpiration < DateTime.now().toISODate()
-      ? t(CustomerLabel.CertificateExpired)
-      : null;
+    : !isISODay(certificateExpiration)
+      ? t(CustomerLabel.CertificateInvalid)
+      : certificateExpiration < DateTime.now().toISODate()
+        ? t(CustomerLabel.CertificateExpired)
+        : null;
 
   return (
     <FormSection

@@ -121,6 +121,7 @@
     "CertificateManagedByAdmins": "La scadenza del certificato medico viene aggiornata dal club. Se non è corretta, contatta il club.",
     "CertificateExpired": "Scaduto",
     "CertificateMissing": "Mancante",
+    "CertificateInvalid": "Data non valida",
     "PersonalDetails": "Dati dell'atleta",
     "ManagePersonalDetails": "Inserire i dati personali dell'atleta",
     "RegistrationCode": "Codice di regitrazione",
