@@ -25,6 +25,7 @@ import {
 } from "@eisbuk/shared";
 
 import { getCustomerStats } from "./utils";
+import { syncAttendanceEntry, syncSlotBookingsCount } from "./bookingSync";
 
 /**
  * A type alias for Customer with `secretKey` and `id` optional
@@ -331,42 +332,50 @@ export const countSlotsBookings = functions
           string
         >;
 
-        // If the booking was merely updated, we don't need to do increment/decrement the counter
+        // If the booking was merely updated, the number of bookings didn't change
         if (change.before.exists && change.after.exists) {
           return;
         }
 
         const db = admin.firestore();
 
-        const date = change.before.data()?.date || change.after.data()!.date;
-        const delta = change.after.exists ? 1 : -1;
+        const date: string | undefined = (
+          change.before.data() || change.after.data()
+        )?.date;
+        if (!date) return;
 
-        const bookingCountsDocRef = db
-          .collection(Collection.Organizations)
-          .doc(organization)
-          .collection(OrgSubCollection.SlotBookingsCounts)
-          .doc(date.substring(0, 7));
-
-        // Use a transaction: the previous non-transactional read-modify-write
-        // lost updates when two bookings for the same month changed
-        // concurrently, permanently corrupting the counters that drive the
-        // "slot is full" filtering in the athlete booking view.
-        await db.runTransaction(async (tx) => {
-          const doc = await tx.get(bookingCountsDocRef);
-          const data = doc.data() || ({} as SlotBookingsCounts);
-
-          const slotsBookings = data[bookingId] || 0;
-          // Floor at 0: decrements for bookings whose counter was never
-          // created (e.g. bulk deletions of legacy bookings) used to write
-          // negative counts.
-          const updatedCount = Math.max(0, slotsBookings + delta);
-
-          tx.set(
-            bookingCountsDocRef,
-            { [bookingId]: updatedCount },
-            { merge: true }
+        // Recount instead of applying +1/-1 from the event: events are delivered at least once and
+        // unordered, so a redelivered or late event used to count a booking twice or count a
+        // cancelled one (#987). See `syncSlotBookingsCount`.
+        try {
+          await syncSlotBookingsCount(db, organization, bookingId, date);
+        } catch (err) {
+          // FAILED_PRECONDITION: the collection group index the recount needs isn't (yet) available.
+          // Keep counting (as before, transactional +1/-1) rather than not counting at all.
+          if ((err as { code?: number }).code !== 9) throw err;
+          functions.logger.error(
+            "countSlotsBookings: recount failed (missing index?), applying delta",
+            err
           );
-        });
+
+          const bookingCountsDocRef = db
+            .collection(Collection.Organizations)
+            .doc(organization)
+            .collection(OrgSubCollection.SlotBookingsCounts)
+            .doc(date.substring(0, 7));
+          const delta = change.after.exists ? 1 : -1;
+
+          await db.runTransaction(async (tx) => {
+            const doc = await tx.get(bookingCountsDocRef);
+            const data = doc.data() || ({} as SlotBookingsCounts);
+            const updatedCount = Math.max(0, (data[bookingId] || 0) + delta);
+            tx.set(
+              bookingCountsDocRef,
+              { [bookingId]: updatedCount },
+              { merge: true }
+            );
+          });
+        }
       }
     )
   );
@@ -376,6 +385,9 @@ export const countSlotsBookings = functions
  *
  * - listens to `organizations/{organization}/bookings/{secretKey}/bookedSlots/{slotId}`
  * - writes to `organizations/{organization}/attendnace/{slotId}` - updates entry for `attendances[customerId]` leaving the rest of the doc unchanged
+ *
+ * The entry is derived from the current booking, not from the event (which can be redelivered or arrive after a
+ * newer one, #988), and an attended interval recorded by the admin is preserved. See `syncAttendanceEntry`.
  */
 export const createAttendanceForBooking = functions
   .runWith({
@@ -388,53 +400,14 @@ export const createAttendanceForBooking = functions
   .onWrite(
     wrapFirestoreOnWriteHandler(
       "createAttendanceForBooking",
-      async (change, context) => {
+      async (_change, context) => {
         const { organization, secretKey, bookingId } = context.params as Record<
           string,
           string
         >;
-        const db = admin.firestore();
 
-        const isUpdate = Boolean(change.after.exists);
-
-        const { id: customerId } = (
-          await db
-            .collection(Collection.Organizations)
-            .doc(organization)
-            .collection(OrgSubCollection.Bookings)
-            .doc(secretKey)
-            .get()
-        ).data() as Customer;
-
-        const afterData = change.after.data() as
-          | CustomerBookingEntry
-          | undefined;
-
-        const updatedEntry = {
-          attendances: {
-            [customerId]: isUpdate
-              ? afterData && afterData?.bookingNotes
-                ? {
-                    bookedInterval: afterData!.interval,
-                    attendedInterval: afterData!.interval,
-                    bookingNotes: afterData!.bookingNotes,
-                  }
-                : {
-                    bookedInterval: afterData!.interval,
-                    attendedInterval: afterData!.interval,
-                  }
-              : admin.firestore.FieldValue.delete(),
-          },
-        };
-
-        const attendanceRef = db
-          .collection(Collection.Organizations)
-          .doc(organization)
-          .collection(OrgSubCollection.Attendance)
-          .doc(bookingId);
-
-        await attendanceRef.set(updatedEntry, {
-          mergeFields: [`attendances.${customerId}`],
+        await syncAttendanceEntry(admin.firestore(), organization, bookingId, {
+          secretKey,
         });
       }
     )
