@@ -79,6 +79,48 @@ describe("Selectors ->", () => {
       expect(res).toHaveLength(1);
       expect(res[0].customers).toEqual([]);
     });
+
+    test("should not crash, nor drop the entry, when an attendance entry references a customer missing from the store (regression: #832)", () => {
+      const dateISO = testDateLuxon.toISODate();
+      const monthStr = dateISO.substring(0, 7);
+      const slot = { ...baseSlot, id: "slot-0", date: dateISO };
+
+      const store = getNewStore({
+        firestore: {
+          data: {
+            slotsByDay: { [monthStr]: { [dateISO]: { [slot.id]: slot } } },
+            attendance: {
+              [slot.id]: {
+                date: dateISO,
+                attendances: {
+                  [saul.id]: {
+                    bookedInterval: "09:00-10:00",
+                    attendedInterval: null,
+                  },
+                  // Customer not (yet) in the store
+                  "missing-customer": {
+                    bookedInterval: "09:00-10:00",
+                    attendedInterval: null,
+                  },
+                },
+              },
+            },
+            customers: { [saul.id]: saul },
+          },
+        },
+        app: {
+          calendarDay: testDateLuxon,
+        },
+      });
+
+      expect(() => getSlotsWithAttendance(store.getState())).not.toThrow();
+      const [{ customers }] = getSlotsWithAttendance(store.getState());
+      expect(customers).toHaveLength(2);
+      expect(customers).toContainEqual({
+        bookedInterval: "09:00-10:00",
+        attendedInterval: null,
+      });
+    });
   });
 
   describe("Test 'getSlotAttendance'", () => {
