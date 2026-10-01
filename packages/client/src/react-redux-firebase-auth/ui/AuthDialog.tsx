@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   AuthError,
   AuthErrorCodes,
@@ -46,6 +46,15 @@ enum AuthFlow {
 export const signInWithGoogle = async (): Promise<void> => {
   const auth = getAuth();
   const provider = new GoogleAuthProvider();
+
+  // In the iOS home-screen app, Firebase opens the "popup" as a separate window
+  // it can't watch: if the user closes it, 'signInWithPopup' never settles.
+  // Use the redirect flow there instead.
+  if (isIOSStandalone()) {
+    await signInWithRedirect(auth, provider);
+    return;
+  }
+
   try {
     await signInWithPopup(auth, provider);
   } catch (err) {
@@ -66,17 +75,35 @@ export const signInWithGoogle = async (): Promise<void> => {
   }
 };
 
+/** The app runs from the iOS home screen ('navigator.standalone' is iOS only) */
+const isIOSStandalone = () =>
+  Boolean(
+    (window.navigator as Navigator & { standalone?: boolean }).standalone,
+  );
+
 const AuthDialog: React.FC = () => {
   const { t } = useTranslation();
 
   const [authFlow, setAuthFlow] = useState<AuthFlow | null>(null);
   const [dialogError, setDialogError] = useState<string | null>(null);
 
-  const startGoogleSignIn = () =>
-    signInWithGoogle().catch((err) => {
+  // A sign in started by a previous click, still in progress: further clicks
+  // would start another one (and could open a second popup)
+  const googleSignInPending = useRef(false);
+
+  const startGoogleSignIn = async () => {
+    if (googleSignInPending.current) return;
+    // Set synchronously, before anything is awaited
+    googleSignInPending.current = true;
+    try {
+      await signInWithGoogle();
+    } catch (err) {
       const { code } = (err as AuthError) || { code: "" };
       setDialogError(t(AuthErrorMessage[code] || AuthErrorMessage.UNKNOWN));
-    });
+    } finally {
+      googleSignInPending.current = false;
+    }
+  };
 
   const handleSelectFlow = (flow: AuthFlow) =>
     flow === AuthFlow.Google ? startGoogleSignIn() : setAuthFlow(flow);
