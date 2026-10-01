@@ -27,15 +27,19 @@ import { saul } from "@eisbuk/testing/customers";
 import {
   getAttendanceDocPath,
   getBookedSlotDocPath,
+  getBookedSlotsPath,
   getBookingsDocPath,
+  getBookingsPath,
   getCustomerDocPath,
   getEmailQueueDocPath,
   getSlotDocPath,
   getSlotsByDayDocPath,
   getSlotsPath,
   getSMSQueueDocPath,
+  collection,
   doc,
   getDoc,
+  getDocs,
   setDoc,
   deleteDoc,
 } from "@/utils/firestore";
@@ -51,9 +55,9 @@ describe("Firestore rules", () => {
         await assertSucceeds(getDoc(orgRef));
         // check write access
         await assertSucceeds(
-          setDoc(orgRef, { admins: ["new_admin@gmail.com"] })
+          setDoc(orgRef, { admins: ["new_admin@gmail.com"] }),
         );
-      }
+      },
     );
 
     testWithEmulator(
@@ -65,7 +69,7 @@ describe("Firestore rules", () => {
         await assertFails(getDoc(orgRef));
         // check write access
         await assertFails(setDoc(orgRef, { admins: ["new_admin@gmail.com"] }));
-      }
+      },
     );
 
     testWithEmulator(
@@ -78,19 +82,19 @@ describe("Firestore rules", () => {
               doc(db, Collection.Organizations, "different-organization"),
               {
                 admins: ["different-admin"],
-              }
+              },
             ),
         });
         const orgRef = doc(
           db,
           Collection.Organizations,
-          "different-organization"
+          "different-organization",
         );
         // check read access
         await assertFails(getDoc(orgRef));
         // check write access
         await assertFails(setDoc(orgRef, { admins: ["new_admin@gmail.com"] }));
-      }
+      },
     );
   });
 
@@ -111,7 +115,7 @@ describe("Firestore rules", () => {
         setDoc(doc(db, getSlotsPath(organization), "some-id"), {
           ...baseSlot,
           id: "some-id",
-        })
+        }),
       );
       // check delete access
       await assertFails(deleteDoc(slotRef));
@@ -128,11 +132,11 @@ describe("Firestore rules", () => {
         await assertSucceeds(getDoc(slotRef));
         // check update access
         await assertSucceeds(
-          setDoc(slotRef, { ...baseSlot, type: SlotType.OffIce })
+          setDoc(slotRef, { ...baseSlot, type: SlotType.OffIce }),
         );
         // check delete access
         await assertSucceeds(deleteDoc(slotRef));
-      }
+      },
     );
 
     testWithEmulator(
@@ -143,9 +147,9 @@ describe("Firestore rules", () => {
           setDoc(doc(db, getSlotDocPath(organization, baseSlot.id)), {
             ...baseSlot,
             date: "2022-24-01",
-          })
+          }),
         );
-      }
+      },
     );
 
     testWithEmulator(
@@ -156,9 +160,9 @@ describe("Firestore rules", () => {
           setDoc(doc(db, getSlotDocPath(organization, baseSlot.id)), {
             ...baseSlot,
             type: "non-existing-slot-type",
-          })
+          }),
         );
-      }
+      },
     );
 
     testWithEmulator(
@@ -172,9 +176,9 @@ describe("Firestore rules", () => {
               Category.PreCompetitiveAdults,
               "non-existing-category",
             ],
-          })
+          }),
         );
-      }
+      },
     );
 
     /**
@@ -238,21 +242,21 @@ describe("Firestore rules", () => {
         setup: async (db, { organization }) => {
           await setDoc(
             doc(db, getSlotDocPath(organization, baseSlot.id)),
-            baseSlot
+            baseSlot,
           );
           // wait for 'slotsByDay' aggregation
           await pRetry(
             async () =>
               (
                 await getDoc(
-                  doc(db, getSlotsByDayDocPath(organization, monthStr))
+                  doc(db, getSlotsByDayDocPath(organization, monthStr)),
                 )
-              ).exists
+              ).exists,
           );
         },
       });
       await assertSucceeds(
-        getDoc(doc(db, getSlotsByDayDocPath(organization, monthStr)))
+        getDoc(doc(db, getSlotsByDayDocPath(organization, monthStr))),
       );
     });
 
@@ -263,9 +267,9 @@ describe("Firestore rules", () => {
         await assertFails(
           setDoc(doc(db, getSlotsByDayDocPath(organization, monthStr)), {
             [baseSlot.date]: { [baseSlot.id]: baseSlot },
-          })
+          }),
         );
-      }
+      },
     );
   });
 
@@ -278,13 +282,36 @@ describe("Firestore rules", () => {
           setup: (db, { organization }) =>
             setDoc(
               doc(db, getBookingsDocPath(organization, saul.secretKey)),
-              sanitizeCustomer(saul)
+              sanitizeCustomer(saul),
             ),
         });
         await assertSucceeds(
-          getDoc(doc(db, getBookingsDocPath(organization, saul.secretKey)))
+          getDoc(doc(db, getBookingsDocPath(organization, saul.secretKey))),
         );
-      }
+      },
+    );
+
+    testWithEmulator(
+      "should NOT allow listing (enumerating) the bookings collection to an unauth user",
+      async () => {
+        const { db, organization } = await getTestEnv({
+          auth: false,
+          setup: (db, { organization }) =>
+            setDoc(
+              doc(db, getBookingsDocPath(organization, saul.secretKey)),
+              sanitizeCustomer(saul),
+            ),
+        });
+        // `get` of a single document by a known secret key must still succeed...
+        await assertSucceeds(
+          getDoc(doc(db, getBookingsDocPath(organization, saul.secretKey))),
+        );
+        // ...but `list`/`query` over the collection must be denied, otherwise an
+        // unauthenticated client could enumerate every athlete's profile and secret key.
+        await assertFails(
+          getDocs(collection(db, getBookingsPath(organization))),
+        );
+      },
     );
 
     testWithEmulator(
@@ -294,15 +321,15 @@ describe("Firestore rules", () => {
 
         const saulBookingsDoc = doc(
           db,
-          getBookingsDocPath(organization, saul.secretKey)
+          getBookingsDocPath(organization, saul.secretKey),
         );
         // check create
         await assertFails(
           setDoc(saulBookingsDoc, {
             ...sanitizeCustomer(saul),
-          })
+          }),
         );
-      }
+      },
     );
 
     testWithEmulator(
@@ -313,13 +340,13 @@ describe("Firestore rules", () => {
           setup: async (db, { organization }) =>
             setDoc(
               doc(db, getBookingsDocPath(organization, saul.secretKey)),
-              sanitizeCustomer(saul)
+              sanitizeCustomer(saul),
             ),
         });
 
         const saulBookingsDoc = doc(
           db,
-          getBookingsDocPath(organization, saul.secretKey)
+          getBookingsDocPath(organization, saul.secretKey),
         );
 
         // check update
@@ -327,9 +354,9 @@ describe("Firestore rules", () => {
           setDoc(saulBookingsDoc, {
             ...sanitizeCustomer(saul),
             name: "not-saul",
-          })
+          }),
         );
-      }
+      },
     );
 
     testWithEmulator(
@@ -339,18 +366,18 @@ describe("Firestore rules", () => {
           setup: (db, { organization }) =>
             setDoc(
               doc(db, getBookingsDocPath(organization, saul.secretKey)),
-              sanitizeCustomer(saul)
+              sanitizeCustomer(saul),
             ),
         });
 
         const saulBookingsDoc = doc(
           db,
-          getBookingsDocPath(organization, saul.secretKey)
+          getBookingsDocPath(organization, saul.secretKey),
         );
 
         // check delete
         await assertFails(deleteDoc(saulBookingsDoc));
-      }
+      },
     );
 
     /**
@@ -381,25 +408,25 @@ describe("Firestore rules", () => {
               // create test slot (as it's used to check compatibility with booking)
               setDoc(
                 doc(db, getSlotDocPath(organization, baseSlot.id)),
-                testSlot
+                testSlot,
               ),
               // create saul's bookings entry (CustomerBase) as it's used to check category
               setDoc(
                 doc(db, getBookingsDocPath(organization, saul.secretKey)),
-                sanitizeCustomer(saul)
+                sanitizeCustomer(saul),
               ),
             ]),
         });
         const bookedSlotRef = doc(
           db,
-          getBookedSlotDocPath(organization, saul.secretKey, baseSlot.id)
+          getBookedSlotDocPath(organization, saul.secretKey, baseSlot.id),
         );
         // check create
         await assertSucceeds(
           setDoc(bookedSlotRef, {
             date: testSlot.date,
             interval: testIntervals[0],
-          })
+          }),
         );
         // check read
         await assertSucceeds(getDoc(bookedSlotRef));
@@ -408,11 +435,32 @@ describe("Firestore rules", () => {
           setDoc(bookedSlotRef, {
             date: testSlot.date,
             interval: testIntervals[1],
-          })
+          }),
         );
         // check delete
         await assertSucceeds(deleteDoc(bookedSlotRef));
-      }
+      },
+    );
+
+    testWithEmulator(
+      "should allow an unauth user to list booked slots under a known secret key (the booking flow uses a ranged query)",
+      async () => {
+        const { db, organization } = await getTestEnv({
+          auth: false,
+          setup: (db, { organization }) =>
+            setDoc(
+              doc(db, getBookingsDocPath(organization, saul.secretKey)),
+              sanitizeCustomer(saul),
+            ),
+        });
+        // `list` within a known secretKey path must stay allowed: the client subscribes
+        // to `bookedSlots` with a ranged query (where "date" ...), which requires `list`.
+        await assertSucceeds(
+          getDocs(
+            collection(db, getBookedSlotsPath(organization, saul.secretKey)),
+          ),
+        );
+      },
     );
 
     testWithEmulator(
@@ -423,7 +471,7 @@ describe("Firestore rules", () => {
           setup: (db, { organization }) =>
             setDoc(
               doc(db, getSlotDocPath(organization, baseSlot.id)),
-              testSlot
+              testSlot,
             ),
         });
         await assertFails(
@@ -433,16 +481,16 @@ describe("Firestore rules", () => {
               getBookedSlotDocPath(
                 organization,
                 saul.secretKey,
-                "non-existing-slot-id"
-              )
+                "non-existing-slot-id",
+              ),
             ),
             {
               date: testSlot.date,
               interval: testIntervals[0],
-            }
-          )
+            },
+          ),
         );
-      }
+      },
     );
 
     testWithEmulator(
@@ -453,22 +501,22 @@ describe("Firestore rules", () => {
           setup: (db, { organization }) =>
             setDoc(
               doc(db, getSlotDocPath(organization, baseSlot.id)),
-              testSlot
+              testSlot,
             ),
         });
         await assertFails(
           setDoc(
             doc(
               db,
-              getBookedSlotDocPath(organization, saul.secretKey, baseSlot.id)
+              getBookedSlotDocPath(organization, saul.secretKey, baseSlot.id),
             ),
             {
               date: testSlot.date,
               interval: testIntervals[0],
-            }
-          )
+            },
+          ),
         );
-      }
+      },
     );
 
     testWithEmulator(
@@ -479,7 +527,7 @@ describe("Firestore rules", () => {
           setup: (db, { organization }) =>
             setDoc(
               doc(db, getSlotDocPath(organization, baseSlot.id)),
-              testSlot
+              testSlot,
             ),
         });
         // check entry <-> subscribed slot `date` mismatch
@@ -487,17 +535,17 @@ describe("Firestore rules", () => {
           setDoc(
             doc(
               db,
-              getBookedSlotDocPath(organization, saul.secretKey, baseSlot.id)
+              getBookedSlotDocPath(organization, saul.secretKey, baseSlot.id),
             ),
             {
               date: DateTime.fromISO(testSlot.date)
                 .plus({ days: 1 })
                 .toISODate(),
               interval: testIntervals[0],
-            }
-          )
+            },
+          ),
         );
-      }
+      },
     );
 
     testWithEmulator(
@@ -516,15 +564,15 @@ describe("Firestore rules", () => {
           setDoc(
             doc(
               db,
-              getBookedSlotDocPath(organization, saul.secretKey, baseSlot.id)
+              getBookedSlotDocPath(organization, saul.secretKey, baseSlot.id),
             ),
             {
               date: testSlot.date,
               interval: testIntervals[0],
-            }
-          )
+            },
+          ),
         );
-      }
+      },
     );
   });
 
@@ -537,18 +585,18 @@ describe("Firestore rules", () => {
       });
       // check read
       await assertFails(
-        getDoc(doc(db, getCustomerDocPath(organization, saul.id)))
+        getDoc(doc(db, getCustomerDocPath(organization, saul.id))),
       );
       // check write
       await assertFails(
         setDoc(doc(db, getCustomerDocPath(organization, saul.id)), {
           ...saul,
           name: "not-saul",
-        })
+        }),
       );
       // check delete
       await assertFails(
-        deleteDoc(doc(db, getCustomerDocPath(organization, saul.id)))
+        deleteDoc(doc(db, getCustomerDocPath(organization, saul.id))),
       );
     });
 
@@ -559,18 +607,18 @@ describe("Firestore rules", () => {
       });
       // check read
       await assertSucceeds(
-        getDoc(doc(db, getCustomerDocPath(organization, saul.id)))
+        getDoc(doc(db, getCustomerDocPath(organization, saul.id))),
       );
       // check write
       await assertSucceeds(
         setDoc(doc(db, getCustomerDocPath(organization, saul.id)), {
           ...saul,
           categories: [Category.PreCompetitiveAdults],
-        })
+        }),
       );
       // check delete
       await assertSucceeds(
-        deleteDoc(doc(db, getCustomerDocPath(organization, saul.id)))
+        deleteDoc(doc(db, getCustomerDocPath(organization, saul.id))),
       );
     });
 
@@ -581,17 +629,20 @@ describe("Firestore rules", () => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { name, ...noNameSaul } = saul;
         await assertFails(
-          setDoc(doc(db, getCustomerDocPath(organization, saul.id)), noNameSaul)
+          setDoc(
+            doc(db, getCustomerDocPath(organization, saul.id)),
+            noNameSaul,
+          ),
         );
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { surname, ...noSurnameSaul } = saul;
         await assertFails(
           setDoc(
             doc(db, getCustomerDocPath(organization, saul.id)),
-            noSurnameSaul
-          )
+            noSurnameSaul,
+          ),
         );
-      }
+      },
     );
 
     testWithEmulator(
@@ -611,10 +662,10 @@ describe("Firestore rules", () => {
         await assertSucceeds(
           setDoc(
             doc(db, getCustomerDocPath(organization, saul.id)),
-            minimalCustomer
-          )
+            minimalCustomer,
+          ),
         );
-      }
+      },
     );
 
     testWithEmulator(
@@ -627,16 +678,16 @@ describe("Firestore rules", () => {
           setDoc(doc(db, getCustomerDocPath(organization, saul.id)), {
             ...saul,
             certificateExpiration: "2022-22-24",
-          })
+          }),
         );
         // should allow if (optional) `certificateExpiration` is not provided
         await assertSucceeds(
           setDoc(
             doc(db, getCustomerDocPath(organization, saul.id)),
-            noCertificateSaul
-          )
+            noCertificateSaul,
+          ),
         );
-      }
+      },
     );
 
     testWithEmulator(
@@ -649,16 +700,16 @@ describe("Firestore rules", () => {
           setDoc(doc(db, getCustomerDocPath(organization, saul.id)), {
             ...saul,
             birthday: "2022-22-24",
-          })
+          }),
         );
         // should allow if (optional) `birthday` is not provided
         await assertSucceeds(
           setDoc(
             doc(db, getCustomerDocPath(organization, saul.id)),
-            noBirthdaySaul
-          )
+            noBirthdaySaul,
+          ),
         );
-      }
+      },
     );
 
     testWithEmulator(
@@ -671,41 +722,41 @@ describe("Firestore rules", () => {
           setDoc(doc(db, getCustomerDocPath(organization, saul.id)), {
             ...saul,
             phone: "not-a-number-string",
-          })
+          }),
         );
         // number needs to be prepended with "+" or "00"
         await assertFails(
           setDoc(doc(db, getCustomerDocPath(organization, saul.id)), {
             ...saul,
             phone: "115566774",
-          })
+          }),
         );
         // should accept only number characters
         await assertFails(
           setDoc(doc(db, getCustomerDocPath(organization, saul.id)), {
             ...saul,
             phone: "foobar+123",
-          })
+          }),
         );
         await assertSucceeds(
           setDoc(doc(db, getCustomerDocPath(organization, saul.id)), {
             ...saul,
             phone: "+385996688132",
-          })
+          }),
         );
         // should allow `phone` prepended with "00" instead of "+"
         await assertSucceeds(
           setDoc(doc(db, getCustomerDocPath(organization, saul.id)), {
             ...saul,
             phone: "00385996688132",
-          })
+          }),
         );
         // should allow if (optional) `phone` is not provided
         await assertSucceeds(
           setDoc(
             doc(db, getCustomerDocPath(organization, saul.id)),
-            noPhoneSaul
-          )
+            noPhoneSaul,
+          ),
         );
         // check too long and to short phone numbers
         // current min length is 9 (not counting "+" or "00" prefix)
@@ -713,16 +764,16 @@ describe("Firestore rules", () => {
           setDoc(doc(db, getCustomerDocPath(organization, saul.id)), {
             ...saul,
             phone: "0038599666",
-          })
+          }),
         );
         // current max length is 15 (not counting "+" or "00" prefix)
         await assertFails(
           setDoc(doc(db, getCustomerDocPath(organization, saul.id)), {
             ...saul,
             phone: "003859966881231567",
-          })
+          }),
         );
-      }
+      },
     );
 
     testWithEmulator(
@@ -735,16 +786,16 @@ describe("Firestore rules", () => {
           setDoc(doc(db, getCustomerDocPath(organization, saul.id)), {
             ...saul,
             email: "no-domain-email@",
-          })
+          }),
         );
         // should allow if (optional) `email` is not provided
         await assertSucceeds(
           setDoc(
             doc(db, getCustomerDocPath(organization, saul.id)),
-            noEmailSaul
-          )
+            noEmailSaul,
+          ),
         );
-      }
+      },
     );
 
     testWithEmulator(
@@ -756,9 +807,9 @@ describe("Firestore rules", () => {
           setDoc(doc(db, getCustomerDocPath(organization, saul.id)), {
             ...saul,
             categories: ["not-a-valid-category"],
-          })
+          }),
         );
-      }
+      },
     );
 
     testWithEmulator("should allow `extendedDate` update", async () => {
@@ -772,8 +823,8 @@ describe("Firestore rules", () => {
           {
             extendedDate: "2022-02-01",
           },
-          { merge: true }
-        )
+          { merge: true },
+        ),
       );
     });
     /** @TODO Add check for card (subscription) number */
@@ -796,12 +847,12 @@ describe("Firestore rules", () => {
           setup: (db, { organization }) =>
             setDoc(
               doc(db, getAttendanceDocPath(organization, baseSlot.id)),
-              testAttendance
+              testAttendance,
             ),
         });
         // check read
         await assertFails(
-          getDoc(doc(db, getAttendanceDocPath(organization, baseSlot.id)))
+          getDoc(doc(db, getAttendanceDocPath(organization, baseSlot.id))),
         );
         // check write
         await assertFails(
@@ -813,13 +864,13 @@ describe("Firestore rules", () => {
                 attendedInterval: null,
               },
             },
-          })
+          }),
         );
         // check delete
         await assertFails(
-          deleteDoc(doc(db, getAttendanceDocPath(organization, baseSlot.id)))
+          deleteDoc(doc(db, getAttendanceDocPath(organization, baseSlot.id))),
         );
-      }
+      },
     );
 
     testWithEmulator(
@@ -829,12 +880,12 @@ describe("Firestore rules", () => {
           setup: (db, { organization }) =>
             setDoc(
               doc(db, getAttendanceDocPath(organization, baseSlot.id)),
-              testAttendance
+              testAttendance,
             ),
         });
         // check read
         await assertSucceeds(
-          getDoc(doc(db, getAttendanceDocPath(organization, baseSlot.id)))
+          getDoc(doc(db, getAttendanceDocPath(organization, baseSlot.id))),
         );
         // check update
         await assertSucceeds(
@@ -846,20 +897,20 @@ describe("Firestore rules", () => {
                 attendedInterval: null,
               },
             },
-          })
+          }),
         );
         // check create
         await assertFails(
           setDoc(
             doc(db, getAttendanceDocPath(organization, "new-attendance")),
-            testAttendance
-          )
+            testAttendance,
+          ),
         );
         // check delete
         await assertFails(
-          deleteDoc(doc(db, getAttendanceDocPath(organization, baseSlot.id)))
+          deleteDoc(doc(db, getAttendanceDocPath(organization, baseSlot.id))),
         );
-      }
+      },
     );
     testWithEmulator(
       "should not allow date update (as that is handled through cloud functions on slot update)",
@@ -868,7 +919,7 @@ describe("Firestore rules", () => {
           setup: (db, { organization }) =>
             setDoc(
               doc(db, getAttendanceDocPath(organization, baseSlot.id)),
-              testAttendance
+              testAttendance,
             ),
         });
         await assertFails(
@@ -877,7 +928,7 @@ describe("Firestore rules", () => {
             date: DateTime.fromISO(testAttendance.date)
               .plus({ days: 1 })
               .toISODate(),
-          })
+          }),
         );
         // if date is the same, but is still included in update payload, should allow
         await assertSucceeds(
@@ -889,9 +940,9 @@ describe("Firestore rules", () => {
                 attendedInterval: "10:00-11:00",
               },
             },
-          })
+          }),
         );
-      }
+      },
     );
   });
 
@@ -910,7 +961,7 @@ describe("Firestore rules", () => {
         });
         // check read
         await assertFails(
-          getDoc(doc(db, getEmailQueueDocPath(organization, "mail-id")))
+          getDoc(doc(db, getEmailQueueDocPath(organization, "mail-id"))),
         );
         // check write
         await assertFails(
@@ -922,13 +973,13 @@ describe("Firestore rules", () => {
               },
               to: "ikusteu@gmail.com",
             },
-          })
+          }),
         );
         // check delete
         await assertFails(
-          deleteDoc(doc(db, getEmailQueueDocPath(organization, "mail-id")))
+          deleteDoc(doc(db, getEmailQueueDocPath(organization, "mail-id"))),
         );
-      }
+      },
     );
   });
 
@@ -947,7 +998,7 @@ describe("Firestore rules", () => {
         });
         // check read
         await assertFails(
-          getDoc(doc(db, getSMSQueueDocPath(organization, "sms-id")))
+          getDoc(doc(db, getSMSQueueDocPath(organization, "sms-id"))),
         );
         // check write
         await assertFails(
@@ -956,13 +1007,13 @@ describe("Firestore rules", () => {
               message: "Hello from the other side",
               to: "ikusteu@gmail.com",
             },
-          })
+          }),
         );
         // check delete
         await assertFails(
-          deleteDoc(doc(db, getSMSQueueDocPath(organization, "sms-id")))
+          deleteDoc(doc(db, getSMSQueueDocPath(organization, "sms-id"))),
         );
-      }
+      },
     );
   });
 
@@ -978,7 +1029,7 @@ describe("Firestore rules", () => {
         });
         // check read
         await assertFails(
-          getDoc(doc(db, Collection.Secrets, "test-organization"))
+          getDoc(doc(db, Collection.Secrets, "test-organization")),
         );
         // check write
         await assertFails(
@@ -987,14 +1038,14 @@ describe("Firestore rules", () => {
             {
               emailAuthToken: "email-test-token",
             },
-            { merge: true }
-          )
+            { merge: true },
+          ),
         );
         // check delete
         await assertFails(
-          deleteDoc(doc(db, Collection.Secrets, "test-organization"))
+          deleteDoc(doc(db, Collection.Secrets, "test-organization")),
         );
-      }
+      },
     );
   });
 });
