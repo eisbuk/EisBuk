@@ -23,6 +23,7 @@ export const addFirestoreListener =
     const listeners = getFirestoreListeners(getState());
     // check if listener for provided collection exists
     let listener = listeners[storeAs as SubscriptionWhitelist];
+    const isNewListener = !listener;
     if (listener) {
       // check if current consumer already registered with the listener
       const consumer = listener.consumers.find(
@@ -41,12 +42,17 @@ export const addFirestoreListener =
         // actual `unsubscribe` function is updated from the `updateSubscription` thunk
         unsubscribe: () => {},
       };
-      dispatch(updateSubscription({ storeAs, meta, ...subscriptionParams }));
     }
     // save updated listener to Redux store
     dispatch(
       updateFirestoreListener(storeAs as SubscriptionWhitelist, listener)
     );
+    // Subscribe only after the listener is registered: `updateSubscription` stores the actual `unsubscribe`
+    // function on the registered listener (registering afterwards would overwrite it with the placeholder above,
+    // and the firestore subscription would never be stopped)
+    if (isNewListener) {
+      dispatch(updateSubscription({ storeAs, meta, ...subscriptionParams }));
+    }
   };
 
 /**
