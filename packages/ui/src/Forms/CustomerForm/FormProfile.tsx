@@ -12,7 +12,6 @@ import SectionPersonalDetails, {
 import SectionMedicalDetails, {
   MedicalDetailsFields,
   medicalDetailsInitialValues,
-  medicalDetailsValidations,
 } from "./SectionMedicalDetails";
 import FormButton, { FormButtonColor } from "../FormButton";
 
@@ -68,7 +67,7 @@ const FormProfile: React.FC<FormProfile> = ({
               defaultDialCode={defaultDialCode}
               disabled={!isEditing}
             />
-            <SectionMedicalDetails disabled={!isEditing} />
+            <SectionMedicalDetails disabled={!isEditing} readOnly />
 
             <div className="flex justify-self-end gap-x-2 mt-5">
               {isEditing ? (
@@ -110,9 +109,10 @@ const FormProfile: React.FC<FormProfile> = ({
   );
 };
 
+// No certificate validation: the athlete can't edit that field (#955), and a
+// malformed stored value must not block saving their other details.
 const validationSchema = Yup.object().shape({
   ...personalDetailsValidations,
-  ...medicalDetailsValidations,
 });
 
 export default FormProfile;

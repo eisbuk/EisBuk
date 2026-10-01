@@ -42,6 +42,7 @@ import {
   getDocs,
   setDoc,
   deleteDoc,
+  FirestoreVariant,
 } from "@/utils/firestore";
 
 describe("Firestore rules", () => {
@@ -599,6 +600,50 @@ describe("Firestore rules", () => {
         deleteDoc(doc(db, getCustomerDocPath(organization, saul.id))),
       );
     });
+
+    testWithEmulator(
+      "should not allow a signed in athlete (non-admin) to change their own certificateExpiration, neither in customers nor in bookings (#955)",
+      async () => {
+        const { db, organization } = await getTestEnv({
+          setup: (db, { organization }) =>
+            Promise.all([
+              setDoc(doc(db, getCustomerDocPath(organization, saul.id)), saul),
+              setDoc(
+                doc(db, getBookingsDocPath(organization, saul.secretKey)),
+                sanitizeCustomer(saul),
+              ),
+            ]),
+        });
+        // Signed in with the email stored on their own customer profile
+        const athleteDb = FirestoreVariant.server({
+          instance: db.testEnv
+            .authenticatedContext("athlete", { email: saul.email })
+            .firestore(),
+        });
+        const update = { certificateExpiration: "2099-12-31" };
+
+        await assertFails(
+          setDoc(
+            doc(athleteDb, getCustomerDocPath(organization, saul.id)),
+            update,
+            { merge: true },
+          ),
+        );
+        await assertFails(
+          setDoc(
+            doc(athleteDb, getBookingsDocPath(organization, saul.secretKey)),
+            update,
+            { merge: true },
+          ),
+        );
+        // An admin still can
+        await assertSucceeds(
+          setDoc(doc(db, getCustomerDocPath(organization, saul.id)), update, {
+            merge: true,
+          }),
+        );
+      },
+    );
 
     testWithEmulator("should allow read/write to org admin", async () => {
       const { db, organization } = await getTestEnv({

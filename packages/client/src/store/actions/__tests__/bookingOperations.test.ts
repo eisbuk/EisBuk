@@ -139,14 +139,14 @@ describe("Booking operations", () => {
         });
         // get all `bookedSlots` for customer
         const bookedSlotsForCustomer = await getDocs(
-          collection(db, getBookedSlotsPath(organization, secretKey))
+          collection(db, getBookedSlotsPath(organization, secretKey)),
         );
         // the updated `bookedSlots` should contain 2 default entries and one new (testBooking)
         expect(bookedSlotsForCustomer.docs.length).toEqual(3);
         // check the updated booking
         const updatedBooking = (
           await getDoc(
-            doc(db, getBookedSlotDocPath(organization, secretKey, bookingId))
+            doc(db, getBookedSlotDocPath(organization, secretKey, bookingId)),
           )
         ).data();
         expect(updatedBooking).toEqual({
@@ -161,9 +161,9 @@ describe("Booking operations", () => {
               interval: intervals[0],
             }),
             variant: NotifVariant.Success,
-          })
+          }),
         );
-      }
+      },
     );
 
     // testWithEmulator(
@@ -183,7 +183,7 @@ describe("Booking operations", () => {
           date: baseSlot.date,
         });
         const mockDispatch = vi.fn();
-        await runThunk(testThunk, mockDispatch, () => ({} as any), {
+        await runThunk(testThunk, mockDispatch, () => ({}) as any, {
           getFirestore,
         });
         expect(mockDispatch).toHaveBeenCalledWith(
@@ -194,9 +194,9 @@ describe("Booking operations", () => {
             }),
             variant: NotifVariant.Error,
             error: testError,
-          })
+          }),
         );
-      }
+      },
     );
   });
 
@@ -240,7 +240,7 @@ describe("Booking operations", () => {
         });
         // get all `bookedSlots` for customer
         const bookedSlotsForCustomer = await getDocs(
-          collection(db, getBookedSlotsPath(organization, secretKey))
+          collection(db, getBookedSlotsPath(organization, secretKey)),
         );
         // the updated `bookedSlots` should contain 2 default entries (with testBooking removed)
         expect(bookedSlotsForCustomer.docs.length).toEqual(2);
@@ -252,9 +252,9 @@ describe("Booking operations", () => {
               interval: intervals[0],
             }),
             variant: NotifVariant.Success,
-          })
+          }),
         );
-      }
+      },
     );
 
     testWithEmulator(
@@ -273,7 +273,7 @@ describe("Booking operations", () => {
           date: baseSlot.date,
         });
         const mockDispatch = vi.fn();
-        await runThunk(testThunk, mockDispatch, () => ({} as any), {
+        await runThunk(testThunk, mockDispatch, () => ({}) as any, {
           getFirestore,
         });
         expect(mockDispatch).toHaveBeenCalledWith(
@@ -284,9 +284,9 @@ describe("Booking operations", () => {
             }),
             variant: NotifVariant.Error,
             error: testError,
-          })
+          }),
         );
-      }
+      },
     );
   });
 
@@ -341,8 +341,8 @@ describe("Booking operations", () => {
         const updatedBooking = await getDoc(
           doc(
             db,
-            getBookedSlotDocPath(organization, saul.secretKey, testSlot.id)
-          )
+            getBookedSlotDocPath(organization, saul.secretKey, testSlot.id),
+          ),
         );
         // the updated booking should contain the same data with 'bookingNotes' added
         expect(updatedBooking.data()).toEqual({
@@ -354,9 +354,9 @@ describe("Booking operations", () => {
           enqueueNotification({
             message: i18n.t(NotificationMessage.BookingNotesUpdated),
             variant: NotifVariant.Success,
-          })
+          }),
         );
-      }
+      },
     );
 
     testWithEmulator(
@@ -376,7 +376,7 @@ describe("Booking operations", () => {
           bookingNotes: "",
         });
         const mockDispatch = vi.fn();
-        await runThunk(testThunk, mockDispatch, () => ({} as any), {
+        await runThunk(testThunk, mockDispatch, () => ({}) as any, {
           getFirestore,
         });
         expect(mockDispatch).toHaveBeenCalledWith(
@@ -384,9 +384,9 @@ describe("Booking operations", () => {
             message: i18n.t(NotificationMessage.BookingNotesError),
             variant: NotifVariant.Error,
             error: testError,
-          })
+          }),
         );
-      }
+      },
     );
   });
 
@@ -416,17 +416,17 @@ describe("Booking operations", () => {
       // Check updates
       await waitFor(async () => {
         const bookingsSnap = await getDoc(
-          doc(db, getBookingsDocPath(organization, saul.secretKey))
+          doc(db, getBookingsDocPath(organization, saul.secretKey)),
         );
         expect(bookingsSnap.data()).toEqual(
-          sanitizeCustomer({ ...saul, name: "Jimmy" })
+          sanitizeCustomer({ ...saul, name: "Jimmy" }),
         );
       });
       expect(mockDispatch).toHaveBeenCalledWith(
         enqueueNotification({
           message: i18n.t(NotificationMessage.CustomerProfileUpdated),
           variant: NotifVariant.Success,
-        })
+        }),
       );
     });
 
@@ -441,7 +441,7 @@ describe("Booking operations", () => {
         // run the thunk
         const testThunk = customerSelfUpdate(saul);
         const mockDispatch = vi.fn();
-        await runThunk(testThunk, mockDispatch, () => ({} as any), {
+        await runThunk(testThunk, mockDispatch, () => ({}) as any, {
           getFunctions,
         });
         expect(mockDispatch).toHaveBeenCalledWith(
@@ -449,9 +449,9 @@ describe("Booking operations", () => {
             message: i18n.t(NotificationMessage.CustomerProfileError),
             variant: NotifVariant.Error,
             error: testError,
-          })
+          }),
         );
-      }
+      },
     );
   });
 
@@ -466,7 +466,7 @@ describe("Booking operations", () => {
           // Set up organization 'registrationCode'
           const docRef = doc(
             db,
-            [Collection.Organizations, organization].join("/")
+            [Collection.Organizations, organization].join("/"),
           );
           await setDoc(docRef, { registrationCode }, { merge: true });
         },
@@ -483,22 +483,33 @@ describe("Booking operations", () => {
       const { id, secretKey } = await runThunk(
         testThunk,
         mockDispatch,
-        store.getState
+        store.getState,
       );
       expect(id).toBeTruthy();
       expect(secretKey).toBeTruthy();
-      // Check updates
+      // Check updates: only the fields collected by the self registration form
+      // are stored. Admin-managed values sent along (categories, certificate
+      // date, photo...) are ignored and the new athlete awaits approval (#955)
       await waitFor(async () => {
         const bookingsSnap = await getDoc(
-          doc(db, getBookingsDocPath(organization, secretKey))
+          doc(db, getBookingsDocPath(organization, secretKey)),
         );
-        expect(bookingsSnap.data()).toEqual({ ...saul, id, secretKey });
+        expect(bookingsSnap.data()).toEqual({
+          name: saul.name,
+          surname: saul.surname,
+          email: saul.email,
+          phone: saul.phone,
+          birthday: saul.birthday,
+          id,
+          secretKey,
+          categories: [],
+        });
       });
       expect(mockDispatch).toHaveBeenCalledWith(
         enqueueNotification({
           message: i18n.t(NotificationMessage.SelfRegSuccess),
           variant: NotifVariant.Success,
-        })
+        }),
       );
     });
 
@@ -516,7 +527,7 @@ describe("Booking operations", () => {
           registrationCode: "",
         });
         const mockDispatch = vi.fn();
-        await runThunk(testThunk, mockDispatch, () => ({} as any), {
+        await runThunk(testThunk, mockDispatch, () => ({}) as any, {
           getFunctions,
         });
         expect(mockDispatch).toHaveBeenCalledWith(
@@ -524,9 +535,9 @@ describe("Booking operations", () => {
             message: i18n.t(NotificationMessage.SelfRegError),
             variant: NotifVariant.Error,
             error: testError,
-          })
+          }),
         );
-      }
+      },
     );
 
     testWithEmulator(
@@ -543,11 +554,11 @@ describe("Booking operations", () => {
           registrationCode: "wrong-code",
         });
         const mockDispatch = vi.fn();
-        const res = await runThunk(testThunk, mockDispatch, () => ({} as any), {
+        const res = await runThunk(testThunk, mockDispatch, () => ({}) as any, {
           getFunctions,
         });
         expect(res.codeOk).toEqual(false);
-      }
+      },
     );
 
     testWithEmulator(
@@ -565,7 +576,7 @@ describe("Booking operations", () => {
           registrationCode: "correct-code",
         });
         const mockDispatch = vi.fn();
-        const res = await runThunk(testThunk, mockDispatch, () => ({} as any), {
+        const res = await runThunk(testThunk, mockDispatch, () => ({}) as any, {
           getFunctions,
         });
         // No misleading "invalid registration code" field error...
@@ -577,9 +588,9 @@ describe("Booking operations", () => {
             message: i18n.t(NotificationMessage.SelfRegError),
             variant: NotifVariant.Error,
             error: networkError,
-          })
+          }),
         );
-      }
+      },
     );
   });
 
@@ -610,7 +621,7 @@ describe("Booking operations", () => {
         // Check updates
         await waitFor(async () => {
           const bookingsSnap = await getDoc(
-            doc(db, getBookingsDocPath(organization, saul.secretKey))
+            doc(db, getBookingsDocPath(organization, saul.secretKey)),
           );
           expect(bookingsSnap.data()?.privacyPolicyAccepted).toEqual({
             timestamp: expect.stringContaining(timestampDate),
@@ -620,9 +631,9 @@ describe("Booking operations", () => {
           enqueueNotification({
             message: i18n.t(NotificationMessage.SelectionSaved),
             variant: NotifVariant.Success,
-          })
+          }),
         );
-      }
+      },
     );
 
     testWithEmulator(
@@ -636,7 +647,7 @@ describe("Booking operations", () => {
         // run the thunk
         const testThunk = acceptPrivacyPolicy(saul);
         const mockDispatch = vi.fn();
-        await runThunk(testThunk, mockDispatch, () => ({} as any), {
+        await runThunk(testThunk, mockDispatch, () => ({}) as any, {
           getFunctions,
         });
         expect(mockDispatch).toHaveBeenCalledWith(
@@ -644,9 +655,9 @@ describe("Booking operations", () => {
             message: i18n.t(NotificationMessage.Error),
             variant: NotifVariant.Error,
             error: testError,
-          })
+          }),
         );
-      }
+      },
     );
   });
 });

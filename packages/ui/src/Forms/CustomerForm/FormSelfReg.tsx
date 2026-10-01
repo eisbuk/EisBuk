@@ -10,11 +10,6 @@ import SectionPersonalDetails, {
   personalDetailsInitialValues,
   personalDetailsValidations,
 } from "./SectionPersonalDetails";
-import SectionMedicalDetails, {
-  MedicalDetailsFields,
-  medicalDetailsInitialValues,
-  medicalDetailsValidations,
-} from "./SectionMedicalDetails";
 import SectionRegistrationCode, {
   RegistrationCodeFields,
   registrationCodeInitialValues,
@@ -24,9 +19,8 @@ import FormButton, { FormButtonColor } from "../FormButton";
 
 import { trimStringValues } from "./utils";
 
-type FormSelfRegValues = PersonalDetailsFields &
-  MedicalDetailsFields &
-  RegistrationCodeFields;
+// No medical details: the certificate expiration date is set by club admins (#955)
+type FormSelfRegValues = PersonalDetailsFields & RegistrationCodeFields;
 
 export interface FormSelfRegProps {
   customer: Pick<CustomerBase, "email" | "phone">;
@@ -48,7 +42,6 @@ const FormSelfReg: React.FC<FormSelfRegProps> = ({
 
   const initialValues = {
     ...personalDetailsInitialValues,
-    ...medicalDetailsInitialValues,
     ...registrationCodeInitialValues,
     ...customer,
   };
@@ -73,7 +66,6 @@ const FormSelfReg: React.FC<FormSelfRegProps> = ({
               defaultDialCode={defaultDialCode}
               disabledFields={disabledFields}
             />
-            <SectionMedicalDetails />
             <SectionRegistrationCode />
 
             <div className="flex justify-self-end gap-x-2 mt-5">
@@ -112,7 +104,6 @@ const FormSelfReg: React.FC<FormSelfRegProps> = ({
 
 const validationSchema = Yup.object().shape({
   ...personalDetailsValidations,
-  ...medicalDetailsValidations,
   ...registrationCodeValidations,
 });
 
