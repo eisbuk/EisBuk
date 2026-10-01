@@ -152,6 +152,35 @@ There's no need to spin up the emulators as unit tests use different emulator se
 Running `test` as in the above example runs all of the unit tests with full emulators support
 Alternatively, you can run `rushx test:quicktest` to run the tests without the emulators. This, however will skip all of the tests requiring emulator support.
 
+For a one-shot run of the emulator test suite that matches CI, use Node 18, then:
+
+```bash
+git submodule update --init packages/jest-smtp
+rush install
+rush build            # also builds jest-smtp, which the tests load
+cd packages/client
+npm run test:emulators:run
+```
+
+`test:emulators:run` compiles the functions once **without bundling** (the same
+compilation CI uses) and runs `vitest run` inside `firebase emulators:exec`, using the
+Firebase CLI locked in this package. It exits with the test result and starts no
+watcher. Do not run the emulator tests against the production bundle from
+`build_scripts/build.js`: the emulator restores callable auth by patching the installed
+`firebase-functions` module, and the bundle carries its own copy, so callable tests
+fail with `Unauthorized`.
+
+To run a subset, compile once and pass a filter to Vitest:
+
+```bash
+node ../functions/build_scripts/watch.js --once
+./node_modules/.bin/firebase -c ../../firebase-testing.json emulators:exec --project eisbuk "./node_modules/.bin/vitest run src/__tests__/auth.test.ts"
+```
+
+The emulators use the ports in `firebase-testing.json` (Auth 9098, Functions 5002,
+Firestore 8081); only one run can use them at a time. `--project eisbuk` is only the
+emulator's project ID; no credentials are needed.
+
 #### E2E Tests - Cypress
 
 To run E2E tests, you need to start up the emulators and the dev server (as in the first working flow) and additionally run cypress.
