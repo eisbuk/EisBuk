@@ -2,6 +2,7 @@ import { DateTime } from "luxon";
 
 import {
   CustomerBookingEntry,
+  OrgSubCollection,
   SlotInterface,
   getIntervalMinutes,
 } from "@eisbuk/shared";
@@ -17,6 +18,18 @@ import { LocalStore } from "@/types/store";
 
 import { getCalendarDay } from "@/store/selectors/app";
 import { getAttendedSlots, getBookedSlots } from "./slots";
+
+/**
+ * Minutes a booked interval counts for, in every total of the athlete's calendar (session, day, week, month),
+ * or `null` if the interval can't be read (the booking is then reported as excluded).
+ *
+ * This is the only place that sets the convention: exact clock time.
+ * The admin monthly summary currently rounds each interval up to the next half hour instead
+ * (`calculateIntervalDuration`); the convention to use for both is pending a decision (#983).
+ * If it changes here, update the unit wording of `BookedHours.MonthTotalNote` too.
+ */
+export const getCountedMinutes = (interval: string): number | null =>
+  getIntervalMinutes(interval);
 
 /** A calendar session carrying the full slot, as needed by the cancel booking dialog */
 export type CalendarSlotSession = SlotInterface & CalendarSession;
@@ -35,7 +48,7 @@ interface SummarizeMonthParams {
   attendedSlots?: BookingEntries;
   /**
    * Lessons of the month, keyed by date, then slot id (the month entry of `slotsByDay`).
-   * `undefined` if not loaded yet.
+   * `undefined` if not loaded yet, empty if the month has no document (every booking of the month is then excluded).
    */
   slotsForMonth?: Record<string, Record<string, SlotInterface>>;
 }
@@ -85,7 +98,7 @@ export const summarizeMonthBookings = ({
         return;
       }
 
-      const minutes = getIntervalMinutes(interval);
+      const minutes = getCountedMinutes(interval);
       if (minutes === null) {
         excluded.push({ slotId, date, interval, reason: "invalid-interval" });
         return;
@@ -141,14 +154,32 @@ export const getMonthBookingsSummary = (
   state: LocalStore
 ): MonthBookingsSummary<CalendarSlotSession> => {
   const month = getCalendarDay(state).toISO().substring(0, 7);
-  const slotsByDay = state.firestore.data.slotsByDay || {};
 
   return summarizeMonthBookings({
     month,
     bookedSlots: getBookedSlots(state),
     attendedSlots: getAttendedSlots(state),
-    slotsForMonth: slotsByDay[month],
+    slotsForMonth: getSlotsForMonth(state, month),
   });
+};
+
+/**
+ * Lessons of a month (the month's `slotsByDay` document):
+ * - `undefined` while the document is loading
+ * - an empty record if the document doesn't exist (e.g. removed by `pruneSlotsByDay` after the month's
+ *   last lesson was deleted), so that any remaining bookings of the month are reported, not hidden
+ */
+const getSlotsForMonth = (
+  state: LocalStore,
+  month: string
+): SummarizeMonthParams["slotsForMonth"] => {
+  const slotsForMonth = state.firestore.data.slotsByDay?.[month];
+  if (slotsForMonth) return slotsForMonth;
+
+  const receivedDocuments =
+    state.firestore.listeners[OrgSubCollection.SlotsByDay]?.receivedDocuments ||
+    [];
+  return receivedDocuments.includes(month) ? {} : undefined;
 };
 
 // #region helpers

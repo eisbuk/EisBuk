@@ -4,12 +4,14 @@ import { DateTime, Settings } from "luxon";
 import {
   BookingSubCollection,
   Category,
+  OrgSubCollection,
   SlotInterface,
   SlotType,
 } from "@eisbuk/shared";
 import type { MonthBookingsSummary } from "@eisbuk/ui";
 import {
   deleteLocalDocuments,
+  markDocumentsReceived,
   updateLocalDocuments,
 } from "@eisbuk/react-redux-firebase-firestore";
 
@@ -439,6 +441,57 @@ describe("Calendar totals", () => {
       const summary = getMonthBookingsSummary(store.getState());
       expect(summary.month).toEqual("2026-09");
       expect(summary.minutes).toEqual(50);
+    });
+
+    describe("Month without a 'slotsByDay' document", () => {
+      // The month's document is removed (e.g. by 'pruneSlotsByDay' after the month's last lesson is deleted)
+      // while the athlete's bookings for that month remain
+      const setupStore = () =>
+        getNewStore({
+          firestore: {
+            data: {
+              slotsByDay: { "2026-09": slotsByDay["2026-09"] },
+              bookedSlots,
+            },
+          },
+          app: { calendarDay: DateTime.fromISO("2026-10-01") },
+        });
+
+      test("should report every booking of the month as excluded once the month's document is known not to exist", () => {
+        const store = setupStore();
+        // First snapshot of the month's document received: the document doesn't exist
+        store.dispatch(
+          deleteLocalDocuments(OrgSubCollection.SlotsByDay, ["2026-10"])
+        );
+        store.dispatch(
+          markDocumentsReceived(OrgSubCollection.SlotsByDay, ["2026-10"])
+        );
+
+        const summary = getMonthBookingsSummary(store.getState());
+
+        expect(summary.minutes).toEqual(0);
+        expect(summary.bookingsCount).toEqual(0);
+        expect(summary.excluded.map(({ slotId }) => slotId).sort()).toEqual([
+          "slot-oct-02",
+          "slot-oct-06-a",
+          "slot-oct-06-b",
+          "slot-oct-14",
+          "slot-oct-25",
+          "slot-oct-26",
+        ]);
+        expect(
+          summary.excluded.every(({ reason }) => reason === "missing-slot")
+        ).toBe(true);
+      });
+
+      test("should not report anything while the month's document is still loading", () => {
+        const store = setupStore();
+
+        const summary = getMonthBookingsSummary(store.getState());
+
+        expect(summary.minutes).toEqual(0);
+        expect(summary.excluded).toEqual([]);
+      });
     });
   });
 });

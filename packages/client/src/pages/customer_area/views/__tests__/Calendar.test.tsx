@@ -11,12 +11,14 @@ import i18n, { ActionButton } from "@eisbuk/translations";
 import {
   BookingSubCollection,
   Category,
+  OrgSubCollection,
   SlotInterface,
   SlotType,
 } from "@eisbuk/shared";
 import { testId } from "@eisbuk/testing/testIds";
 import {
   deleteLocalDocuments,
+  markDocumentsReceived,
   updateLocalDocuments,
 } from "@eisbuk/react-redux-firebase-firestore";
 
@@ -147,5 +149,29 @@ describe("Customer area calendar view", () => {
     renderWithRedux(<CalendarView />, store);
 
     expect(screen.queryByTestId(testId("month-total"))).toBeNull();
+  });
+
+  test("should report the bookings of a month whose 'slotsByDay' document no longer exists", () => {
+    // E.g. the month's last lesson was deleted and 'pruneSlotsByDay' removed the month's document,
+    // while the athlete's booking remained
+    const store = setupStore();
+    renderWithRedux(<CalendarView />, store);
+
+    act(() => {
+      store.dispatch(
+        deleteLocalDocuments(OrgSubCollection.SlotsByDay, ["2026-10"])
+      );
+      store.dispatch(
+        markDocumentsReceived(OrgSubCollection.SlotsByDay, ["2026-10"])
+      );
+    });
+
+    expect(getMonthTotal().textContent).toEqual("0 h");
+    expect(
+      screen.getByTestId(testId("excluded-bookings")).textContent
+    ).toContain("2 October");
+    expect(
+      screen.queryAllByTestId(testId("booking-calendar-card"))
+    ).toHaveLength(0);
   });
 });
