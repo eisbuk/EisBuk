@@ -1,7 +1,11 @@
 import { Reducer } from "redux";
 import { FirestoreAction } from "../enums";
 
-import { FirestoreReducerAction, FirestoreState } from "../types";
+import {
+  FirestoreReducerAction,
+  FirestoreState,
+  SubscriptionWhitelist,
+} from "../types";
 
 const defaultState: FirestoreState = {
   data: {},
@@ -83,6 +87,27 @@ export const createFirestoreReducer: FirestoreReducerFactory =
             [collectionToUpdate]: updatedCollection,
           },
           listeners: state.listeners,
+        };
+      }
+
+      case FirestoreAction.MarkDocumentsReceived: {
+        const { collection, ids } =
+          action.payload as FirestoreReducerAction<FirestoreAction.MarkDocumentsReceived>["payload"];
+        const listener = state.listeners[collection as SubscriptionWhitelist];
+        const receivedDocuments = listener?.receivedDocuments || [];
+        const newIds = ids.filter((id) => !receivedDocuments.includes(id));
+
+        if (!newIds.length) return state;
+
+        return {
+          ...state,
+          listeners: {
+            ...state.listeners,
+            [collection]: {
+              ...listener,
+              receivedDocuments: [...receivedDocuments, ...newIds],
+            },
+          },
         };
       }
 

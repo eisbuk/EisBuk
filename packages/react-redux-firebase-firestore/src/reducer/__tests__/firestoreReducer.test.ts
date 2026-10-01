@@ -11,6 +11,7 @@ import {
   updateFirestoreListener,
   updateLocalDocuments,
   deleteLocalDocuments,
+  markDocumentsReceived,
 } from "../../actions";
 
 import { baseAttendance } from "../../__testData__/dataTriggers";
@@ -149,6 +150,78 @@ describe("Firestore reducer", () => {
         },
         listeners: {},
       });
+    });
+  });
+
+  describe("Test Action.MarkDocumentsReceived", () => {
+    test("should record received document ids on the collection's listener, once each", () => {
+      const initialState: FirestoreState = {
+        data: {},
+        listeners: {
+          [OrgSubCollection.SlotsByDay]: {
+            ...baseListener,
+            documents: ["2026-09", "2026-10", "2026-11"],
+          },
+        },
+      };
+      const reducer = createFirestoreReducer();
+
+      const afterFirst = reducer(
+        initialState,
+        markDocumentsReceived(OrgSubCollection.SlotsByDay, ["2026-10"])
+      );
+      const afterSecond = reducer(
+        afterFirst,
+        markDocumentsReceived(OrgSubCollection.SlotsByDay, [
+          "2026-10",
+          "2026-09",
+        ])
+      );
+
+      expect(afterSecond).toEqual({
+        data: {},
+        listeners: {
+          [OrgSubCollection.SlotsByDay]: {
+            ...baseListener,
+            documents: ["2026-09", "2026-10", "2026-11"],
+            receivedDocuments: ["2026-10", "2026-09"],
+          },
+        },
+      });
+      // No-op (same state) if all documents were already received
+      expect(
+        reducer(
+          afterSecond,
+          markDocumentsReceived(OrgSubCollection.SlotsByDay, ["2026-09"])
+        )
+      ).toBe(afterSecond);
+    });
+
+    test("should keep received documents when the listener is updated (e.g. subscribing to more documents)", () => {
+      const reducer = createFirestoreReducer();
+      const state = reducer(
+        {
+          data: {},
+          listeners: {
+            [OrgSubCollection.SlotsByDay]: {
+              ...baseListener,
+              documents: ["2026-10"],
+            },
+          },
+        },
+        markDocumentsReceived(OrgSubCollection.SlotsByDay, ["2026-10"])
+      );
+
+      const updated = reducer(
+        state,
+        updateFirestoreListener(OrgSubCollection.SlotsByDay, {
+          documents: ["2026-10", "2026-11"],
+        })
+      );
+
+      expect(
+        updated.listeners[OrgSubCollection.SlotsByDay]!.receivedDocuments
+      ).toEqual(["2026-10"]);
     });
   });
 });

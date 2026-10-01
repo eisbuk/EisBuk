@@ -111,6 +111,12 @@ export interface FirestoreListener {
    * ```
    */
   documents?: string[];
+  /**
+   * Ids of subscribed documents (`documents` constraint) for which a first snapshot has been received.
+   * Lets consumers tell a document that is still loading (not in the list) from one that
+   * doesn't exist in firestore (in the list, but not in `firestore.data`).
+   */
+  receivedDocuments?: string[];
   /** @TODO add additional meta functionality (for reporting) here */
 }
 
@@ -164,6 +170,10 @@ interface FirestorReducerPayload {
     listener: Partial<FirestoreListener>;
   };
   [FirestoreAction.DeleteFirestoreListener]: SubscriptionWhitelist;
+  [FirestoreAction.MarkDocumentsReceived]: {
+    collection: string;
+    ids: string[];
+  };
 }
 /**
  * Copy Paste reducer action generic

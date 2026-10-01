@@ -22,6 +22,7 @@ import {
   updateLocalDocuments,
   deleteLocalDocuments,
   updateFirestoreListener,
+  markDocumentsReceived,
 } from "../actions";
 
 import { getFirestoreListeners } from "../selectors";
@@ -337,4 +338,7 @@ export const createDocSnapshotHandler: OnSnapshotHandlerHOF<"doc"> =
       // if `docData` is undefined the document has been deleted from firestore
       dispatch(deleteLocalDocuments(storeAs, [docId]));
     }
+
+    // Record the first snapshot, so that a missing document can be told apart from one still loading
+    dispatch(markDocumentsReceived(storeAs, [docId]));
   };
