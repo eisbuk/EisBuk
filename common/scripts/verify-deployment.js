@@ -395,6 +395,17 @@ const main = async () => {
 if (require.main === module) {
   // Only an explicit success exits with 0, never an event loop that ran dry
   process.exitCode = 1;
+  // A signal would end the process without the "exit" listeners that kill the
+  // bundle process: exit explicitly instead (128 + signal number)
+  for (const [signal, status] of [
+    ["SIGINT", 130],
+    ["SIGTERM", 143],
+  ]) {
+    process.on(signal, () => {
+      console.error(`DEPLOYMENT VERIFICATION FAILED: interrupted by ${signal}`);
+      process.exit(status);
+    });
+  }
   setTimeout(() => {
     console.error(
       `DEPLOYMENT VERIFICATION FAILED: not finished within ${DEADLINE_MS} ms`,

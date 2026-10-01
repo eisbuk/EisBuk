@@ -241,6 +241,46 @@ for (const [what, before] of [
   });
 }
 
+for (const [signal, expectedStatus] of [
+  ["SIGTERM", 143],
+  ["SIGINT", 130],
+]) {
+  test(`${signal} to the verifier kills a stopped bundle process and fails`, async () => {
+    const bundle = writeFakeBundle(
+      `{ a: cf("europe-west6") }`,
+      `process.kill(process.pid, "SIGSTOP");`,
+    );
+    const verifier = childProcess.spawn(
+      process.execPath,
+      [SCRIPT, "--release", "r1", "--functions-bundle", bundle],
+      {
+        env: {
+          PATH: process.env.PATH,
+          ACCESS_TOKEN: "fake",
+          VERIFY_FUNCTIONS_API: "http://127.0.0.1:1",
+          VERIFY_BUNDLE_TIMEOUT_MS: "60000",
+          VERIFY_DEADLINE_MS: "60000",
+        },
+      },
+    );
+    let stderr = "";
+    verifier.stderr.on("data", (d) => (stderr += d));
+    const closed = new Promise((resolve) =>
+      verifier.on("close", (status) => resolve(status)),
+    );
+    // Wait for the bundle process to exist (it stops itself right away)
+    for (let i = 0; i < 50 && !bundleProcessLeft(bundle); i++) {
+      await new Promise((r) => setTimeout(r, 100));
+    }
+    assert.ok(bundleProcessLeft(bundle), "the bundle process never started");
+    verifier.kill(signal);
+    const status = await closed;
+    assert.strictEqual(status, expectedStatus, stderr);
+    assert.match(stderr, new RegExp(`interrupted by ${signal}`));
+    assert.ok(!bundleProcessLeft(bundle), "the bundle process survived");
+  });
+}
+
 test("a functions bundle that never loads cannot delay the overall deadline", async () => {
   const bundle = writeFakeBundle(
     `{ a: cf("europe-west6") }`,
