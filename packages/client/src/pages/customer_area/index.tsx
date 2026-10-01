@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { Redirect } from "react-router-dom";
 import i18n, {
@@ -70,15 +70,13 @@ const CustomerArea: React.FC = () => {
 
   const { t } = useTranslation();
 
-  // We're providing a fallback [secretKey] as we have multiple ways of authenticating. If authenticating
-  // using firebase auth, the user will have all of their secret keys in the store (this is the preferred way).
-  // However, user can simply use a booking link (which includes the secret key). For this method, the user doesn't have
-  // to authenticate with firebase auth, no secret keys will be found in auth section of the store and 'getAllSecretKeys' selector
-  // will return 'undefined'
+  // Always load the athlete in the booking link, alongside any linked accounts
+  // used by the account switcher. The viewer's accounts may not include this athlete.
   const secretKeysInStore = useSelector(getAllSecretKeys);
-  const secretKeys = secretKeysInStore?.length
-    ? secretKeysInStore
-    : [secretKey];
+  const secretKeys = useMemo(
+    () => Array.from(new Set([...(secretKeysInStore || []), secretKey])),
+    [secretKeysInStore, secretKey],
+  );
 
   // Subscribe to necessary collections
   useFirestoreSubscribe(getOrganization(), [
@@ -96,15 +94,15 @@ const CustomerArea: React.FC = () => {
 
   useUpdateSubscription(
     { collection: OrgSubCollection.Bookings, meta: { secretKeys } },
-    [secretKeys]
+    [secretKeys],
   );
   useUpdateSubscription(
     { collection: BookingSubCollection.BookedSlots, meta: { secretKey } },
-    [secretKey]
+    [secretKey],
   );
   useUpdateSubscription(
     { collection: BookingSubCollection.AttendedSlots, meta: { secretKey } },
-    [secretKey]
+    [secretKey],
   );
 
   const calendarNavProps = useDate();
