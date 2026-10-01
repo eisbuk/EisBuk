@@ -67,18 +67,3 @@ export const deleteFirestoreListener = (
   type: FirestoreAction.DeleteFirestoreListener,
   payload: collection,
 });
-
-/**
- * An action used to record that a snapshot has been received for given documents
- * (subscribed to with `documents` constraint), whether the documents exist or not.
- * @param collection
- * @param ids
- * @returns Redux action
- */
-export const markDocumentsReceived = (
-  collection: string,
-  ids: string[]
-): FirestoreReducerAction<FirestoreAction.MarkDocumentsReceived> => ({
-  type: FirestoreAction.MarkDocumentsReceived,
-  payload: { collection, ids },
-});

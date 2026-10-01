@@ -181,4 +181,30 @@ describe("BookedHoursCalendar", () => {
     );
     expect(screen.queryAllByTestId(testId("week-section"))).toHaveLength(0);
   });
+
+  test("should show a booking whose lesson isn't available, with its times and the cancel button", () => {
+    const onCancel = vi.fn();
+    const summary = buildSummary("2026-11", [
+      {
+        id: "lesson-not-loaded",
+        date: "2026-11-04",
+        interval: { startTime: "17:00", endTime: "17:50" },
+        hours: 1,
+        booked: true,
+      },
+    ]);
+    render(<BookedHoursCalendar summary={summary} onCancel={onCancel} />);
+
+    const [card] = screen.getAllByTestId(testId("booking-calendar-card"));
+    expect(card.textContent).toContain("17:00 - 17:50");
+    expect(card.textContent).toContain("1 hour");
+    expect(screen.getByTestId(testId("month-total")).textContent).toEqual(
+      "1 hour"
+    );
+
+    screen.getByText(i18n.t(ActionButton.Cancel) as string).click();
+    expect(onCancel).toHaveBeenCalledWith(
+      expect.objectContaining({ id: "lesson-not-loaded", date: "2026-11-04" })
+    );
+  });
 });

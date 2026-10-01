@@ -18,7 +18,6 @@ import {
 import { testId } from "@eisbuk/testing/testIds";
 import {
   deleteLocalDocuments,
-  markDocumentsReceived,
   updateLocalDocuments,
 } from "@eisbuk/react-redux-firebase-firestore";
 
@@ -65,18 +64,6 @@ const setupStore = () =>
         },
         bookedSlots: {
           [slotA.id]: { date: slotA.date, interval: "16:00-17:50" },
-        },
-      },
-      // The month documents' listener, as registered by the customer area
-      listeners: {
-        [OrgSubCollection.SlotsByDay]: {
-          consumers: ["consumer-id"],
-          unsubscribe: () => {},
-          documents: ["2026-09", "2026-10", "2026-11"],
-          meta: {
-            organization: "test-organization",
-            currentDate: DateTime.fromISO("2026-10-01"),
-          },
         },
       },
     },
@@ -163,7 +150,7 @@ describe("Customer area calendar view", () => {
     expect(screen.queryByTestId(testId("month-total"))).toBeNull();
   });
 
-  test("should report the bookings of a month whose 'slotsByDay' document no longer exists", () => {
+  test("should count and show the bookings of a month whose 'slotsByDay' document no longer exists", () => {
     // E.g. the month's last lesson was deleted and 'pruneSlotsByDay' removed the month's document,
     // while the athlete's booking remained
     const store = setupStore();
@@ -173,17 +160,28 @@ describe("Customer area calendar view", () => {
       store.dispatch(
         deleteLocalDocuments(OrgSubCollection.SlotsByDay, ["2026-10"])
       );
-      store.dispatch(
-        markDocumentsReceived(OrgSubCollection.SlotsByDay, ["2026-10"])
-      );
     });
 
-    expect(getMonthTotal().textContent).toEqual("0 hours");
+    expect(getMonthTotal().textContent).toEqual("2 hours");
+    const [card] = screen.getAllByTestId(testId("booking-calendar-card"));
+    expect(card.textContent).toContain("16:00 - 17:50");
+    expect(screen.queryByTestId(testId("excluded-bookings"))).toBeNull();
+  });
+
+  test("should report a booking whose interval can't be read, without counting it", () => {
+    const store = setupStore();
+    act(() => {
+      store.dispatch(
+        updateLocalDocuments(BookingSubCollection.BookedSlots, {
+          [slotB.id]: { date: slotB.date, interval: "17:00-16:10" },
+        })
+      );
+    });
+    renderWithRedux(<CalendarView />, store);
+
+    expect(getMonthTotal().textContent).toEqual("2 hours");
     expect(
       screen.getByTestId(testId("excluded-bookings")).textContent
-    ).toContain("2 October");
-    expect(
-      screen.queryAllByTestId(testId("booking-calendar-card"))
-    ).toHaveLength(0);
+    ).toContain("6 October");
   });
 });

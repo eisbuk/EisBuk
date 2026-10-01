@@ -6,11 +6,10 @@ import {
 
 /**
  * A single lesson shown in the athlete's calendar.
+ * `type` and `notes` come from the lesson, and are missing if the lesson isn't loaded (or no longer exists).
  */
-export type CalendarSession = Pick<
-  SlotInterface,
-  "id" | "date" | "type" | "notes"
-> &
+export type CalendarSession = Pick<SlotInterface, "id" | "date"> &
+  Partial<Pick<SlotInterface, "type" | "notes">> &
   Pick<CustomerBookingEntry, "bookingNotes"> & {
     /**
      * Times of the session, as booked (or attended).
@@ -55,10 +54,9 @@ export interface ExcludedBooking {
   date: string;
   interval: string;
   /**
-   * - `missing-slot` - the lesson no longer exists on the booked date
-   * - `invalid-interval` - the booked interval can't be read as a time range
+   * `invalid-interval` - the booked interval can't be read as a time range
    */
-  reason: "missing-slot" | "invalid-interval";
+  reason: "invalid-interval";
 }
 
 export interface MonthBookingsSummary<

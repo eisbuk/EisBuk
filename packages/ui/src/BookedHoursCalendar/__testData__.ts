@@ -104,8 +104,8 @@ export const octoberSummaryWithExcluded = buildSummary(
     {
       slotId: "s8",
       date: "2026-10-20",
-      interval: "17:00-17:50",
-      reason: "missing-slot",
+      interval: "17:50-17:00",
+      reason: "invalid-interval",
     },
   ]
 );

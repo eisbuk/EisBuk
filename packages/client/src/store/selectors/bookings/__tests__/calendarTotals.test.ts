@@ -4,7 +4,6 @@ import { DateTime, Settings } from "luxon";
 import {
   BookingSubCollection,
   Category,
-  OrgSubCollection,
   SlotInterface,
   SlotType,
   calculateIntervalDuration,
@@ -12,7 +11,6 @@ import {
 import type { MonthBookingsSummary } from "@eisbuk/ui";
 import {
   deleteLocalDocuments,
-  markDocumentsReceived,
   updateLocalDocuments,
 } from "@eisbuk/react-redux-firebase-firestore";
 
@@ -83,15 +81,6 @@ const bookedSlots = {
   // Day of the daylight saving change (Europe/Rome, last Sunday of October)
   "slot-oct-25": { date: "2026-10-25", interval: "17:00-17:50" },
   "slot-oct-26": { date: "2026-10-26", interval: "17:00-17:50" },
-};
-const slotsByDayListener = {
-  consumers: ["consumer-id"],
-  unsubscribe: () => {},
-  documents: ["2026-09", "2026-10", "2026-11"],
-  meta: {
-    organization: "test-organization",
-    currentDate: DateTime.fromISO("2026-10-01"),
-  },
 };
 // #endregion fixtures
 
@@ -334,7 +323,7 @@ describe("Calendar totals", () => {
       expect(sumOfWeeks(summary)).toEqual(summary.hours);
     });
 
-    test("should exclude (and report) bookings whose lesson no longer exists", () => {
+    test("should count (and show, without lesson data) a booking whose lesson no longer exists", () => {
       const summary = summarizeMonthBookings({
         month: "2026-10",
         bookedSlots: {
@@ -344,15 +333,37 @@ describe("Calendar totals", () => {
         slotsForMonth: slotsByDay["2026-10"],
       });
 
-      expect(summary.hours).toEqual(8.5);
-      expect(summary.excluded).toEqual([
+      expect(summary.hours).toEqual(8.5 + 1);
+      expect(summary.bookingsCount).toEqual(7);
+      expect(summary.excluded).toEqual([]);
+      expect(getDay(summary, "2026-10-20").sessions).toEqual([
         {
-          slotId: "deleted-slot",
+          id: "deleted-slot",
           date: "2026-10-20",
-          interval: "17:00-17:50",
-          reason: "missing-slot",
+          interval: { startTime: "17:00", endTime: "17:50" },
+          hours: 1,
+          booked: true,
+          bookingNotes: undefined,
         },
       ]);
+      expect(getWeek(summary, "2026-10-19").hours).toEqual(2);
+      expect(sumOfWeeks(summary)).toEqual(summary.hours);
+    });
+
+    test("should enrich sessions with the lesson's type and notes when available", () => {
+      const summary = summarizeMonthBookings({
+        month: "2026-10",
+        bookedSlots,
+        slotsForMonth: slotsByDay["2026-10"],
+      });
+
+      expect(getDay(summary, "2026-10-06").sessions[1]).toEqual(
+        expect.objectContaining({
+          id: "slot-oct-06-b",
+          type: SlotType.OffIce,
+          categories: [Category.Competitive],
+        })
+      );
     });
 
     test("should count a booking whose interval was removed from the lesson, with its booked times", () => {
@@ -374,16 +385,22 @@ describe("Calendar totals", () => {
       });
     });
 
-    test("should return an empty summary (and report nothing) while the month's lessons aren't loaded", () => {
+    test("should count every booking while the month's lessons aren't loaded (or the month's document doesn't exist)", () => {
       const summary = summarizeMonthBookings({
         month: "2026-10",
         bookedSlots,
         slotsForMonth: undefined,
       });
 
-      expect(summary.hours).toEqual(0);
+      // The same totals as with the lessons loaded: they only depend on the bookings
+      expect(summary.hours).toEqual(8.5);
+      expect(summary.bookingsCount).toEqual(6);
       expect(summary.excluded).toEqual([]);
-      expect(summary.weeks).toHaveLength(5);
+      expect(summary.weeks.map(({ hours }) => hours)).toEqual([
+        2, 3, 1.5, 1, 1,
+      ]);
+      // ...but without the lesson's data
+      expect(getDay(summary, "2026-10-02").sessions[0].type).toBeUndefined();
     });
 
     test("should handle a month starting on Sunday (single day first week)", () => {
@@ -490,57 +507,24 @@ describe("Calendar totals", () => {
       expect(summary.hours).toEqual(1);
     });
 
-    describe("Month without a 'slotsByDay' document", () => {
-      // The month's document is removed (e.g. by 'pruneSlotsByDay' after the month's last lesson is deleted)
+    test("should count the bookings of a month without a 'slotsByDay' document", () => {
+      // E.g. the month's last lesson was deleted and 'pruneSlotsByDay' removed the month's document,
       // while the athlete's bookings for that month remain
-      const setupStore = () =>
-        getNewStore({
-          firestore: {
-            data: {
-              slotsByDay: { "2026-09": slotsByDay["2026-09"] },
-              bookedSlots,
-            },
-            // The month documents' listener, as registered by the customer area
-            listeners: { [OrgSubCollection.SlotsByDay]: slotsByDayListener },
+      const store = getNewStore({
+        firestore: {
+          data: {
+            slotsByDay: { "2026-09": slotsByDay["2026-09"] },
+            bookedSlots,
           },
-          app: { calendarDay: DateTime.fromISO("2026-10-01") },
-        });
-
-      test("should report every booking of the month as excluded once the month's document is known not to exist", () => {
-        const store = setupStore();
-        // First snapshot of the month's document received: the document doesn't exist
-        store.dispatch(
-          deleteLocalDocuments(OrgSubCollection.SlotsByDay, ["2026-10"])
-        );
-        store.dispatch(
-          markDocumentsReceived(OrgSubCollection.SlotsByDay, ["2026-10"])
-        );
-
-        const summary = getMonthBookingsSummary(store.getState());
-
-        expect(summary.hours).toEqual(0);
-        expect(summary.bookingsCount).toEqual(0);
-        expect(summary.excluded.map(({ slotId }) => slotId).sort()).toEqual([
-          "slot-oct-02",
-          "slot-oct-06-a",
-          "slot-oct-06-b",
-          "slot-oct-14",
-          "slot-oct-25",
-          "slot-oct-26",
-        ]);
-        expect(
-          summary.excluded.every(({ reason }) => reason === "missing-slot")
-        ).toBe(true);
+        },
+        app: { calendarDay: DateTime.fromISO("2026-10-01") },
       });
 
-      test("should not report anything while the month's document is still loading", () => {
-        const store = setupStore();
+      const summary = getMonthBookingsSummary(store.getState());
 
-        const summary = getMonthBookingsSummary(store.getState());
-
-        expect(summary.hours).toEqual(0);
-        expect(summary.excluded).toEqual([]);
-      });
+      expect(summary.hours).toEqual(8.5);
+      expect(summary.bookingsCount).toEqual(6);
+      expect(summary.excluded).toEqual([]);
     });
   });
 });

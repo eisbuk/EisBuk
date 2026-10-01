@@ -3,15 +3,13 @@ import { useSelector, useStore } from "react-redux";
 import { getFirestore } from "@firebase/firestore";
 
 import i18n, { Alerts } from "@eisbuk/translations";
+import { SlotInterface } from "@eisbuk/shared";
 import { BookedHoursCalendar, CalendarSession, EmptySpace } from "@eisbuk/ui";
 
 import { functions } from "@/setup";
 
 import { getIsBookingAllowed } from "@/store/selectors/bookings";
-import {
-  CalendarSlotSession,
-  getMonthBookingsSummary,
-} from "@/store/selectors/bookings/calendarTotals";
+import { getMonthBookingsSummary } from "@/store/selectors/bookings/calendarTotals";
 import { getCalendarDay, getSecretKey } from "@/store/selectors/app";
 import { updateBookingNotes } from "@/store/actions/bookingOperations";
 
@@ -30,9 +28,10 @@ const CalendarView: React.FC = () => {
   const { openWithProps: openCancelBookingDialog } = useCancelBookingModal();
 
   // Sessions passed back by the calendar are the ones from the summary (full slot included)
+  // The dialog uses the slot's `id`, `date` and `interval` to cancel, the lesson's data (if available) only to display it
   const handleCancellation = (session: CalendarSession) =>
     openCancelBookingDialog({
-      ...(session as CalendarSlotSession),
+      ...(session as SlotInterface & CalendarSession),
       secretKey,
     });
 

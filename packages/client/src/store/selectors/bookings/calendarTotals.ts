@@ -2,7 +2,6 @@ import { DateTime } from "luxon";
 
 import {
   CustomerBookingEntry,
-  OrgSubCollection,
   SlotInterface,
   calculateIntervalDuration,
   getIntervalMinutes,
@@ -34,8 +33,11 @@ export const getCountedHours = (interval: string): number | null =>
     ? null
     : calculateIntervalDuration(interval);
 
-/** A calendar session carrying the full slot, as needed by the cancel booking dialog */
-export type CalendarSlotSession = SlotInterface & CalendarSession;
+/**
+ * A calendar session, with the lesson's data (type, notes...) when the lesson is loaded.
+ * The cancel booking dialog needs `id`, `date` and `interval` only.
+ */
+export type CalendarSlotSession = CalendarSession & Partial<SlotInterface>;
 
 type BookingEntries = Record<
   string,
@@ -50,21 +52,21 @@ interface SummarizeMonthParams {
   /** Athlete's attendance recorded without a booking (`attendedSlots`), keyed by slot id */
   attendedSlots?: BookingEntries;
   /**
-   * Lessons of the month, keyed by date, then slot id (the month entry of `slotsByDay`).
-   * `undefined` if not loaded yet, empty if the month has no document (every booking of the month is then excluded).
+   * Lessons of the month, keyed by date, then slot id (the month entry of `slotsByDay`), if loaded.
+   * Only used to show the lessons' type and notes: the totals don't depend on it.
    */
   slotsForMonth?: Record<string, Record<string, SlotInterface>>;
 }
 
 /**
- * Summarizes the athlete's booked time for a month, from the booked intervals (`bookedSlots`).
+ * Summarizes the athlete's booked time for a month, from the booking documents themselves (`bookedSlots`),
+ * each with its own `date` and `interval`.
  *
  * - Each booking counts for its lesson hours (see `getCountedHours`), summed (in steps of half an hour,
  *   so the sums are exact), formatting is left to the view.
- * - The counted hours come from the booked interval itself, so a booking still counts if its interval
- *   was later removed from the lesson (the same interval is what the admin summary reads from attendance).
- * - Bookings whose lesson no longer exists on the booked date, or whose interval can't be read, aren't counted
- *   and are returned in `excluded`, so that the view can say so.
+ * - The lesson (`slotsByDay`) is only used to show its type and notes, when available: a booking whose lesson
+ *   isn't loaded, or no longer exists, still counts and is shown with its booked date and times.
+ * - Only bookings whose interval can't be read aren't counted: they're returned in `excluded`, so that the view can say so.
  * - Attended-only entries are shown on their day, but never counted.
  * - Weeks start on Monday and contain only the days of the month, so a week spanning two months is split
  *   between them, and the weeks' hours always add up to the month's hours.
@@ -76,7 +78,7 @@ export const summarizeMonthBookings = ({
   month,
   bookedSlots,
   attendedSlots = {},
-  slotsForMonth,
+  slotsForMonth = {},
 }: SummarizeMonthParams): MonthBookingsSummary<CalendarSlotSession> => {
   const days = new Map<string, CalendarDay<CalendarSlotSession>>(
     getDaysOfMonth(month).map((date) => [
@@ -87,20 +89,11 @@ export const summarizeMonthBookings = ({
   const excluded: ExcludedBooking[] = [];
   let bookingsCount = 0;
 
-  const isInMonth = (date: string) =>
-    typeof date === "string" && date.substring(0, 7) === month;
-
-  Object.entries(bookedSlots)
-    .filter(([, { date }]) => isInMonth(date))
-    // If the month's lessons aren't loaded yet, there's nothing to show (nor to report as missing)
-    .filter(() => Boolean(slotsForMonth))
-    .forEach(([slotId, { date, interval, bookingNotes }]) => {
-      const slot = slotsForMonth?.[date]?.[slotId];
+  Object.entries(bookedSlots).forEach(
+    ([slotId, { date, interval, bookingNotes }]) => {
       const day = days.get(date);
-      if (!slot || !day) {
-        excluded.push({ slotId, date, interval, reason: "missing-slot" });
-        return;
-      }
+      // Not a day of this month
+      if (!day) return;
 
       const hours = getCountedHours(interval);
       if (hours === null) {
@@ -109,7 +102,10 @@ export const summarizeMonthBookings = ({
       }
 
       day.sessions.push({
-        ...slot,
+        // The lesson's data (type, notes), if available
+        ...slotsForMonth[date]?.[slotId],
+        id: slotId,
+        date,
         interval: parseInterval(interval),
         hours,
         booked: true,
@@ -117,20 +113,21 @@ export const summarizeMonthBookings = ({
       });
       day.hours += hours;
       bookingsCount++;
-    });
+    }
+  );
 
   Object.entries(attendedSlots)
-    .filter(([, { date }]) => isInMonth(date))
     // Shouldn't happen (attended slots are created only for slots that weren't booked), but don't show the same lesson twice
     .filter(([slotId]) => !bookedSlots[slotId])
     .forEach(([slotId, { date, interval }]) => {
-      const slot = slotsForMonth?.[date]?.[slotId];
       const day = days.get(date);
       // Not counted anyway: an attended-only entry that can't be shown is just left out
-      if (!slot || !day || getIntervalMinutes(interval) === null) return;
+      if (!day || getIntervalMinutes(interval) === null) return;
 
       day.sessions.push({
-        ...slot,
+        ...slotsForMonth[date]?.[slotId],
+        id: slotId,
+        date,
         interval: parseInterval(interval),
         hours: 0,
         booked: false,
@@ -163,27 +160,9 @@ export const getMonthBookingsSummary = (
     month,
     bookedSlots: getBookedSlots(state),
     attendedSlots: getAttendedSlots(state),
-    slotsForMonth: getSlotsForMonth(state, month),
+    // Lessons, if loaded, only to show their type and notes
+    slotsForMonth: state.firestore.data.slotsByDay?.[month],
   });
-};
-
-/**
- * Lessons of a month (the month's `slotsByDay` document):
- * - `undefined` while the document is loading
- * - an empty record if the document doesn't exist (e.g. removed by `pruneSlotsByDay` after the month's
- *   last lesson was deleted), so that any remaining bookings of the month are reported, not hidden
- */
-const getSlotsForMonth = (
-  state: LocalStore,
-  month: string
-): SummarizeMonthParams["slotsForMonth"] => {
-  const slotsForMonth = state.firestore.data.slotsByDay?.[month];
-  if (slotsForMonth) return slotsForMonth;
-
-  const receivedDocuments =
-    state.firestore.listeners[OrgSubCollection.SlotsByDay]?.receivedDocuments ||
-    [];
-  return receivedDocuments.includes(month) ? {} : undefined;
 };
 
 // #region helpers

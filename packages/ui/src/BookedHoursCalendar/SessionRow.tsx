@@ -57,7 +57,7 @@ const SessionRow: React.FC<SessionRowProps> = ({
 
   const typeAndNotes = (
     <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-500">
-      <SlotTypeIcon type={type} className="!text-sm" />
+      {type && <SlotTypeIcon type={type} className="!text-sm" />}
       {notes && <span className="break-words">{notes}</span>}
     </div>
   );
@@ -65,11 +65,9 @@ const SessionRow: React.FC<SessionRowProps> = ({
   if (!booked) {
     return (
       <li
-        className={[
-          ...rowClasses,
-          "border-dashed",
-          borderColorLookup[type],
-        ].join(" ")}
+        className={[...rowClasses, "border-dashed", getBorderColor(type)].join(
+          " "
+        )}
       >
         {timeAndDuration}
         {typeAndNotes}
@@ -83,7 +81,7 @@ const SessionRow: React.FC<SessionRowProps> = ({
   return (
     <li
       data-testid={testId("booking-calendar-card")}
-      className={[...rowClasses, borderColorLookup[type]].join(" ")}
+      className={[...rowClasses, getBorderColor(type)].join(" ")}
     >
       {/* The day is in the heading above, this is for screen readers and for matching the card's content */}
       <span className="sr-only">
@@ -112,7 +110,8 @@ const SessionRow: React.FC<SessionRowProps> = ({
           </IconButton>
           <BookingButton
             className="min-w-[85px] justify-center"
-            type={type}
+            // The type only sets the colour of the "book" variant, not of this (cancel) button
+            type={type || SlotType.Ice}
             variant={IntervalCardVariant.Calendar}
             state={
               disabled ? IntervalCardState.Disabled : IntervalCardState.Default
@@ -157,5 +156,9 @@ const borderColorLookup = {
   [SlotType.Ice]: "border-cyan-500",
   [SlotType.OffIce]: "border-yellow-600",
 };
+
+/** Lesson type colour, neutral if the lesson's data isn't available */
+const getBorderColor = (type?: SlotType) =>
+  type ? borderColorLookup[type] : "border-gray-400";
 
 export default SessionRow;
