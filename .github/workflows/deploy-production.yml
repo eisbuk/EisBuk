@@ -18,6 +18,8 @@ jobs:
       with:
         submodules: recursive
         fetch-depth: 1
+    - name: Test the deploy wrapper
+      run: common/scripts/test-deploy-firebase-expect.sh
     - uses: actions/setup-node@v4
       with:
         node-version: "18"

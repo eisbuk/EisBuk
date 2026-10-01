@@ -29,6 +29,8 @@ jobs:
       - name: Install expect
         run: sudo apt-get -y install expect
       -  #@ checkout()
+      - name: Test the deploy wrapper
+        run: common/scripts/test-deploy-firebase-expect.sh
       - uses: actions/setup-node@v4
         with:
           node-version: "18"
