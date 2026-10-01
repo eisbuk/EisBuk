@@ -68,7 +68,7 @@ const FormProfile: React.FC<FormProfile> = ({
               defaultDialCode={defaultDialCode}
               disabled={!isEditing}
             />
-            <SectionMedicalDetails disabled={!isEditing} />
+            <SectionMedicalDetails disabled={!isEditing} readOnly />
 
             <div className="flex justify-self-end gap-x-2 mt-5">
               {isEditing ? (

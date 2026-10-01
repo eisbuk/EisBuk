@@ -1,6 +1,8 @@
 import React from "react";
 import * as Yup from "yup";
 import { ObjectShape } from "yup/lib/object";
+import { useField } from "formik";
+import { DateTime } from "luxon";
 
 import i18n, {
   useTranslation,
@@ -21,15 +23,37 @@ export interface MedicalDetailsFields {
 interface SectionProps {
   disabled?: boolean;
   disabledFields?: Array<keyof MedicalDetailsFields>;
+  /**
+   * The certificate expiration date is managed by club admins only (#955):
+   * athletes see it (with a warning if missing or expired), but can't edit it.
+   */
+  readOnly?: boolean;
 }
 
-const SectionMedicalDetails: React.FC<SectionProps> = (contextProps) => {
+const SectionMedicalDetails: React.FC<SectionProps> = ({
+  readOnly = false,
+  ...contextProps
+}) => {
   const { t } = useTranslation();
+  const [{ value: certificateExpiration }] = useField<string>(
+    "certificateExpiration",
+  );
+
+  // The certificate is valid through its expiration day
+  const status = !certificateExpiration
+    ? t(CustomerLabel.CertificateMissing)
+    : certificateExpiration < DateTime.now().toISODate()
+      ? t(CustomerLabel.CertificateExpired)
+      : null;
 
   return (
     <FormSection
       title={t(CustomerLabel.MedicalDetails)}
-      subtitle={t(CustomerLabel.ManageMedicalDetails)}
+      subtitle={
+        readOnly
+          ? t(CustomerLabel.CertificateManagedByAdmins)
+          : t(CustomerLabel.ManageMedicalDetails)
+      }
       {...contextProps}
     >
       <FormField
@@ -38,6 +62,14 @@ const SectionMedicalDetails: React.FC<SectionProps> = (contextProps) => {
         width={FormFieldWitdh.MD}
         label={t(CustomerLabel.CertificateExpiration)}
         Icon={ClipboardList}
+        disabled={readOnly}
+        EndAdornment={
+          readOnly && status ? (
+            <span className="whitespace-nowrap rounded-full border border-red-300 bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700">
+              {status}
+            </span>
+          ) : null
+        }
       />
     </FormSection>
   );

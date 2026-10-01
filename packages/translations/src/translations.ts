@@ -125,6 +125,9 @@ export enum CustomerLabel {
   ExtendedBookingDate = "CustomerLabel.ExtendedBookingDate",
   MedicalDetails = "CustomerLabel.MedicalDetails",
   ManageMedicalDetails = "CustomerLabel.ManageMedicalDetails",
+  CertificateManagedByAdmins = "CustomerLabel.CertificateManagedByAdmins",
+  CertificateExpired = "CustomerLabel.CertificateExpired",
+  CertificateMissing = "CustomerLabel.CertificateMissing",
   PersonalDetails = "CustomerLabel.PersonalDetails",
   ManagePersonalDetails = "CustomerLabel.ManagePersonalDetails",
 
