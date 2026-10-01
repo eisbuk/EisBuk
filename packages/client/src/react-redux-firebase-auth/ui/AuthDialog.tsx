@@ -1,17 +1,25 @@
 import React, { useEffect, useState } from "react";
 import {
+  AuthError,
+  AuthErrorCodes,
   GoogleAuthProvider,
   getAuth,
+  signInWithPopup,
   signInWithRedirect,
   isSignInWithEmailLink,
 } from "@firebase/auth";
 
-import { useTranslation, AuthTitle } from "@eisbuk/translations";
+import {
+  useTranslation,
+  AuthTitle,
+  AuthErrorMessage,
+} from "@eisbuk/translations";
 import { Google, Key } from "@eisbuk/svg";
 import { HoverText, IconButton, IconButtonSize } from "@eisbuk/ui";
 
 import AuthButton from "./atoms/AuthButton";
 import AuthContainer from "./atoms/AuthContainer";
+import AuthErrorDialog from "./atoms/AuthErrorDialog";
 import EmailFlow from "./flows/EmailFlow";
 import EmailLinkFlow from "./flows/EmailLinkFlow";
 import PhoneFlow from "./flows/PhoneFlow";
@@ -23,10 +31,55 @@ enum AuthFlow {
   Google = "google",
 }
 
+/**
+ * Signs in with Google in a popup.
+ *
+ * The redirect flow ('signInWithRedirect') doesn't work when the app is served
+ * from a domain other than the 'authDomain' (app on '<site>.web.app',
+ * 'authDomain' '<project>.firebaseapp.com'): browsers partition the
+ * third-party storage the redirect result is read from (Chrome 115+,
+ * Firefox 109+, Safari 16.1+), so users came back to the login page signed
+ * out (#960). See https://firebase.google.com/docs/auth/web/redirect-best-practices
+ *
+ * Must be called straight from the click handler, or browsers block the popup.
+ */
+export const signInWithGoogle = async (): Promise<void> => {
+  const auth = getAuth();
+  const provider = new GoogleAuthProvider();
+  try {
+    await signInWithPopup(auth, provider);
+  } catch (err) {
+    switch ((err as AuthError)?.code) {
+      // The user closed the popup, or clicked the button again
+      case AuthErrorCodes.POPUP_CLOSED_BY_USER:
+      case AuthErrorCodes.EXPIRED_POPUP_REQUEST:
+      case AuthErrorCodes.USER_CANCELLED:
+        return;
+      // No popups here (blocked, or an embedded browser): try a redirect instead
+      case AuthErrorCodes.POPUP_BLOCKED:
+      case AuthErrorCodes.OPERATION_NOT_SUPPORTED:
+        await signInWithRedirect(auth, provider);
+        return;
+      default:
+        throw err;
+    }
+  }
+};
+
 const AuthDialog: React.FC = () => {
   const { t } = useTranslation();
 
   const [authFlow, setAuthFlow] = useState<AuthFlow | null>(null);
+  const [dialogError, setDialogError] = useState<string | null>(null);
+
+  const startGoogleSignIn = () =>
+    signInWithGoogle().catch((err) => {
+      const { code } = (err as AuthError) || { code: "" };
+      setDialogError(t(AuthErrorMessage[code] || AuthErrorMessage.UNKNOWN));
+    });
+
+  const handleSelectFlow = (flow: AuthFlow) =>
+    flow === AuthFlow.Google ? startGoogleSignIn() : setAuthFlow(flow);
 
   // redirect to login-with-email-link if site visited by login link
   useEffect(() => {
@@ -34,14 +87,6 @@ const AuthDialog: React.FC = () => {
       setAuthFlow(AuthFlow.EmailLink);
     }
   }, []);
-
-  // control login with google flow
-  useEffect(() => {
-    if (authFlow === AuthFlow.Google) {
-      const provider = new GoogleAuthProvider();
-      signInWithRedirect(getAuth(), provider);
-    }
-  }, [authFlow]);
 
   switch (authFlow) {
     case AuthFlow.Email:
@@ -58,13 +103,18 @@ const AuthDialog: React.FC = () => {
         <AuthContainer>
           {({ Content }) => (
             <Content>
+              <AuthErrorDialog
+                message={dialogError || ""}
+                open={Boolean(dialogError)}
+                onClose={() => setDialogError(null)}
+              />
               <ul className="list-none my-4 mb-8">
                 {mainButtons.map(({ authFlow, label, ...button }) => (
                   <AuthButton
                     key={label}
                     {...button}
                     label={t(label)}
-                    onClick={() => setAuthFlow(authFlow)}
+                    onClick={() => handleSelectFlow(authFlow)}
                   />
                 ))}
               </ul>
@@ -74,7 +124,7 @@ const AuthDialog: React.FC = () => {
                 {additionalButtons.map(({ authFlow, label, Icon }) => (
                   <li
                     className="cursor-pointer m-1"
-                    onClick={() => setAuthFlow(authFlow)}
+                    onClick={() => handleSelectFlow(authFlow)}
                     aria-label={t(label)}
                     key={label}
                   >
