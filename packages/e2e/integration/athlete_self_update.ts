@@ -20,22 +20,30 @@ const saul = {
 // Remove the "dial code" from saul's phone
 const saulsDialCode = "IT (+39)";
 const saulsPhone = saul.phone!.substring(3);
+// Saul's certificate date ("yyyy-mm-dd") as displayed ("dd/mm/yyyy")
+const saulsCertificateDate = saul
+  .certificateExpiration!.split("-")
+  .reverse()
+  .join("/");
+
+/** Opens (a freshly loaded) customer area on the profile view */
+const openProfile = (name = saul.name) => {
+  cy.visit([Routes.CustomerArea, saul.secretKey].join("/"));
+  // Wait for Saul's data to be loaded
+  cy.contains(`${name} ${saul.surname}`);
+  // Navigate to profile
+  cy.clickButton(i18n.t(CustomerNavigationLabel.Profile) as string);
+};
 
 describe("athlete profile", () => {
   beforeEach(() => {
     // Initialize app, create default user,
     cy.initAdminApp().then((organization) =>
-      cy.updateCustomers(organization, { saul } as Record<string, Customer>)
+      cy.updateCustomers(organization, { saul } as Record<string, Customer>),
     );
     cy.signOut();
 
-    cy.visit([Routes.CustomerArea, saul.secretKey].join("/"));
-
-    // Wait for Saul's data to be loaded
-    cy.contains(`${saul.name} ${saul.surname}`);
-
-    // Navigate to profile
-    cy.clickButton(i18n.t(CustomerNavigationLabel.Profile) as string);
+    openProfile();
     // Toggle edit mode
     cy.clickButton(i18n.t(ActionButton.Edit) as string);
     // Wait for edit mode to be enabled before making furter assertions
@@ -51,15 +59,50 @@ describe("athlete profile", () => {
     cy.getAttrWith("name", "email").clearAndType(saul.email || "");
     cy.getAttrWith("id", "dialCode").select(saulsDialCode);
     cy.getAttrWith("name", "phone").clearAndType(saulsPhone);
-    cy.getAttrWith("name", "certificateExpiration").clearAndType(
-      saul.certificateExpiration || ""
-    );
+    // The certificate expiration date is managed by club admins (#955):
+    // athletes see it, but can't edit it
+    cy.getAttrWith("name", "certificateExpiration")
+      .should("be.visible")
+      .should("be.disabled")
+      .should("have.value", saulsCertificateDate);
+
     cy.getAttrWith("type", "submit").click();
     cy.contains(i18n.t(NotificationMessage.CustomerProfileUpdated) as string);
+
+    // The club's date is still the stored one (read back after a reload)
+    openProfile();
+    cy.getAttrWith("name", "certificateExpiration").should(
+      "have.value",
+      saulsCertificateDate,
+    );
+  });
+
+  it("doesn't let the athlete change the certificate date, even by tampering with the request", () => {
+    // Rewrite the date in the request the profile form sends to the backend
+    cy.intercept({ method: "POST", url: "**/customerSelfUpdate" }, (req) => {
+      req.body.data.customer.certificateExpiration = "2099-12-31";
+    }).as("selfUpdate");
+
+    cy.getAttrWith("name", "name").clearAndType("Jimmy");
+    cy.getAttrWith("type", "submit").click();
+    cy.wait("@selfUpdate")
+      .its("request.body.data.customer.certificateExpiration")
+      .should("eq", "2099-12-31");
+    cy.contains(i18n.t(NotificationMessage.CustomerProfileUpdated) as string);
+
+    // The other changes are saved, the certificate date is not
+    openProfile("Jimmy");
+    cy.getAttrWith("name", "name").should("have.value", "Jimmy");
+    cy.getAttrWith("name", "certificateExpiration").should(
+      "have.value",
+      saulsCertificateDate,
+    );
   });
 
   it("allows customer form submission with minimal fields", () => {
-    cy.getAttrWith("name", "certificateExpiration").clear();
+    // Clear the optional field athletes can edit (the certificate date is read-only)
+    cy.getAttrWith("name", "birthday").clear();
+    cy.getAttrWith("name", "certificateExpiration").should("be.disabled");
 
     cy.getAttrWith("type", "submit").click();
     cy.contains(i18n.t(NotificationMessage.CustomerProfileUpdated) as string);
