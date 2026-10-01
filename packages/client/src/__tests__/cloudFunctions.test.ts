@@ -634,6 +634,8 @@ describe("Cloud functions", () => {
   });
 
   describe("customerSelfRegister", () => {
+    // What the self registration form sends: personal details, plus the
+    // certificate date (still in the form of older client bundles)
     const minimalSaul: CustomerBase = {
       name: saul.name,
       surname: saul.surname,
@@ -642,8 +644,16 @@ describe("Cloud functions", () => {
         " " +
         saul.email!.replace(/.*@|o|g/g, (match) => match.toUpperCase()) +
         " ",
+      birthday: saul.birthday,
       certificateExpiration: saul.certificateExpiration,
     };
+    // What gets stored: the certificate date is set by admins only (#955)
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { certificateExpiration, ...storedSaul } = {
+      ...minimalSaul,
+      email: saul.email,
+    };
+
     testWithEmulator(
       "should create a new customer with data passed in as well as bookings entry",
       async () => {
@@ -657,7 +667,7 @@ describe("Cloud functions", () => {
           .set({ registrationCode }, { merge: true });
 
         // run the function to update customer
-        await httpsCallable(
+        const res = await httpsCallable(
           functions,
           CloudFunction.CustomerSelfRegister,
         )({
@@ -680,8 +690,7 @@ describe("Cloud functions", () => {
           expect(Boolean(secretKey)).toEqual(true);
           expect(Boolean(id)).toEqual(true);
           expect(customerData).toEqual({
-            ...minimalSaul,
-            email: saul.email,
+            ...storedSaul,
             secretKey,
             id,
             // Should set up empty categories
@@ -691,6 +700,9 @@ describe("Cloud functions", () => {
           return customerData;
         });
 
+        // The client uses the returned 'id' and 'secretKey' to enter the customer area
+        expect(res.data).toEqual(expect.objectContaining({ id, secretKey }));
+
         // Check that bookings doc has been created
         await waitFor(async () => {
           const bookingsSnap = await adminDb
@@ -698,9 +710,7 @@ describe("Cloud functions", () => {
             .get();
           expect(bookingsSnap.data()).toEqual(
             sanitizeCustomer({
-              ...minimalSaul,
-              email: saul.email,
-
+              ...storedSaul,
               secretKey,
               id,
             } as Customer),
@@ -723,6 +733,84 @@ describe("Cloud functions", () => {
               from: emailFrom,
             },
           }),
+        );
+      },
+    );
+
+    testWithEmulator(
+      "should store only the fields collected by the registration form, ignoring admin-managed fields sent by the registrant",
+      async () => {
+        const registrationCode = "CODE111";
+        const { organization } = await setUpOrganization({ doLogin: false });
+        await adminDb
+          .collection(Collection.Organizations)
+          .doc(organization)
+          .set({ registrationCode }, { merge: true });
+
+        const res = await httpsCallable(
+          functions,
+          CloudFunction.CustomerSelfRegister,
+        )({
+          organization,
+          registrationCode,
+          customer: {
+            ...minimalSaul,
+            phone: saul.phone,
+            // None of these may be stored: self-approval, admin-managed
+            // values, or values set through other flows
+            categories: [Category.Competitive],
+            certificateExpiration: "2099-12-31",
+            extendedDate: "2099-12-31",
+            subscriptionNumber: "tampered",
+            deleted: true,
+            photoURL: "https://example.com/photo.jpg",
+            privacyPolicyAccepted: { timestamp: "2020-01-01" },
+            bookingStats: { "2020-01": { ice: 100, "off-ice": 0 } },
+            id: "chosen-id",
+            secretKey: "chosen-secret-key",
+          },
+        });
+
+        const customersColl = await adminDb
+          .collection(getCustomersPath(organization))
+          .get();
+        expect(customersColl.docs.length).toEqual(1);
+        const customerData = customersColl.docs[0].data();
+        const { id, secretKey } = customerData;
+
+        // Only the legitimate registration data, plus server generated values
+        expect(customerData).toEqual({
+          ...storedSaul,
+          phone: saul.phone,
+          id: customersColl.docs[0].id,
+          secretKey,
+          categories: [],
+        });
+        expect(id).not.toEqual("chosen-id");
+        expect(secretKey).not.toEqual("chosen-secret-key");
+        expect(res.data).toEqual(
+          expect.objectContaining({ id, secretKey, categories: [] }),
+        );
+
+        // The athlete-facing copy has no injected values either
+        await waitFor(async () => {
+          const bookingsSnap = await adminDb
+            .doc(getBookingsDocPath(organization, secretKey))
+            .get();
+          expect(bookingsSnap.data()).toEqual(
+            sanitizeCustomer(customerData as Customer),
+          );
+        });
+
+        // The admin is still notified of the new athlete
+        const emailQueue = await adminDb
+          .collection(Collection.DeliveryQueues)
+          .doc(organization)
+          .collection(DeliveryQueue.EmailQueue)
+          .get();
+        expect(emailQueue.docs.length).toEqual(1);
+        expect(emailQueue.docs[0].data().payload.subject).toEqual(
+          `New user ${saul.name} ${saul.surname}`,
         );
       },
     );

@@ -214,9 +214,35 @@ export const customerSelfRegister = functions
         const id = customerRef.id;
         const secretKey = uuid();
 
-        const fullCustomer = { ...customer, id, secretKey };
+        // Only persist the fields collected by the self registration form.
+        // Admin SDK writes bypass firestore rules, so without this whitelist a
+        // registrant could set admin-managed fields, e.g. `categories`
+        // (approving themselves), `extendedDate` or `deleted`.
+        // `certificateExpiration` is set by club admins only (#955).
+        // Other fields are ignored, not rejected: (older) clients send the
+        // whole form, certificate date included, and must still register.
+        const selfRegisterFields = [
+          "name",
+          "surname",
+          "email",
+          "phone",
+          "birthday",
+        ] as const;
+        const registrationData = selfRegisterFields.reduce(
+          (acc, field) =>
+            customer[field] !== undefined
+              ? { ...acc, [field]: customer[field] }
+              : acc,
+          {} as Pick<CustomerBase, (typeof selfRegisterFields)[number]>,
+        );
 
-        await customerRef.set(sanitizeCustomer(fullCustomer));
+        const fullCustomer = sanitizeCustomer({
+          ...registrationData,
+          id,
+          secretKey,
+        });
+
+        await customerRef.set(fullCustomer);
 
         // If email sending available, send an email to the admin, notifiying them of the new customer.
         const { emailFrom, smtpConfigured } = orgData;
