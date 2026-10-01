@@ -154,6 +154,11 @@ const getAttendance = async (
   return snap.data()?.attendances?.[athlete.id];
 };
 
+/** Athletes marked absent whose booking was then cancelled (kept outside of `attendances`) */
+const getCancelledAbsences = async (organization: string, slotId: string) =>
+  (await adminDb.doc(getAttendanceDocPath(organization, slotId)).get()).data()
+    ?.cancelledAbsences || {};
+
 /** The athlete's attended slot (shown in their calendar for attendance without booking) */
 const getAttendedSlot = async (
   organization: string,
@@ -606,10 +611,13 @@ describe("Booking derived data under at-least-once, unordered trigger delivery",
             bookedInterval: null,
             attendedInterval: intervals.short,
           });
-          // The recorded absence stays too
-          expect(await getAttendance(organization, slotId, absent)).toEqual({
-            bookedInterval: null,
-            attendedInterval: null,
+          // The recorded absence is removed from the entries (clients show nothing for an athlete who neither
+          // booked nor attended) and kept aside, for a rebooking
+          expect(await getAttendance(organization, slotId, absent)).toEqual(
+            undefined
+          );
+          expect(await getCancelledAbsences(organization, slotId)).toEqual({
+            [absent.id]: true,
           });
           // No admin edit: the entry goes with the booking
           expect(await getAttendance(organization, slotId, untouched)).toEqual(
@@ -626,6 +634,24 @@ describe("Booking derived data under at-least-once, unordered trigger delivery",
         expect(await getAttendedSlot(organization, slotId, untouched)).toEqual(
           undefined
         );
+
+        // The admin corrects the absence: the athlete came after all (`markAttendance` for an athlete without
+        // an entry writes `bookedInterval: null`)
+        await adminWriteAttendance(organization, slotId, absent, {
+          bookedInterval: null,
+          attendedInterval: intervals.late,
+        });
+        await waitFor(async () => {
+          expect(await getAttendance(organization, slotId, absent)).toEqual({
+            bookedInterval: null,
+            attendedInterval: intervals.late,
+          });
+          expect(await getCancelledAbsences(organization, slotId)).toEqual({});
+          expect(await getAttendedSlot(organization, slotId, absent)).toEqual({
+            date,
+            interval: intervals.late,
+          });
+        });
       }
     );
 
@@ -673,9 +699,9 @@ describe("Booking derived data under at-least-once, unordered trigger delivery",
         // The cancellation is processed before the new booking
         await cancel(organization, cancelFirst, slotId);
         await waitFor(async () =>
-          expect(
-            await getAttendance(organization, slotId, cancelFirst)
-          ).toEqual(absent(null))
+          expect(await getCancelledAbsences(organization, slotId)).toEqual({
+            [cancelFirst.id]: true,
+          })
         );
         await book(organization, cancelFirst, slotId, intervals.short);
 
@@ -863,6 +889,59 @@ describe("Booking derived data under at-least-once, unordered trigger delivery",
             interval: intervals.late,
           });
         });
+      }
+    );
+
+    testWithEmulator(
+      "uses the booking under the current secret key when older bookings documents hold one for the same slot",
+      async () => {
+        const {
+          organization,
+          athletes: [athlete],
+        } = await setUp([slotId], 1);
+        const older = { ...athlete, secretKey: uuid() };
+        await adminDb
+          .doc(getBookingsDocPath(organization, older.secretKey))
+          .set(sanitizeCustomer(older));
+
+        // Booked under the older key, then under the current one (the customer's secret key)
+        await book(organization, older, slotId, intervals.long);
+        await waitFor(async () =>
+          expect(
+            (
+              await getAttendance(organization, slotId, athlete)
+            )?.bookedInterval
+          ).toEqual(intervals.long)
+        );
+        await book(organization, athlete, slotId, intervals.short);
+        await waitFor(async () =>
+          expect(await getAttendance(organization, slotId, athlete)).toEqual({
+            bookedInterval: intervals.short,
+            attendedInterval: intervals.short,
+          })
+        );
+
+        // A later change under the older key doesn't win over the current key
+        await book(organization, older, slotId, intervals.late);
+        await deliverBookingEvent(
+          "createAttendanceForBooking",
+          bookingPath(organization, older, slotId),
+          { date, interval: intervals.long },
+          { date, interval: intervals.late }
+        );
+        expect(await getAttendance(organization, slotId, athlete)).toEqual({
+          bookedInterval: intervals.short,
+          attendedInterval: intervals.short,
+        });
+
+        // Without the current key's booking, the older key's booking counts
+        await cancel(organization, athlete, slotId);
+        await waitFor(async () =>
+          expect(await getAttendance(organization, slotId, athlete)).toEqual({
+            bookedInterval: intervals.late,
+            attendedInterval: intervals.late,
+          })
+        );
       }
     );
 

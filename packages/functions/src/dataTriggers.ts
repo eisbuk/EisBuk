@@ -27,8 +27,10 @@ import {
 
 import { getCustomerStats } from "./utils";
 import {
+  getAttendedSlotInterval,
   getSecretKeys,
   syncAttendanceEntry,
+  syncAttendedSlot,
   syncSlotBookingsCount,
 } from "./bookingSync";
 
@@ -56,6 +58,24 @@ const bookingSyncRuntimeOptions: functions.RuntimeOptions = {
  * or the reconciliation brings the data in line, and a persistent error shouldn't be retried for a week.
  */
 const maxRetriedEventAge = 24 * 60 * 60 * 1000;
+
+/**
+ * Waits for all the (independent) syncs of a trigger, and fails if any of them failed, for the event to be retried.
+ * The error carries error codes only: Firestore error messages can contain document paths, with secret keys.
+ */
+const settleAll = async (name: string, syncs: Promise<unknown>[]) => {
+  const results = await Promise.allSettled(syncs);
+  const codes = results
+    .filter((r): r is PromiseRejectedResult => r.status === "rejected")
+    .map(({ reason }) => (reason as { code?: unknown })?.code ?? "unknown");
+  if (codes.length) {
+    throw new Error(
+      `${name}: ${codes.length} of ${
+        results.length
+      } syncs failed (codes: ${codes.join(", ")})`
+    );
+  }
+};
 const isTooOldToRetry = (name: string, context: functions.EventContext) => {
   const age = Date.now() - Date.parse(context.timestamp);
   if (age <= maxRetriedEventAge) return false;
@@ -585,7 +605,8 @@ export const syncAttendanceWithBookings = functions
             !isEqual(getBookedPart(before?.[id]), getBookedPart(after?.[id]))
         );
 
-        const results = await Promise.allSettled(
+        await settleAll(
+          "syncAttendanceWithBookings",
           customerIds.map(async (customerId) => {
             const secretKeys = await getSecretKeys(
               db,
@@ -596,21 +617,6 @@ export const syncAttendanceWithBookings = functions
             await syncAttendanceEntry(db, organization, slotId, secretKeys);
           })
         );
-
-        const failed = results.filter(
-          (r): r is PromiseRejectedResult => r.status === "rejected"
-        );
-        if (failed.length) {
-          // Error codes only: Firestore error messages can contain document paths, with secret keys
-          const codes = failed.map(
-            ({ reason }) => (reason as { code?: unknown })?.code ?? "unknown"
-          );
-          throw new Error(
-            `syncAttendanceWithBookings: ${failed.length} of ${
-              results.length
-            } entries failed (codes: ${codes.join(", ")})`
-          );
-        }
       }
     )
   );
@@ -622,13 +628,13 @@ export const syncAttendanceWithBookings = functions
  * Note: We're only creating attended slot entries for customers who haven't booked the same slot
  * (as the booking is displayed in their calendar in that case).
  *
- * The attended slot is derived from the current attendance entry: it exists while the entry has an attended interval
- * and no booked interval. That includes an athlete who cancelled the booking after the admin recorded attendance.
+ * The attended slot is derived from the current attendance entry (see `syncAttendedSlot`): it exists while the entry
+ * has an attended interval and no booked interval. That includes an athlete who cancelled the booking after the admin
+ * recorded attendance. Each customer is synced independently: if some fail, the function fails at the end and is
+ * retried.
  */
 export const createAttendedSlotOnAttendance = functions
-  .runWith({
-    memory: "512MB",
-  })
+  .runWith(bookingSyncRuntimeOptions)
   .region(__functionsZone__)
   .firestore.document(
     `${Collection.Organizations}/{organization}/${OrgSubCollection.Attendance}/{slotId}`
@@ -637,19 +643,12 @@ export const createAttendedSlotOnAttendance = functions
     wrapFirestoreOnWriteHandler(
       "createAttendedSlotOnAttendance",
       async (change, context) => {
+        if (isTooOldToRetry("createAttendedSlotOnAttendance", context)) return;
+
         const { organization, slotId } = context.params as Record<
           string,
           string
         >;
-
-        const db = admin.firestore();
-        const orgRef = db
-          .collection(Collection.Organizations)
-          .doc(organization);
-
-        /** The interval of the attended slot an entry calls for (attended without booking), `null` for none */
-        const getAttendedSlotInterval = (entry?: CustomerAttendance) =>
-          (entry && !entry.bookedInterval && entry.attendedInterval) || null;
 
         const previousAttendances =
           (change.before.data() as SlotAttendnace | undefined)?.attendances ||
@@ -669,44 +668,14 @@ export const createAttendedSlotOnAttendance = functions
             getAttendedSlotInterval(previousAttendances[id]) !==
             getAttendedSlotInterval(eventAttendances[id])
         );
-        if (!ids.length) return;
 
-        // Write the attended slots from the current attendance (this event may not be the latest)
-        const current = (await change.after.ref.get()).data() as
-          | SlotAttendnace
-          | undefined;
-
-        const batch = db.batch();
-
-        await Promise.all(
-          ids.map(async (customerId) => {
-            const customer = (
-              await orgRef
-                .collection(OrgSubCollection.Customers)
-                .doc(customerId)
-                .get()
-            ).data() as Customer | undefined;
-            // Unknown customer: no bookings document to write to
-            if (!customer?.secretKey) return;
-
-            const attendedSlotRef = orgRef
-              .collection(OrgSubCollection.Bookings)
-              .doc(customer.secretKey)
-              .collection(BookingSubCollection.AttendedSlots)
-              .doc(slotId);
-
-            const interval = getAttendedSlotInterval(
-              current?.attendances?.[customerId]
-            );
-            if (interval) {
-              batch.set(attendedSlotRef, { date: current!.date, interval });
-            } else {
-              batch.delete(attendedSlotRef);
-            }
-          })
+        const db = admin.firestore();
+        await settleAll(
+          "createAttendedSlotOnAttendance",
+          ids.map((customerId) =>
+            syncAttendedSlot(db, organization, slotId, customerId)
+          )
         );
-
-        await batch.commit();
       }
     )
   );

@@ -20,8 +20,10 @@ import {
 
 import {
   getAttendanceDocPath,
+  getAttendedSlotDocPath,
   getBookedSlotDocPath,
   getBookingsDocPath,
+  getCustomerDocPath,
   getSlotDocPath,
 } from "@/utils/firestore";
 
@@ -38,6 +40,7 @@ import {
 import { bookedSlotsAttendanceAutofix } from "../../../functions/src/checks/bookingsAttendance";
 import {
   syncAttendanceEntry,
+  syncAttendedSlot,
   syncSlotBookingsCount,
 } from "../../../functions/src/bookingSync";
 
@@ -67,6 +70,8 @@ const intervals = {
 };
 
 const future = { id: "future-slot", date: "2030-02-11", month: "2030-02" };
+/** Bookings of athletes whose secret key changed, under the older and the current key */
+const rotation = { id: "rotation-slot", date: "2030-02-18", month: "2030-02" };
 const past = { id: "past-slot", date: "2020-01-13", month: "2020-01" };
 
 const createSlot = ({ id, date }: typeof future): SlotInterface => ({
@@ -164,6 +169,13 @@ const setUpInconsistentData = async () => {
     pastMissing: createAthlete("pastMissing"),
     pastStray: createAthlete("pastStray"),
     newcomer: createAthlete("newcomer"),
+    rotated: createAthlete("rotated"),
+    rotatedStale: createAthlete("rotatedStale"),
+  };
+  // The older bookings documents of the athletes whose secret key changed
+  const older = {
+    rotated: { ...athletes.rotated, secretKey: uuid() },
+    rotatedStale: { ...athletes.rotatedStale, secretKey: uuid() },
   };
   const ghost = "unknown-athlete-id";
 
@@ -177,7 +189,26 @@ const setUpInconsistentData = async () => {
       .set({ date: slot.date, interval: intervals.long, ...extra });
 
   await Promise.all([
-    ...[future, past].map((slot) =>
+    ...[athletes.rotated, athletes.rotatedStale].map((athlete) =>
+      db.doc(getCustomerDocPath(organization, athlete.id)).set(athlete)
+    ),
+    ...Object.values(older).map((athlete) =>
+      db
+        .doc(getBookingsDocPath(organization, athlete.secretKey))
+        .set(sanitizeCustomer(athlete))
+    ),
+    book(athletes.rotated, rotation, { interval: intervals.short }),
+    book(athletes.rotatedStale, rotation, { interval: intervals.short }),
+    attendanceRef(rotation.id).set({
+      date: rotation.date,
+      attendances: {
+        // Matches the booking under the current key
+        [athletes.rotated.id]: entry(intervals.short, intervals.short),
+        // Matches the booking under the older key
+        [athletes.rotatedStale.id]: booked,
+      },
+    }),
+    ...[future, past, rotation].map((slot) =>
       db.doc(getSlotDocPath(organization, slot.id)).set(createSlot(slot))
     ),
     ...Object.values(athletes).map((athlete) =>
@@ -192,7 +223,12 @@ const setUpInconsistentData = async () => {
     ...[athletes.pastMismatch, athletes.pastMissing].map((athlete) =>
       book(athlete, past)
     ),
-    countsRef(future.month).set({ [future.id]: 3, "deleted-slot": -2 }),
+    countsRef(future.month).set({
+      [future.id]: 3,
+      "deleted-slot": -2,
+      // Counts are of booking documents: two for each athlete
+      [rotation.id]: 4,
+    }),
     countsRef(past.month).set({ [past.id]: 2 }),
     attendanceRef(future.id).set({
       date: future.date,
@@ -216,6 +252,11 @@ const setUpInconsistentData = async () => {
       },
     }),
   ]);
+
+  // The bookings under the older keys are the most recently updated (written last)
+  await Promise.all(
+    Object.values(older).map((athlete) => book(athlete, rotation))
+  );
 
   return {
     organization,
@@ -319,6 +360,16 @@ describe("Reconciliation of data derived from bookings", () => {
             before: booked,
             skipped: "past-lesson",
           },
+          {
+            // The booking under the current secret key counts, even if the older one was updated later
+            slotId: rotation.id,
+            customerId: athletes.rotatedStale.id,
+            date: rotation.date,
+            booking: { date: rotation.date, interval: intervals.short },
+            before: booked,
+            expected: entry(intervals.short, intervals.short),
+            after: entry(intervals.short, intervals.short),
+          },
         ])
       );
 
@@ -367,6 +418,11 @@ describe("Reconciliation of data derived from bookings", () => {
         [athletes.pastMismatch.id]: entry(intervals.long, intervals.short),
         // Past lesson, no booking: left for the club to review
         [athletes.pastStray.id]: booked,
+      });
+      // The repair and the check agree on which booking counts
+      expect(await getAttendance(rotation.id)).toEqual({
+        [athletes.rotated.id]: entry(intervals.short, intervals.short),
+        [athletes.rotatedStale.id]: entry(intervals.short, intervals.short),
       });
 
       // The summary logged by the callable: no secret keys, no booking notes
@@ -431,6 +487,98 @@ describe("Reconciliation of data derived from bookings", () => {
         [athletes.missing.id]: booked,
         [ghost]: booked,
       });
+    }
+  );
+});
+
+describe("Attended slot projection", () => {
+  /**
+   * Wraps the db so that the first transaction attempt pauses after its first read and runs `whilePaused`
+   * (without waiting for it longer than `maxPause`): a handler that read the attendance, then got delayed.
+   */
+  const pauseAfterFirstRead = (
+    target: Firestore,
+    whilePaused: () => Promise<unknown>,
+    maxPause = 3000
+  ) => {
+    let paused = false;
+    const pause = () =>
+      Promise.race([
+        whilePaused(),
+        new Promise((resolve) => setTimeout(resolve, maxPause)),
+      ]);
+    const bind = <T extends object>(obj: T, override: Partial<T>) =>
+      new Proxy(obj, {
+        get: (o, prop) => {
+          if (prop in override) return override[prop as keyof T];
+          const value = Reflect.get(o, prop);
+          return typeof value === "function" ? value.bind(o) : value;
+        },
+      });
+    return bind(target, {
+      runTransaction: ((fn: (tx: any) => Promise<unknown>) =>
+        target.runTransaction((tx) => {
+          const read =
+            (method: "get" | "getAll") =>
+            async (...args: unknown[]) => {
+              const result = await (tx[method] as any)(...args);
+              if (!paused) {
+                paused = true;
+                await pause();
+              }
+              return result;
+            };
+          return fn(bind(tx, { get: read("get"), getAll: read("getAll") }));
+        })) as Firestore["runTransaction"],
+    });
+  };
+
+  testWithEmulator(
+    "a delayed sync that read the attendance before a rebooking doesn't bring the attended slot back",
+    async () => {
+      const organization = uuid();
+      const athlete = createAthlete("rebooking");
+      const slotId = "slot-a";
+      const attendanceRef = db.doc(getAttendanceDocPath(organization, slotId));
+      const attendedSlotRef = db.doc(
+        getAttendedSlotDocPath(organization, athlete.secretKey, slotId)
+      );
+
+      // Booking cancelled after the admin recorded attendance: attended without booking
+      await Promise.all([
+        db.doc(getCustomerDocPath(organization, athlete.id)).set(athlete),
+        attendanceRef.set({
+          date: future.date,
+          attendances: {
+            [athlete.id]: entry(null, intervals.late),
+          },
+        }),
+      ]);
+
+      // Handler A reads that, and is delayed. Meanwhile the athlete books again (the booking sync writes the entry)
+      // and handler B, for that write, syncs the attended slot.
+      let rebooking: Promise<unknown> = Promise.resolve();
+      const handlerA = syncAttendedSlot(
+        pauseAfterFirstRead(db, () => {
+          rebooking = attendanceRef
+            .update({
+              [`attendances.${athlete.id}`]: entry(
+                intervals.long,
+                intervals.late
+              ),
+            })
+            .then(() => syncAttendedSlot(db, organization, slotId, athlete.id));
+          return rebooking;
+        }),
+        organization,
+        slotId,
+        athlete.id
+      );
+      await handlerA;
+      await rebooking;
+
+      // Booked again: the lesson is shown from the booking, not as an attended slot
+      expect((await attendedSlotRef.get()).exists).toEqual(false);
     }
   );
 });

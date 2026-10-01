@@ -9,14 +9,16 @@ import {
   CustomerBookings,
   Collection,
   OrgSubCollection,
-  SlotAttendnace,
+  Customer,
   SlotBookingsCounts,
 } from "@eisbuk/shared";
 
 import { Firestore } from "./types";
 
 import {
+  AttendanceDocument,
   deriveAttendanceEntry,
+  selectBooking,
   syncAttendanceEntry,
   syncMonthBookingsCounts,
 } from "../bookingSync";
@@ -100,6 +102,8 @@ interface Booking {
   customerId: string;
   slotId: string;
   booking: CustomerBookingEntry;
+  /** Update time of the booking document, in milliseconds */
+  updateTime: number;
 }
 
 /**
@@ -143,6 +147,7 @@ const readMonths = async (
               customerId: (doc.data() as CustomerBookings).id,
               slotId: bookedSlot.id,
               booking: bookedSlot.data() as CustomerBookingEntry,
+              updateTime: bookedSlot.updateTime.toMillis(),
             })
           )
         )
@@ -156,7 +161,7 @@ const readMonths = async (
     .get()
     .then(
       ({ docs }) =>
-        new Map(docs.map((doc) => [doc.id, doc.data() as SlotAttendnace]))
+        new Map(docs.map((doc) => [doc.id, doc.data() as AttendanceDocument]))
     );
 
   const counts = await orgRef
@@ -169,7 +174,16 @@ const readMonths = async (
         new Map(docs.map((doc) => [doc.id, doc.data() as SlotBookingsCounts]))
     );
 
-  return { secretKeys, bookings, attendance, counts };
+  // Customers' current secret keys: their booking is preferred when there's more than one (see `selectBooking`)
+  const currentSecretKeys = await orgRef
+    .collection(OrgSubCollection.Customers)
+    .get()
+    .then(
+      ({ docs }) =>
+        new Map(docs.map((doc) => [doc.id, (doc.data() as Customer).secretKey]))
+    );
+
+  return { secretKeys, currentSecretKeys, bookings, attendance, counts };
 };
 
 const findCountDifferences = (
@@ -202,12 +216,22 @@ const findCountDifferences = (
 
 const findAttendanceDifferences = (
   bookings: Booking[],
-  attendance: Map<string, SlotAttendnace>,
+  attendance: Map<string, AttendanceDocument>,
   secretKeys: Map<string, string[]>,
+  currentSecretKeys: Map<string, string>,
   today: string
 ): AttendanceDifference[] => {
+  // The booking that counts for each slot/athlete (an athlete can hold more than one, see `selectBooking`)
   const bookingsByEntry = new Map(
-    bookings.map((b) => [`${b.slotId}/${b.customerId}`, b])
+    Object.entries(
+      _.groupBy(bookings, (b) => `${b.slotId}/${b.customerId}`)
+    ).map(([key, candidates]) => [
+      key,
+      selectBooking(
+        candidates,
+        currentSecretKeys.get(candidates[0].customerId)
+      )!,
+    ])
   );
   const entries = new Set([
     ...bookingsByEntry.keys(),
@@ -223,9 +247,14 @@ const findAttendanceDifferences = (
     const [slotId, customerId] = key.split("/");
     const booking = bookingsByEntry.get(key)?.booking;
     const before = attendance.get(slotId)?.attendances?.[customerId];
+    const cancelledAbsence = Boolean(
+      attendance.get(slotId)?.cancelledAbsences?.[customerId]
+    );
     const date = (attendance.get(slotId)?.date || booking?.date)!;
 
-    const expected = deriveAttendanceEntry(booking, before);
+    const expected = deriveAttendanceEntry(booking, before, {
+      cancelledAbsence,
+    }).entry;
     if (_.isEqual(before, expected)) continue;
 
     const difference: AttendanceDifference = {
@@ -242,7 +271,8 @@ const findAttendanceDifferences = (
 
     const after = deriveAttendanceEntry(booking, before, {
       bookedPartOnly: date < today,
-    });
+      cancelledAbsence,
+    }).entry;
     differences.push(
       _.isEqual(before, after)
         ? { ...difference, skipped: "past-lesson" }
@@ -267,12 +297,8 @@ export const reconcileBookingDerivedData = async (
     counts: checkCounts = true,
   }: ReconcileOptions
 ): Promise<BookingDerivedDataReport> => {
-  const { secretKeys, bookings, attendance, counts } = await readMonths(
-    db,
-    organization,
-    from,
-    to
-  );
+  const { secretKeys, currentSecretKeys, bookings, attendance, counts } =
+    await readMonths(db, organization, from, to);
 
   const report: BookingDerivedDataReport = {
     id: DateTime.now().toISO(),
@@ -286,6 +312,7 @@ export const reconcileBookingDerivedData = async (
       bookings,
       attendance,
       secretKeys,
+      currentSecretKeys,
       today
     ),
   };
