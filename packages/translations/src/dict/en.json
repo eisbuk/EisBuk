@@ -293,7 +293,7 @@
     "BookingNotesError": "Error updating booking notes",
     "BookingAlreadyExists": "You already have a booking for this lesson: {{ date, EEEE d MMMM }}, {{ interval }}. Nothing was changed.",
     "BookingChangedMeanwhile": "Your booking for this lesson ({{ date, EEEE d MMMM }}) was changed or cancelled in the meantime. Nothing was changed: check your bookings and try again.",
-    "BookingPendingOffline": "No connection: the booking {{ date, EEEE d MMMM }}, {{ interval }} will be sent when the connection returns. Check that it gets confirmed.",
+    "BookingOffline": "No connection: the booking was not saved. Try again when you are online.",
 
     "CopyPasteErrorWeek": "Error copying slots week",
     "CopyPasteErrorDay": "Error copying slots day",

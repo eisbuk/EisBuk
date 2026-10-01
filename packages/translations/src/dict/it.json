@@ -294,7 +294,7 @@
     "BookingNotesError": "Errore durante l'aggiornamento della nota alla prenotazione",
     "BookingAlreadyExists": "Hai già una prenotazione per questa lezione: {{ date, EEEE d MMMM }}, {{ interval }}. Non è stato modificato nulla.",
     "BookingChangedMeanwhile": "La tua prenotazione per questa lezione ({{ date, EEEE d MMMM }}) è stata modificata o cancellata nel frattempo. Non è stato modificato nulla: controlla le tue prenotazioni e riprova.",
-    "BookingPendingOffline": "Nessuna connessione: la prenotazione {{ date, EEEE d MMMM }}, {{ interval }} verrà inviata appena torna la connessione. Controlla che venga confermata.",
+    "BookingOffline": "Nessuna connessione: la prenotazione non è stata salvata. Riprova quando sei online.",
 
     "CopyPasteErrorWeek": "Errore nella copia della settimana",
     "CopyPasteErrorDay": "Errore nella copia del giorno",

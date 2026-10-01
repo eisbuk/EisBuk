@@ -100,52 +100,38 @@ const isUnavailableError = (err: unknown) =>
  * (page still loading, another device, a second click while the first write is in flight) can't replace,
  * or recreate, a booking.
  *
- * Without a connection the transaction can't run. A first booking (no `replacedInterval`) is then checked
- * against the local copy of the bookings and written as a regular write, which Firestore keeps on the device
- * and sends when the connection returns (as it did before the transaction was introduced); the athlete is told
- * it's pending. Replacing a booking always needs the connection.
+ * The transaction needs the server: without a connection nothing is written (no queued write, which couldn't
+ * be checked against the stored booking) and the athlete is told the booking wasn't saved.
  */
 export const bookInterval: UpdateBooking<{ replacedInterval?: string }> =
   ({ slotId, secretKey, interval, date, replacedInterval }): FirestoreThunk =>
-  async (dispatch, getState, { getFirestore }) => {
-    const payload = { interval, date, replacedInterval };
-
-    try {
-      const bookingRef = doc(
-        getFirestore(),
-        getBookedSlotDocPath(getOrganization(), secretKey, slotId),
+  async (dispatch, _, { getFirestore }) => {
+    const notifyOffline = () =>
+      dispatch(
+        enqueueNotification({
+          message: i18n.t(NotificationMessage.BookingOffline),
+          variant: NotifVariant.Error,
+        }),
       );
 
-      const writeFirstBookingOffline = async () => {
-        const localBooking = getState().firestore?.data?.bookedSlots?.[slotId];
-        const update = getUpdatedBooking(localBooking, payload);
-        if (!update) return;
+    if (isBrowserOffline()) {
+      notifyOffline();
+      return;
+    }
 
-        dispatch(
-          enqueueNotification({
-            message: i18n.t(NotificationMessage.BookingPendingOffline, {
-              date: DateTime.fromISO(date),
-              interval,
-            }),
-            variant: NotifVariant.Error,
+    try {
+      await setDocInTransaction(
+        doc(
+          getFirestore(),
+          getBookedSlotDocPath(getOrganization(), secretKey, slotId),
+        ),
+        (booking) =>
+          getUpdatedBooking(booking as CustomerBookingEntry, {
+            interval,
+            date,
+            replacedInterval,
           }),
-        );
-        // Resolves only once the server has the booking
-        await setDoc(bookingRef, update);
-      };
-
-      if (!replacedInterval && isBrowserOffline()) {
-        await writeFirstBookingOffline();
-      } else {
-        try {
-          await setDocInTransaction(bookingRef, (booking) =>
-            getUpdatedBooking(booking as CustomerBookingEntry, payload),
-          );
-        } catch (err) {
-          if (replacedInterval || !isUnavailableError(err)) throw err;
-          await writeFirstBookingOffline();
-        }
-      }
+      );
 
       // show success message
       dispatch(
@@ -172,6 +158,11 @@ export const bookInterval: UpdateBooking<{ replacedInterval?: string }> =
             variant: NotifVariant.Error,
           }),
         );
+        return;
+      }
+
+      if (isUnavailableError(err)) {
+        notifyOffline();
         return;
       }
 

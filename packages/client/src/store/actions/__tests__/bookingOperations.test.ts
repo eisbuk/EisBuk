@@ -487,83 +487,60 @@ describe("Booking operations", () => {
       },
     );
 
-    const offlineError = () =>
-      Object.assign(new Error("client is offline"), { code: "unavailable" });
+    const offlineNotification = () =>
+      enqueueNotification({
+        message: i18n.t(NotificationMessage.BookingOffline),
+        variant: NotifVariant.Error,
+      });
 
     testWithEmulator(
-      "without a connection, a first booking is kept on the device (pending) and sent when the connection returns",
+      "without a connection (transaction fails as 'unavailable') nothing is written, not even after reconnecting, and the athlete is told",
       async () => {
         const { book, db, getServerBooking, mockDispatch } = await setup();
         const client = (db as any).instance;
 
-        // Network down: the transaction can't reach the server, regular writes are queued
+        // Network down: any regular write would be queued and sent on reconnection
         await client.disableNetwork();
-        vi.mocked(setDocInTransaction).mockRejectedValueOnce(offlineError());
-
-        let done = false;
-        const booking = book(intervalA).then(() => (done = true));
-
-        await waitFor(() =>
-          expect(mockDispatch).toHaveBeenCalledWith(
-            enqueueNotification({
-              message: i18n.t(NotificationMessage.BookingPendingOffline, {
-                date: DateTime.fromISO(testSlot.date),
-                interval: intervalA,
-              }),
-              variant: NotifVariant.Error,
-            }),
-          ),
-        );
-        // Pending: not on the server, no success message yet
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        expect(done).toEqual(false);
-        expect(await getServerBooking()).toBeUndefined();
-        expect(mockDispatch).not.toHaveBeenCalledWith(
-          successNotification(intervalA),
+        vi.mocked(setDocInTransaction).mockRejectedValueOnce(
+          Object.assign(new Error("client is offline"), {
+            code: "unavailable",
+          }),
         );
 
-        // Connection back: the queued write reaches the server
+        await book(intervalA);
+
+        expect(mockDispatch).toHaveBeenCalledTimes(1);
+        expect(mockDispatch).toHaveBeenCalledWith(offlineNotification());
+
+        // Connection back: nothing was queued, so nothing reaches the server
         await client.enableNetwork();
-        await booking;
-        expect(await getServerBooking()).toEqual({
-          date: testSlot.date,
-          interval: intervalA,
-        });
-        expect(mockDispatch).toHaveBeenCalledWith(
-          successNotification(intervalA),
-        );
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        expect(await getServerBooking()).toBeUndefined();
+        expect(mockDispatch).toHaveBeenCalledTimes(1);
       },
     );
 
     testWithEmulator(
-      "without a connection, a booking is never replaced (neither explicitly nor by a first-booking click)",
+      "when the browser reports offline, no write is attempted (first booking or replacement) and the athlete is told",
       async () => {
         const { book, getServerBooking, mockDispatch } = await setup({
           date: testSlot.date,
           interval: intervalA,
         });
+        vi.stubGlobal("navigator", { onLine: false });
 
-        // Explicit replacement needs the server: refused with an error
-        vi.mocked(setDocInTransaction).mockRejectedValueOnce(offlineError());
-        await book(intervalB, intervalA);
-        expect(mockDispatch).toHaveBeenCalledWith(
-          expect.objectContaining({
-            payload: expect.objectContaining({
-              message: i18n.t(NotificationMessage.BookingError, {
-                date: DateTime.fromISO(testSlot.date),
-                interval: intervalB,
-              }),
-            }),
-          }),
-        );
+        try {
+          await book(intervalB, intervalA);
+          await book(intervalC);
+        } finally {
+          vi.unstubAllGlobals();
+        }
 
-        // A click treated as a first booking is checked against the local bookings (which have A)
-        vi.mocked(setDocInTransaction).mockRejectedValueOnce(offlineError());
-        await book(intervalB);
-        expect(mockDispatch).toHaveBeenCalledWith(
-          alreadyBookedNotification(intervalA),
-        );
-
+        expect(setDocInTransaction).not.toHaveBeenCalled();
+        expect(mockDispatch.mock.calls).toEqual([
+          [offlineNotification()],
+          [offlineNotification()],
+        ]);
         expect(await getServerBooking()).toEqual({
           date: testSlot.date,
           interval: intervalA,
