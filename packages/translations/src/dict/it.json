@@ -231,6 +231,9 @@
     "ExtendBookingDateBody": "Conferma l'autorizzazione per {{ name }} {{ surname }} a prenotare fino al {{ extendedDate, EEEE d MMMM }}",
 
     "CancelBookingTitle": "Cancellare la prenotazione per",
+    "ReplaceBookingTitle": "Vuoi cambiare la prenotazione per questa lezione?",
+    "ReplaceBookingCurrent": "Prenotazione attuale",
+    "ReplaceBookingNew": "Nuova prenotazione",
     "FinalizeBookingsTitle": "Ho finito con le prenotazioni",
     "ConfirmFinalizeBookings": "Confermi le prenotazioni di {{ month, MMMM }}? Dopo aver confermato non potrai più cambiare le tue prenotazioni.",
     "EnterEmailTitle": "Inserisci la tua Email qui sotto",
@@ -277,7 +280,9 @@
     "Add": "Aggiungi",
     "Delete": "Elimina",
     "Saving": "Salvataggio",
-    "Accept": "Accetta"
+    "Accept": "Accetta",
+    "KeepBooking": "Mantieni la prenotazione attuale",
+    "ReplaceBooking": "Cambia prenotazione"
   },
 
   "Notification": {
@@ -287,6 +292,7 @@
     "BookingCanceledError": "Errore nel rimuovere la prenotazione: {{ date, EEEE d MMMM }}, {{ interval }}",
     "BookingNotesUpdated": "Nota della prenotazione aggiornata",
     "BookingNotesError": "Errore durante l'aggiornamento della nota alla prenotazione",
+    "BookingAlreadyExists": "Hai già una prenotazione per questa lezione: {{ date, EEEE d MMMM }}, {{ interval }}. Non è stato modificato nulla.",
 
     "CopyPasteErrorWeek": "Errore nella copia della settimana",
     "CopyPasteErrorDay": "Errore nella copia del giorno",
@@ -418,7 +424,8 @@
     "NoAttendance": "Al momento non sono presenti presenze per il mese di {{ currentDate, MMMM }}",
     "NoCategories": "Il tuo account deve ancora essere approvato. Contatta un amministratore se pensi che dovrebbe già esserlo.",
     "ContactEmail": "Per maggiori informazioni, contattaci: <a href=\"mailto:{{ email }}\"><strong>{{ email }}</strong></a>",
-    "ErrorBoundary": "Qualcosa è andato storto! Prova a contattare: <a href=\"mailto:{{ email }}\"><strong>{{ email }}</strong></a>"
+    "ErrorBoundary": "Qualcosa è andato storto! Prova a contattare: <a href=\"mailto:{{ email }}\"><strong>{{ email }}</strong></a>",
+    "IntervalRemoved": "Questo orario non è più previsto per questa lezione"
   },
   "PrintableAttendance": {
     "Start": "Inizio",

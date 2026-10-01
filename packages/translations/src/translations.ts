@@ -243,6 +243,9 @@ export enum Prompt {
   ExtendBookingDateBody = "Prompt.ExtendBookingDateBody",
 
   CancelBookingTitle = "Prompt.CancelBookingTitle",
+  ReplaceBookingTitle = "Prompt.ReplaceBookingTitle",
+  ReplaceBookingCurrent = "Prompt.ReplaceBookingCurrent",
+  ReplaceBookingNew = "Prompt.ReplaceBookingNew",
   FinalizeBookingsTitle = "Prompt.FinalizeBookingsTitle",
   ConfirmFinalizeBookings = "Prompt.ConfirmFinalizeBookings",
   EnterEmailTitle = "Prompt.EnterEmailTitle",
@@ -291,6 +294,8 @@ export enum ActionButton {
   Delete = "ActionButton.Delete",
   Saving = "ActionButton.Saving",
   Accept = "ActionButton.Accept",
+  KeepBooking = "ActionButton.KeepBooking",
+  ReplaceBooking = "ActionButton.ReplaceBooking",
 }
 // #endregion dialog
 
@@ -309,6 +314,7 @@ export enum NotificationMessage {
   BookingCanceledError = "Notification.BookingCanceledError",
   BookingNotesUpdated = "Notification.BookingNotesUpdated",
   BookingNotesError = "Notification.BookingNotesError",
+  BookingAlreadyExists = "Notification.BookingAlreadyExists",
 
   SlotAdded = "Notification.SlotAdded",
   SlotAddError = "Notification.SlotAddError",
@@ -443,6 +449,7 @@ export enum Alerts {
   NoCategories = "Alerts.NoCategories",
   ContactEmail = "Alerts.ContactEmail",
   ErrorBoundary = "Alerts.ErrorBoundary",
+  IntervalRemoved = "Alerts.IntervalRemoved",
 }
 // #endregion alerts
 

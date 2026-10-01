@@ -230,6 +230,9 @@
     "ExtendBookingDateBody": "Please confirm you wish to extended the date for {{ name }} {{ surname }}'s bookings until {{ extendedDate, EEEE d MMMM }}",
 
     "CancelBookingTitle": "Cancel booking for",
+    "ReplaceBookingTitle": "Change your booking for this lesson?",
+    "ReplaceBookingCurrent": "Booked now",
+    "ReplaceBookingNew": "New booking",
     "FinalizeBookingsTitle": "Finalize Bookings",
     "ConfirmFinalizeBookings": "Are you sure you wish to finalize bookings {{ month, MMMM }}. You won't be able to make any changes for the given month.",
     "EnterEmailTitle": "Enter your Email below",
@@ -276,7 +279,9 @@
     "Edit": "Edit",
     "Delete": "Delete",
     "Saving": "Saving",
-    "Accept": "Accept"
+    "Accept": "Accept",
+    "KeepBooking": "Keep current booking",
+    "ReplaceBooking": "Change booking"
   },
 
   "Notification": {
@@ -286,6 +291,7 @@
     "BookingCanceledError": "Error cancelling booking: {{ date, EEEE d MMMM }}, {{ interval }}",
     "BookingNotesUpdated": "Booking notes updated",
     "BookingNotesError": "Error updating booking notes",
+    "BookingAlreadyExists": "You already have a booking for this lesson: {{ date, EEEE d MMMM }}, {{ interval }}. Nothing was changed.",
 
     "CopyPasteErrorWeek": "Error copying slots week",
     "CopyPasteErrorDay": "Error copying slots day",
@@ -415,7 +421,8 @@
     "NoAttendance": "No attendance data for the month of {{ currentDate, MMMM }}",
     "NoCategories": "You haven't been assigned a category yet. The admins will review your registration shortly and assign one to you.",
     "ContactEmail": "For more info, contact us at: <a href=\"mailto:{{ email }}\"><strong>{{ email }}</strong></a>",
-    "ErrorBoundary": "Something went wrong! Try contacting: <a href=\"mailto:{{ email }}\"><strong>{{ email }}</strong></a>"
+    "ErrorBoundary": "Something went wrong! Try contacting: <a href=\"mailto:{{ email }}\"><strong>{{ email }}</strong></a>",
+    "IntervalRemoved": "This time is no longer offered for this lesson"
   },
   "PrintableAttendance": {
     "Start": "Start",
