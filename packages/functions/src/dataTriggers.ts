@@ -71,20 +71,29 @@ const isTooOldToRetry = (name: string, context: functions.EventContext) => {
 };
 
 /**
- * gRPC codes of errors worth retrying: they can go away by themselves (contention, timeouts, unavailability, and
- * FAILED_PRECONDITION for the recount's index still building after a deploy).
+ * gRPC codes of errors worth retrying: they can go away by themselves (contention, timeouts, unavailability).
  */
 const transientErrorCodes = new Set([
   2, // UNKNOWN
   4, // DEADLINE_EXCEEDED
   8, // RESOURCE_EXHAUSTED
-  9, // FAILED_PRECONDITION
   10, // ABORTED
   13, // INTERNAL
   14, // UNAVAILABLE
 ]);
 const getErrorCode = (error: unknown) =>
   (error as { code?: unknown } | undefined)?.code;
+/**
+ * FAILED_PRECONDITION (9) is transient only for an index that is still building (right after a deploy); for a
+ * missing index (or another precondition) retrying can't help.
+ */
+const isTransientError = (error: unknown) => {
+  const code = getErrorCode(error);
+  if (code === 9) {
+    return /currently building/i.test(String((error as Error)?.message));
+  }
+  return transientErrorCodes.has(code as number);
+};
 
 /**
  * Waits for all the (independent) syncs of a trigger.
@@ -96,12 +105,11 @@ const getErrorCode = (error: unknown) =>
  */
 const settleAll = async (name: string, syncs: Promise<unknown>[]) => {
   const results = await Promise.allSettled(syncs);
-  const codes = results
+  const failures = results
     .filter((r): r is PromiseRejectedResult => r.status === "rejected")
-    .map(({ reason }) => getErrorCode(reason));
-  const transient = codes.filter((code) =>
-    transientErrorCodes.has(code as number)
-  );
+    .map(({ reason }) => reason);
+  const codes = failures.map(getErrorCode);
+  const transient = failures.filter(isTransientError).map(getErrorCode);
   if (transient.length) {
     throw new Error(
       `${name}: ${transient.length} of ${
@@ -423,10 +431,12 @@ export const countSlotsBookings = functions
 
         const db = admin.firestore();
 
-        const date: string | undefined = (
-          change.before.data() || change.after.data()
-        )?.date;
-        if (!date) return;
+        const date: unknown = (change.before.data() || change.after.data())
+          ?.date;
+        if (typeof date !== "string" || !date) {
+          functions.logger.warn("countSlotsBookings: booking without a date");
+          return;
+        }
 
         // Recount instead of applying +1/-1 from the event: events are delivered at least once and
         // unordered, so a redelivered or late event used to count a booking twice or count a
@@ -435,7 +445,8 @@ export const countSlotsBookings = functions
         // Until the collection group index the recount needs is ready (right after a deploy), this fails and
         // is retried (`failurePolicy`).
         await settleAll("countSlotsBookings", [
-          syncSlotBookingsCount(db, organization, bookingId, date),
+          (async () =>
+            syncSlotBookingsCount(db, organization, bookingId, date))(),
         ]);
       }
     )
@@ -597,13 +608,20 @@ export const createPublicOrgInfo = functions
  * admin's local copy. A copy older than the latest booking change puts an old `bookedInterval` back, or drops the
  * entry of a booking made in the meantime, and no booking event follows to correct it (#988).
  *
- * For every athlete whose entry was added, removed, or had its booked part changed by this write, re-derive the
- * entry from the athlete's current booking. Changes to `attendedInterval` alone are not checked. `syncAttendanceEntry`
- * writes only when the entry differs, so the write it may cause is followed by a check that finds nothing to do.
+ * For every athlete whose entry was added, removed, or had its booked part changed by this write (or that the write
+ * left partial), correct the entry from the athlete's current booking: restore a missing entry; for lessons from
+ * today on, derive it as on a booking change (keeping an attended interval the admin recorded). Existing entries of
+ * past lessons are left as they are: they may be the club's record of the lesson (the reconciliation repairs their
+ * booked interval only). Changes to `attendedInterval` alone are not checked. `syncAttendanceEntry` writes only when the entry differs, so the write it may cause is
+ * followed by a check that finds nothing to do.
+ *
+ * Entries of athletes without a booking are left as they are (only made complete if partial): attendance written
+ * without the bookings (a stale copy after a cancellation, but also a restore or test data written before the
+ * bookings) isn't evidence enough to remove anything. The reconciliation reports and repairs those.
  *
  * The booking is looked up under all of the athlete's bookings documents. Athletes without a bookings document are
  * left as they are. Each athlete is synced independently: if some fail, the others are still written and the
- * function then fails, to be retried (`failurePolicy`).
+ * function then fails, to be retried (`failurePolicy`) if the failure is transient.
  */
 export const syncAttendanceWithBookings = functions
   .runWith(bookingSyncRuntimeOptions)
@@ -653,7 +671,9 @@ export const syncAttendanceWithBookings = functions
               customerId
             );
             // Unknown athlete (no bookings document): leave the entry as it is
-            await syncAttendanceEntry(db, organization, slotId, secretKeys);
+            await syncAttendanceEntry(db, organization, slotId, secretKeys, {
+              guard: true,
+            });
           })
         );
       }

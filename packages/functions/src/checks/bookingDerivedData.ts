@@ -47,8 +47,9 @@ import {
  *   the club's record of the lesson, and only the club can tell.
  * - attended slots: made to match the attendance (after the attendance repair), created, updated or removed
  *
- * The attended slots are checked against the attendance as read by the check: an attendance repair can change them
- * further (a second dry run after a repair shows what's left).
+ * The attended slots are checked against the attendance as it will be after the attendance repair (the planned
+ * entries), so an entry the repair changes (e.g. a cancelled booking's entry keeping the admin's attended interval)
+ * gets its attended slot in the same run.
  */
 
 /** Why a difference is reported but not repaired */
@@ -351,6 +352,32 @@ const findAttendanceDifferences = (
   return differences;
 };
 
+/**
+ * The attendance with the entries the attendance repair will write (`after` of the differences it repairs).
+ */
+const withPlannedRepair = (
+  attendance: Map<string, SlotAttendnace>,
+  differences: AttendanceDifference[]
+) => {
+  const planned = new Map(
+    [...attendance].map(([slotId, doc]) => [
+      slotId,
+      { ...doc, attendances: { ...(doc.attendances || {}) } },
+    ])
+  );
+  for (const { slotId, customerId, date, after, skipped } of differences) {
+    if (skipped) continue;
+    const doc = planned.get(slotId) || { date, attendances: {} };
+    if (after) {
+      doc.attendances[customerId] = after;
+    } else {
+      delete doc.attendances[customerId];
+    }
+    planned.set(slotId, doc);
+  }
+  return planned;
+};
+
 const findAttendedSlotDifferences = (
   attendedSlots: StoredAttendedSlot[],
   attendance: Map<string, SlotAttendnace>,
@@ -436,14 +463,15 @@ export const reconcileBookingDerivedData = async (
       currentSecretKeys,
       today
     ),
-    attendedSlots: checkAttendedSlots
-      ? findAttendedSlotDifferences(
-          attendedSlots,
-          attendance,
-          currentSecretKeys
-        )
-      : [],
+    attendedSlots: [],
   };
+  if (checkAttendedSlots) {
+    report.attendedSlots = findAttendedSlotDifferences(
+      attendedSlots,
+      withPlannedRepair(attendance, report.attendance),
+      currentSecretKeys
+    );
+  }
 
   if (!apply) return report;
 

@@ -33,6 +33,8 @@ import { waitFor } from "@/__testUtils__/helpers";
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 import { deliverFirestoreWriteEvent } from "@/__testUtils__/firestoreEvents";
 
+import { reconcileBookingDerivedData } from "../../../functions/src/checks/bookingDerivedData";
+
 /**
  * Regression tests for #987 (booking counts drifting from the number of bookings) and
  * #988 (attendance contradicting the booking it derives from).
@@ -113,6 +115,9 @@ const setUp = async (slotIds: string[], athleteCount: number) => {
 
   return { organization, athletes };
 };
+
+/** Lets the data triggers run (to check that they leave something alone) */
+const settle = () => new Promise((resolve) => setTimeout(resolve, 3000));
 
 const bookingPath = (
   organization: string,
@@ -332,6 +337,28 @@ describe("Booking derived data under at-least-once, unordered trigger delivery",
         );
 
         expect(await getCount(organization, slotId)).toEqual(0);
+      }
+    );
+  });
+
+  describe("countSlotsBookings: malformed bookings", () => {
+    testWithEmulator(
+      "ignores a booking with a malformed date and keeps counting the others",
+      async () => {
+        const slotId = "slot-a";
+        const {
+          organization,
+          athletes: [malformed, valid],
+        } = await setUp([slotId], 2);
+
+        await adminDb
+          .doc(bookingPath(organization, malformed, slotId))
+          .set({ date: 20300211, interval: intervals.short });
+        await book(organization, valid, slotId, intervals.short);
+
+        await waitFor(async () =>
+          expect(await getCount(organization, slotId)).toEqual(1)
+        );
       }
     );
   });
@@ -882,7 +909,7 @@ describe("Booking derived data under at-least-once, unordered trigger delivery",
     );
 
     testWithEmulator(
-      "clears the booked interval of an admin write from a copy older than the cancellation",
+      "leaves an admin write from a copy older than the cancellation to the reconciliation, which repairs it with triggers active",
       async () => {
         const {
           organization,
@@ -909,6 +936,20 @@ describe("Booking derived data under at-least-once, unordered trigger delivery",
           attendedInterval: intervals.late,
         });
 
+        // No booking: the attendance trigger leaves the entry alone (attendance written without the bookings isn't
+        // evidence enough to change anything)
+        await settle();
+        expect(await getAttendance(organization, slotId, athlete)).toEqual({
+          bookedInterval: intervals.long,
+          attendedInterval: intervals.late,
+        });
+
+        // The reconciliation repairs it (the data triggers run on its writes)
+        await reconcileBookingDerivedData(adminDb, organization, {
+          from: month,
+          to: month,
+          apply: true,
+        });
         await waitFor(async () => {
           expect(await getAttendance(organization, slotId, athlete)).toEqual({
             bookedInterval: null,
@@ -1007,6 +1048,88 @@ describe("Booking derived data under at-least-once, unordered trigger delivery",
             attendedInterval: intervals.late,
           })
         );
+      }
+    );
+
+    testWithEmulator(
+      "leaves attendance written for an athlete without a booking (data restore, test data) as it is",
+      async () => {
+        const {
+          organization,
+          athletes: [athlete],
+        } = await setUp([slotId], 1);
+
+        // As written by a restore or by test data, before (or without) the bookings
+        await adminWriteAttendance(organization, slotId, athlete, {
+          bookedInterval: intervals.long,
+          attendedInterval: intervals.long,
+        });
+
+        await settle();
+        expect(await getAttendance(organization, slotId, athlete)).toEqual({
+          bookedInterval: intervals.long,
+          attendedInterval: intervals.long,
+        });
+      }
+    );
+
+    testWithEmulator(
+      "keeps the attended interval and notes of a past lesson when the reconciliation corrects its booked interval, with the triggers active",
+      async () => {
+        const {
+          organization,
+          athletes: [athlete],
+        } = await setUp([], 1);
+        const pastSlot = "past-slot";
+        const pastDate = "2020-01-13";
+        await adminDb.doc(getSlotDocPath(organization, pastSlot)).set({
+          ...createSlot(pastSlot),
+          date: pastDate,
+        });
+        await waitFor(async () =>
+          expect(
+            (
+              await adminDb
+                .doc(getAttendanceDocPath(organization, pastSlot))
+                .get()
+            ).exists
+          ).toEqual(true)
+        );
+        await adminDb
+          .doc(bookingPath(organization, athlete, pastSlot))
+          .set({ date: pastDate, interval: intervals.long });
+        await waitFor(async () =>
+          expect(await getAttendance(organization, pastSlot, athlete)).toEqual({
+            bookedInterval: intervals.long,
+            attendedInterval: intervals.long,
+          })
+        );
+
+        // The club's record of the lesson, with a booked interval that doesn't match the booking
+        const record = {
+          bookedInterval: intervals.short,
+          attendedInterval: intervals.short,
+          bookingNotes: "A historical note",
+        };
+        await adminWriteAttendance(organization, pastSlot, athlete, record);
+
+        // Past lesson: the attendance trigger leaves the club's record alone
+        await settle();
+        expect(await getAttendance(organization, pastSlot, athlete)).toEqual(
+          record
+        );
+
+        // The reconciliation corrects the booked interval only, and the triggers its write sets off change nothing
+        await reconcileBookingDerivedData(adminDb, organization, {
+          from: "2020-01",
+          to: "2020-01",
+          apply: true,
+        });
+        await settle();
+        expect(await getAttendance(organization, pastSlot, athlete)).toEqual({
+          ...record,
+          bookedInterval: intervals.long,
+        });
       }
     );
   });

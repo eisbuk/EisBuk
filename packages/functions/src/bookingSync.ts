@@ -5,6 +5,7 @@ import {
   Firestore,
 } from "@google-cloud/firestore";
 import _ from "lodash";
+import { DateTime } from "luxon";
 
 import {
   BookingSubCollection,
@@ -314,7 +315,18 @@ export const syncAttendanceEntry = (
   {
     dryRun = false,
     bookedPartOnly = false,
-  }: SyncOptions & { bookedPartOnly?: boolean } = {}
+    guard = false,
+    today = DateTime.now().toISODate(),
+  }: SyncOptions & {
+    bookedPartOnly?: boolean;
+    /**
+     * Correct attendance written by someone else (see `syncAttendanceWithBookings`): create the entry of a booked
+     * athlete if it's missing; for lessons from `today` on, derive it as on a booking change; otherwise (no booking,
+     * or a past lesson's existing entry) leave it as it is, only made complete if partial.
+     */
+    guard?: boolean;
+    today?: string;
+  } = {}
 ): Promise<
   (SyncResult<CustomerAttendance | undefined> & { customerId: string }) | null
 > => {
@@ -376,11 +388,17 @@ export const syncAttendanceEntry = (
 
     const stored = (attendanceSnap.data() as SlotAttendnace | undefined)
       ?.attendances?.[id];
-    const after = deriveAttendanceEntry(
-      booking,
-      normalizeAttendanceEntry(stored),
-      { bookedPartOnly }
-    );
+    const lessonDate = (attendanceSnap.data()?.date || slotDate) as
+      | string
+      | undefined;
+    const isPastLesson = Boolean(lessonDate && lessonDate < today);
+    const current = normalizeAttendanceEntry(stored);
+    const after =
+      guard && (!booking || (current && isPastLesson))
+        ? current
+        : deriveAttendanceEntry(booking, current, {
+            bookedPartOnly: !guard && bookedPartOnly,
+          });
 
     // Compared with the stored entry: a malformed entry is rewritten
     const changed = !_.isEqual(stored, after);

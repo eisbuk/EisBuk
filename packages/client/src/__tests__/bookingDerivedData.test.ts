@@ -182,6 +182,9 @@ const setUpInconsistentData = async () => {
     rotatedStale: createAthlete("rotatedStale"),
     // Attended without a booking: an attended slot is due (missing)
     attendedOnly: createAthlete("attendedOnly"),
+    // Booking cancelled after the admin recorded attendance, entry not updated: the repair keeps the attendance
+    // (without the booking), and an attended slot is then due
+    cancelledAttended: createAthlete("cancelledAttended"),
   };
   // The older bookings documents of the athletes whose secret key changed
   const older = {
@@ -205,6 +208,7 @@ const setUpInconsistentData = async () => {
       athletes.rotatedStale,
       athletes.attendedOnly,
       athletes.consistent,
+      athletes.cancelledAttended,
     ].map((athlete) =>
       db.doc(getCustomerDocPath(organization, athlete.id)).set(athlete)
     ),
@@ -268,6 +272,7 @@ const setUpInconsistentData = async () => {
         [athletes.stray.id]: booked,
         [ghost]: booked,
         [athletes.attendedOnly.id]: entry(null, intervals.late),
+        [athletes.cancelledAttended.id]: entry(intervals.long, intervals.late),
       },
     }),
     attendanceRef(past.id).set({
@@ -363,6 +368,14 @@ describe("Reconciliation of data derived from bookings", () => {
             skipped: "unknown-athlete",
           },
           {
+            slotId: future.id,
+            customerId: athletes.cancelledAttended.id,
+            date: future.date,
+            before: entry(intervals.long, intervals.late),
+            expected: entry(null, intervals.late),
+            after: entry(null, intervals.late),
+          },
+          {
             // Past lesson: only the booked interval is repaired, the attended interval stays
             slotId: past.id,
             customerId: athletes.pastMismatch.id,
@@ -411,6 +424,12 @@ describe("Reconciliation of data derived from bookings", () => {
             slotId: future.id,
             customerId: athletes.consistent.id,
             before: { date: future.date, interval: intervals.late },
+          },
+          {
+            // Due after the attendance repair
+            slotId: future.id,
+            customerId: athletes.cancelledAttended.id,
+            after: { date: future.date, interval: intervals.late },
           },
         ])
       );
@@ -469,6 +488,7 @@ describe("Reconciliation of data derived from bookings", () => {
         // Unknown athlete: left as it was
         [ghost]: booked,
         [athletes.attendedOnly.id]: entry(null, intervals.late),
+        [athletes.cancelledAttended.id]: entry(null, intervals.late),
       });
       // Attended slots: the missing one created, the stale one removed
       const getAttendedSlot = async (athlete: CustomerFull) =>
@@ -484,6 +504,11 @@ describe("Reconciliation of data derived from bookings", () => {
         interval: intervals.late,
       });
       expect(await getAttendedSlot(athletes.consistent)).toEqual(undefined);
+      // The attended slot due after the attendance repair, in the same run
+      expect(await getAttendedSlot(athletes.cancelledAttended)).toEqual({
+        date: future.date,
+        interval: intervals.late,
+      });
       expect(await getAttendance(past.id)).toEqual({
         [athletes.pastMismatch.id]: entry(intervals.long, intervals.short),
         // Past lesson, no booking: left for the club to review
@@ -574,7 +599,7 @@ describe("Reconciliation of data derived from bookings", () => {
         athletes.missing.id,
       ]);
       expect(Object.keys(check.strayAttendances[future.id]).sort()).toEqual(
-        [athletes.stray.id, ghost].sort()
+        [athletes.stray.id, athletes.cancelledAttended.id, ghost].sort()
       );
       // Past lessons are out of the check's period
       expect(check.mismatchedAttendances[past.id]).toEqual(undefined);
@@ -587,6 +612,7 @@ describe("Reconciliation of data derived from bookings", () => {
         [athletes.missing.id]: booked,
         [ghost]: booked,
         [athletes.attendedOnly.id]: entry(null, intervals.late),
+        [athletes.cancelledAttended.id]: entry(null, intervals.late),
       });
       expect(await getAttendance(rotation.id)).toEqual({
         [athletes.rotated.id]: entry(intervals.short, intervals.short),
