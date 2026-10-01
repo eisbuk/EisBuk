@@ -9,8 +9,9 @@
 #
 # This script must never report success for a deploy that did not complete:
 # - firebase-tools 12.2.1 can exit with code 0 without deploying anything: if the
-#   first function update in a region is rejected, the other updates wait forever
-#   for a source token, node runs out of work and exits 0 (eisbuk/EisBuk#986).
+#   first function update of a region and memory size is rejected, the other
+#   updates of that group wait forever for a source token, node runs out of work
+#   and exits 0 (eisbuk/EisBuk#986).
 #   So we require "Deploy complete!" in addition to exit code 0.
 # - On timeout we kill the deploy and fail, instead of waiting for it with nobody
 #   reading its output (which deadlocks once the terminal buffer is full).
