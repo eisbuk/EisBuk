@@ -197,6 +197,17 @@ describe("Firestore reducer", () => {
       ).toBe(afterSecond);
     });
 
+    test("should ignore received documents for a listener that doesn't exist (e.g. snapshot arriving after unsubscribing)", () => {
+      const initialState: FirestoreState = { data: {}, listeners: {} };
+
+      const updatedState = createFirestoreReducer()(
+        initialState,
+        markDocumentsReceived(OrgSubCollection.SlotsByDay, ["2026-10"])
+      );
+
+      expect(updatedState).toBe(initialState);
+    });
+
     test("should keep received documents when the listener is updated (e.g. subscribing to more documents)", () => {
       const reducer = createFirestoreReducer();
       const state = reducer(

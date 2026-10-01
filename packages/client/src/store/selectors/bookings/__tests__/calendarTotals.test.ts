@@ -82,6 +82,15 @@ const bookedSlots = {
   "slot-oct-25": { date: "2026-10-25", interval: "17:00-17:50" },
   "slot-oct-26": { date: "2026-10-26", interval: "17:00-17:50" },
 };
+const slotsByDayListener = {
+  consumers: ["consumer-id"],
+  unsubscribe: () => {},
+  documents: ["2026-09", "2026-10", "2026-11"],
+  meta: {
+    organization: "test-organization",
+    currentDate: DateTime.fromISO("2026-10-01"),
+  },
+};
 // #endregion fixtures
 
 // #region helpers
@@ -453,6 +462,8 @@ describe("Calendar totals", () => {
               slotsByDay: { "2026-09": slotsByDay["2026-09"] },
               bookedSlots,
             },
+            // The month documents' listener, as registered by the customer area
+            listeners: { [OrgSubCollection.SlotsByDay]: slotsByDayListener },
           },
           app: { calendarDay: DateTime.fromISO("2026-10-01") },
         });

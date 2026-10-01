@@ -94,7 +94,11 @@ export const createFirestoreReducer: FirestoreReducerFactory =
         const { collection, ids } =
           action.payload as FirestoreReducerAction<FirestoreAction.MarkDocumentsReceived>["payload"];
         const listener = state.listeners[collection as SubscriptionWhitelist];
-        const receivedDocuments = listener?.receivedDocuments || [];
+        // Ignore snapshots arriving after the listener was removed:
+        // recording them would create an incomplete listener entry
+        if (!listener) return state;
+
+        const receivedDocuments = listener.receivedDocuments || [];
         const newIds = ids.filter((id) => !receivedDocuments.includes(id));
 
         if (!newIds.length) return state;

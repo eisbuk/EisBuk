@@ -67,6 +67,18 @@ const setupStore = () =>
           [slotA.id]: { date: slotA.date, interval: "16:00-17:50" },
         },
       },
+      // The month documents' listener, as registered by the customer area
+      listeners: {
+        [OrgSubCollection.SlotsByDay]: {
+          consumers: ["consumer-id"],
+          unsubscribe: () => {},
+          documents: ["2026-09", "2026-10", "2026-11"],
+          meta: {
+            organization: "test-organization",
+            currentDate: DateTime.fromISO("2026-10-01"),
+          },
+        },
+      },
     },
     app: { calendarDay: DateTime.fromISO("2026-10-01"), secretKey },
   });
