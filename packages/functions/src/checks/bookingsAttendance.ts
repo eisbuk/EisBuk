@@ -3,7 +3,6 @@ import {
   CollectionReference,
   DocumentData,
   DocumentSnapshot,
-  FieldValue,
 } from "@google-cloud/firestore";
 
 import {
@@ -25,6 +24,8 @@ import {
 
 import { Firestore } from "./types";
 import _ from "lodash";
+
+import { reconcileBookingDerivedData } from "./bookingDerivedData";
 
 type MismatchReport = {
   booking: CustomerBookingEntry;
@@ -162,107 +163,47 @@ export const findBookedSlotsAttendanceMismatches = async (
   };
 };
 
+/**
+ * Repairs the attendance entries that contradict the bookings, for lessons from the beginning of the T-3 month on
+ * (the same period as the check).
+ *
+ * It used to write both intervals from a (possibly old) check report, overwriting the attended interval recorded
+ * by the admin. It now re-derives each entry from the current booking with the sync the data triggers use, so the
+ * admin's attended interval is kept and bookings changed in the meantime are respected (see `bookingDerivedData.ts`).
+ */
 export const bookedSlotsAttendanceAutofix = async (
   db: Firestore,
-  organization: string,
-  mismatches: BookedSlotsAttendanceSanityCheckReport
+  organization: string
 ): Promise<BookedSlotsAttendanceAutofixReport> => {
-  const report = {
+  const report: BookedSlotsAttendanceAutofixReport = {
     timestamp: DateTime.now().toISO(),
     created: {},
     deleted: {},
     updated: {},
   };
 
-  const batch = db.batch();
+  const from = DateTime.now()
+    .minus({ months: 3 })
+    .startOf("month")
+    .toFormat("yyyy-MM");
+  const { attendance } = await reconcileBookingDerivedData(db, organization, {
+    from,
+    to: "9999-12",
+    apply: true,
+    counts: false,
+  });
 
-  const { mismatchedAttendances, missingAttendances, strayAttendances } =
-    mismatches;
-
-  const orgRef = db.collection(Collection.Organizations).doc(organization);
-  const attendance = orgRef.collection(OrgSubCollection.Attendance);
-
-  /** Document we're queueing updates for the given slot's attendance into */
-  type AttendanceUpdate = {
-    attendances: {
-      [customerId: string]: CustomerAttendance | FieldValue;
-    };
-  };
-  /** Aggregated updates per each slot attendance document */
-  const updates = new Map<string, AttendanceUpdate>();
-  const queueUpdate = (
-    slotId: string,
-    customerId: string,
-    after: CustomerAttendance | FieldValue
-  ) => {
-    const slot = updates.get(slotId) || { attendances: {} };
-    slot.attendances[customerId] = after;
-    updates.set(slotId, slot);
-  };
-
-  // Delete strays
-  //
-  // Result: Iterable of { slotId => { [customerId: string]: { attendance } }}
-  const toDelete = wrapIter(Object.entries(strayAttendances))
-    // Result: Iterable of { slotId => { customerId => { attendance } } } pairs
-    .map(valueMapper((customers) => Object.entries(customers)))
-    // Result: Iterable of [slotId, customerId, { attendance }] tuples
-    .flatMap(([slotId, c]) => c.map((kv) => [slotId, ...kv] as const));
-
-  for (const [slotId, customerId, r] of toDelete) {
-    const before = r.attendance;
-
-    queueUpdate(slotId, customerId, FieldValue.delete());
+  for (const { slotId, customerId, before, after, skipped } of attendance) {
+    if (skipped || _.isEqual(before, after)) continue;
     // Using _.set as a convenience method to create all of the parent nodes for the property (if they don't exist)
-    _.set(report, ["deleted", slotId, customerId], { before });
+    if (!before) {
+      _.set(report, ["created", slotId, customerId], { after });
+    } else if (!after) {
+      _.set(report, ["deleted", slotId, customerId], { before });
+    } else {
+      _.set(report, ["updated", slotId, customerId], { before, after });
+    }
   }
-
-  // Create missing
-  //
-  // Result: Iterable of { slotId => { [customerId: string]: { booking } }}
-  const toCreate = wrapIter(Object.entries(missingAttendances))
-    // Result: Iterable of { slotId => { customerId => { booking } } } pairs
-    .map(valueMapper((customers) => Object.entries(customers)))
-    // Result: Iterable of [slotId, customerId, { booking }] tuples
-    .flatMap(([slotId, c]) => c.map((kv) => [slotId, ...kv] as const));
-
-  for (const [slotId, customerId, r] of toCreate) {
-    const bookedInterval = r.booking?.interval;
-    const attendedInterval = r.booking?.interval;
-
-    const after = { bookedInterval, attendedInterval };
-
-    queueUpdate(slotId, customerId, after);
-    // Using _.set as a convenience method to create all of the parent nodes for the property (if they don't exist)
-    _.set(report, ["created", slotId, customerId], { after });
-  }
-
-  // Update mismatched
-  //
-  // Result: Iterable of { slotId => { [customerId: string]: { attendance, booking } }}
-  const toUpdate = wrapIter(Object.entries(mismatchedAttendances))
-    // Result: Iterable of { slotId => { customerId => { attendance, booking } } } pairs
-    .map(valueMapper((customers) => Object.entries(customers)))
-    // Result: Iterable of [slotId, customerId, { attendance, booking }] tuples
-    .flatMap(([slotId, c]) => c.map((kv) => [slotId, ...kv] as const));
-
-  for (const [slotId, customerId, r] of toUpdate) {
-    const bookedInterval = r.booking?.interval;
-    const attendedInterval = r.booking?.interval;
-
-    const before = r.attendance;
-    const after = { bookedInterval, attendedInterval };
-
-    queueUpdate(slotId, customerId, after);
-    // Using _.set as a convenience method to create all of the parent nodes for the property (if they don't exist)
-    _.set(report, ["updated", slotId, customerId], { before, after });
-  }
-
-  // Apply (batch) updates
-  for (const [slotId, update] of updates) {
-    batch.set(attendance.doc(slotId), update, { merge: true });
-  }
-  await batch.commit();
 
   return report;
 };

@@ -16,6 +16,7 @@ import {
 } from "./slotAttendance";
 import { slotsSlotsByDayAutofix } from "./slotSlotsByDay";
 import { bookedSlotsAttendanceAutofix } from "./bookingsAttendance";
+import { reconcileBookingDerivedData } from "./bookingDerivedData";
 
 /**
  * Goes through all 'slotsByDay' entries, checks each date to see if there are no slots in the day and deletes the day if empty.
@@ -221,18 +222,65 @@ export const dbBookedSlotsAttendanceAutofix = functions
           SanityCheckKind.BookedSlotsAttendance
         );
 
-        const report = await checker
-          .getLatestReport()
-          .then((r) => (!r || r.attendanceFixes ? checker.checkAndWrite() : r));
+        // Always start from fresh data: a stored report can be out of date
+        const report = await checker.checkAndWrite();
 
         const attendanceFixes = await bookedSlotsAttendanceAutofix(
           db,
-          organization,
-          report
+          organization
         );
         checker.writeReport({ ...report, attendanceFixes });
 
         return attendanceFixes;
+      }
+    )
+  );
+
+/**
+ * Checks the data derived from bookings (slot booking counts, booked part of attendance) against the bookings for
+ * the lessons in the months `from`-`to` ("YYYY-MM"), from fresh reads. Dry run unless `apply` is `true`: then it
+ * repairs the differences (see `bookingDerivedData.ts`) and logs what it wrote.
+ */
+export const dbBookingDerivedDataReconcile = functions
+  .runWith({
+    memory: "512MB",
+    timeoutSeconds: 300,
+  })
+  .region(__functionsZone__)
+  .https.onCall(
+    wrapHttpsOnCallHandler(
+      "dbBookingDerivedDataReconcile",
+      async (
+        {
+          organization,
+          from,
+          to,
+          apply,
+        }: { organization: string; from: string; to: string; apply?: boolean },
+        { auth }
+      ) => {
+        if (!(await checkIsAdmin(organization, auth))) throwUnauth();
+
+        const isMonth = (month: unknown) =>
+          typeof month === "string" && /^\d{4}-\d{2}$/.test(month);
+        if (!isMonth(from) || !isMonth(to) || from > to) {
+          throw new functions.https.HttpsError(
+            "invalid-argument",
+            "'from' and 'to' must be months (YYYY-MM), 'from' not after 'to'"
+          );
+        }
+
+        const report = await reconcileBookingDerivedData(
+          admin.firestore(),
+          organization,
+          { from, to, apply: apply === true }
+        );
+        if (report.applied) {
+          functions.logger.info("dbBookingDerivedDataReconcile: applied", {
+            report,
+          });
+        }
+        return report;
       }
     )
   );
