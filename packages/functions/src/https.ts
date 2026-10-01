@@ -51,7 +51,7 @@ export const finalizeBookings = functions
       if (!customerInStore.exists) {
         throw new functions.https.HttpsError(
           "not-found",
-          BookingsErrors.CustomerNotFound
+          BookingsErrors.CustomerNotFound,
         );
       }
 
@@ -61,13 +61,13 @@ export const finalizeBookings = functions
       if (secretKey !== existingSecretKey) {
         throw new functions.https.HttpsError(
           "invalid-argument",
-          BookingsErrors.SecretKeyMismatch
+          BookingsErrors.SecretKeyMismatch,
         );
       }
 
       // remove `extendedDate`
       await customerRef.set({ extendedDate: null }, { merge: true });
-    })
+    }),
   );
 
 /**
@@ -104,7 +104,7 @@ export const customerSelfUpdate = functions
         if (!customerInStore.exists) {
           throw new functions.https.HttpsError(
             "not-found",
-            BookingsErrors.CustomerNotFound
+            BookingsErrors.CustomerNotFound,
           );
         }
 
@@ -114,7 +114,7 @@ export const customerSelfUpdate = functions
         if (customer.secretKey !== existingSecretKey) {
           throw new functions.https.HttpsError(
             "invalid-argument",
-            BookingsErrors.SecretKeyMismatch
+            BookingsErrors.SecretKeyMismatch,
           );
         }
 
@@ -122,13 +122,16 @@ export const customerSelfUpdate = functions
         // (CustomerBase). Admin SDK writes bypass firestore rules, so without
         // this whitelist an athlete could write arbitrary fields (categories,
         // extendedDate, deleted, ...) to their own customer document.
+        //
+        // `certificateExpiration` is managed by club admins only (#955). It's
+        // left out (silently ignored, not rejected) because the profile form
+        // always sends it: older clients must still be able to save the rest.
         const selfEditableFields = [
           "name",
           "surname",
           "email",
           "phone",
           "birthday",
-          "certificateExpiration",
           "photoURL",
           "privacyPolicyAccepted",
         ] as const;
@@ -137,12 +140,12 @@ export const customerSelfUpdate = functions
             customer[field] !== undefined
               ? { ...acc, [field]: customer[field] }
               : acc,
-          {} as Partial<CustomerBase>
+          {} as Partial<CustomerBase>,
         );
 
         await customerRef.set(updates, { merge: true });
-      }
-    )
+      },
+    ),
   );
 
 /**
@@ -200,7 +203,7 @@ export const customerSelfRegister = functions
             HTTPSErrors.SelfRegInvalidCode,
             {
               registrationCode,
-            }
+            },
           );
         }
 
@@ -237,8 +240,8 @@ To verify the athlete, add them to a category/categories on their respective pro
         }
 
         return fullCustomer;
-      }
-    )
+      },
+    ),
   );
 
 /**
@@ -282,7 +285,7 @@ export const acceptPrivacyPolicy = functions
       if (!customerInStore.exists) {
         throw new functions.https.HttpsError(
           "not-found",
-          BookingsErrors.CustomerNotFound
+          BookingsErrors.CustomerNotFound,
         );
       }
 
@@ -292,14 +295,14 @@ export const acceptPrivacyPolicy = functions
       if (secretKey !== existingSecretKey) {
         throw new functions.https.HttpsError(
           "invalid-argument",
-          BookingsErrors.SecretKeyMismatch
+          BookingsErrors.SecretKeyMismatch,
         );
       }
 
       // Store the accepted privacy policy timestamp to the customer structure
       await customerRef.set(
         { privacyPolicyAccepted: { timestamp } },
-        { merge: true }
+        { merge: true },
       );
-    })
+    }),
   );

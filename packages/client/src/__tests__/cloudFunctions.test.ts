@@ -3,6 +3,7 @@
  */
 
 import { httpsCallable, FunctionsError } from "@firebase/functions";
+import { doc, setDoc } from "@firebase/firestore";
 import { describe, expect } from "vitest";
 
 import {
@@ -20,7 +21,7 @@ import {
 } from "@eisbuk/shared";
 import { CloudFunction } from "@eisbuk/shared/ui";
 
-import { functions, adminDb } from "@/__testSetup__/firestoreSetup";
+import { functions, adminDb, db } from "@/__testSetup__/firestoreSetup";
 import { emailFrom, setUpOrganization } from "@/__testSetup__/node";
 
 import {
@@ -469,6 +470,86 @@ describe("Cloud functions", () => {
         expect(Boolean(updatedSaul.deleted)).toEqual(Boolean(saul.deleted));
         expect(updatedSaul.subscriptionNumber).toEqual(saul.subscriptionNumber);
         expect(updatedSaul.secretKey).toEqual(saul.secretKey);
+      },
+    );
+
+    testWithEmulator(
+      "should not let the customer change or clear certificateExpiration, but save the other fields of the same request (#955)",
+      async () => {
+        const { organization } = await setUpOrganization();
+        const saulRef = adminDb.doc(getCustomerDocPath(organization, saul.id));
+        await saulRef.set(saul);
+
+        // An (older) client sends the whole profile form, including the
+        // certificate date: the request must succeed, ignoring only that field
+        const attemptUpdate = async (
+          name: string,
+          certificateExpiration: string,
+        ) => {
+          await httpsCallable(
+            functions,
+            CloudFunction.CustomerSelfUpdate,
+          )({
+            organization,
+            customer: {
+              ...saul,
+              name,
+              phone: "+3900000000",
+              certificateExpiration,
+            },
+          });
+
+          const updatedSaul = (await saulRef.get()).data()!;
+          expect(updatedSaul.name).toEqual(name);
+          expect(updatedSaul.phone).toEqual("+3900000000");
+          expect(updatedSaul.certificateExpiration).toEqual(
+            saul.certificateExpiration,
+          );
+        };
+        // Try to postpone the date
+        await attemptUpdate("Jimmy", "2099-12-31");
+        // Try to clear the date
+        await attemptUpdate("James", "");
+
+        // The athlete-facing copy keeps the club's date too
+        await waitFor(async () => {
+          const bookingsSnap = await adminDb
+            .doc(getBookingsDocPath(organization, saul.secretKey))
+            .get();
+          expect(bookingsSnap.data()).toEqual(
+            expect.objectContaining({
+              name: "James",
+              certificateExpiration: saul.certificateExpiration,
+            }),
+          );
+        });
+      },
+    );
+
+    testWithEmulator(
+      "should still let an admin change certificateExpiration, and mirror it to the bookings copy (#955)",
+      async () => {
+        // Signs the client SDK in as an org admin: writes go through the rules
+        const { organization } = await setUpOrganization();
+        await adminDb.doc(getCustomerDocPath(organization, saul.id)).set(saul);
+
+        // Same write the admin customer form does (updateCustomer thunk)
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { id, ...saulData } = saul;
+        await setDoc(
+          doc(db, getCustomerDocPath(organization, saul.id)),
+          { ...saulData, certificateExpiration: "2030-06-30" },
+          { merge: true },
+        );
+
+        await waitFor(async () => {
+          const bookingsSnap = await adminDb
+            .doc(getBookingsDocPath(organization, saul.secretKey))
+            .get();
+          expect(bookingsSnap.data()?.certificateExpiration).toEqual(
+            "2030-06-30",
+          );
+        });
       },
     );
 
