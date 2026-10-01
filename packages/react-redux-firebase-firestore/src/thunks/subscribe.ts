@@ -246,6 +246,9 @@ export const updateSubscription: SubscribeFunction =
         const docRef = doc(collRef, docId);
         const unsubscribe = onSnapshot(
           docRef,
+          // Metadata changes are needed to receive the server's confirmation of a snapshot first served
+          // from the cache, when nothing changed (e.g. a document missing from both): see `createDocSnapshotHandler`
+          { includeMetadataChanges: true },
           createDocSnapshotHandler(dispatch, collName)
         );
         unsubscribeFunctions.push(unsubscribe);
@@ -339,6 +342,10 @@ export const createDocSnapshotHandler: OnSnapshotHandlerHOF<"doc"> =
       dispatch(deleteLocalDocuments(storeAs, [docId]));
     }
 
-    // Record the first snapshot, so that a missing document can be told apart from one still loading
-    dispatch(markDocumentsReceived(storeAs, [docId]));
+    // Record the first snapshot confirmed by the server, so that a missing document can be told apart from one
+    // still loading. A snapshot from the cache doesn't prove a document is missing (e.g. offline, or the document
+    // was evicted from the cache): until the server confirms it, the document is treated as still loading.
+    if (!docSnapshot.metadata.fromCache) {
+      dispatch(markDocumentsReceived(storeAs, [docId]));
+    }
   };

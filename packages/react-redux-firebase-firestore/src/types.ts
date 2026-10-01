@@ -115,6 +115,7 @@ export interface FirestoreListener {
    * Ids of subscribed documents (`documents` constraint) for which a first snapshot has been received.
    * Lets consumers tell a document that is still loading (not in the list) from one that
    * doesn't exist in firestore (in the list, but not in `firestore.data`).
+   * Only snapshots confirmed by the server count: one served from the cache doesn't prove a document is missing.
    */
   receivedDocuments?: string[];
   /** @TODO add additional meta functionality (for reporting) here */

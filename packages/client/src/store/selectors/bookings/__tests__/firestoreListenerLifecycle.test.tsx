@@ -25,6 +25,7 @@ const snapshotListeners = vi.hoisted(
   () =>
     [] as {
       path: string;
+      options?: { includeMetadataChanges?: boolean };
       handler: (snapshot: any) => void;
       unsubscribe: ReturnType<typeof vi.fn>;
     }[]
@@ -39,15 +40,22 @@ vi.mock("@firebase/firestore", () => ({
   }),
   query: (ref: unknown) => ref,
   where: () => undefined,
-  onSnapshot: (ref: { path: string }, handler: (snapshot: any) => void) => {
+  // onSnapshot(ref, handler) or onSnapshot(ref, options, handler)
+  onSnapshot: (ref: { path: string }, ...args: any[]) => {
+    const handler = args[args.length - 1];
+    const options = args.length > 1 ? args[0] : undefined;
     const unsubscribe = vi.fn();
-    snapshotListeners.push({ path: ref.path, handler, unsubscribe });
+    snapshotListeners.push({ path: ref.path, options, handler, unsubscribe });
     return unsubscribe;
   },
 }));
 
-/** A snapshot of a document that doesn't exist */
-const missingDocSnapshot = (id: string) => ({ id, data: () => undefined });
+/** A snapshot of a document that doesn't exist, from the server unless `fromCache` */
+const missingDocSnapshot = (id: string, fromCache = false) => ({
+  id,
+  data: () => undefined,
+  metadata: { fromCache, hasPendingWrites: false },
+});
 // #endregion firestoreMock
 
 const SlotsByDaySubscriber: React.FC = () => {
@@ -142,5 +150,62 @@ describe("Firestore listener lifecycle (slotsByDay, as subscribed by the custome
     snapshotListeners.forEach(({ unsubscribe }) =>
       expect(unsubscribe).toHaveBeenCalledTimes(1)
     );
+  });
+
+  test("cached absence of the month's document -> server confirmation", async () => {
+    // The athlete has bookings for a month whose 'slotsByDay' document isn't in the local cache
+    // (e.g. offline, or evicted from the cache)
+    const store = getNewStore(
+      {
+        app: { calendarDay: DateTime.fromISO("2026-10-01") },
+        firestore: {
+          data: {
+            bookedSlots: {
+              "slot-oct-02": { date: "2026-10-02", interval: "16:00-17:50" },
+            },
+          },
+          listeners: {},
+        },
+      },
+      { getFirestore: vi.fn(), getFunctions: vi.fn() } as any
+    );
+    render(
+      <ReduxProvider store={store}>
+        <SlotsByDaySubscriber />
+      </ReduxProvider>
+    );
+
+    // Document listeners receive metadata-only snapshots, so that the server's confirmation arrives
+    // even when nothing changed
+    snapshotListeners.forEach(({ options }) =>
+      expect(options).toEqual({ includeMetadataChanges: true })
+    );
+    const octoberListener = snapshotListeners.find(({ path }) =>
+      path.endsWith("/2026-10")
+    )!;
+
+    // Snapshot from the cache: the document is absent, but that isn't confirmed
+    act(() => {
+      octoberListener.handler(missingDocSnapshot("2026-10", true));
+    });
+    expect(getSlotsByDayListener(store)?.receivedDocuments).toBeUndefined();
+    // Still treated as loading: the booking is neither shown nor reported as a missing lesson
+    expect(getMonthBookingsSummary(store.getState()).excluded).toEqual([]);
+
+    // Server confirmation (metadata-only snapshot): the document really doesn't exist
+    act(() => {
+      octoberListener.handler(missingDocSnapshot("2026-10", false));
+    });
+    expect(getSlotsByDayListener(store)?.receivedDocuments).toEqual([
+      "2026-10",
+    ]);
+    expect(getMonthBookingsSummary(store.getState()).excluded).toEqual([
+      {
+        slotId: "slot-oct-02",
+        date: "2026-10-02",
+        interval: "16:00-17:50",
+        reason: "missing-slot",
+      },
+    ]);
   });
 });
