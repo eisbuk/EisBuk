@@ -27,7 +27,7 @@ type firestoreOnDeleteHandler = Parameters<DocumentBuilder["onDelete"]>[0];
 type FunctionType = "http" | "callable" | "document" | "schedule";
 
 /** Maximum time a function waits for its events to be sent to Sentry */
-const FLUSH_TIMEOUT_MS = 2000;
+const FLUSH_TIMEOUT_MS = 1000;
 
 export function getLocationHeaders(req: https.Request): {
   country?: string;

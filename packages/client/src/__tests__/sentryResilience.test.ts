@@ -23,7 +23,8 @@ import path from "path";
 import { createRequire } from "module";
 
 // Upper bound for the time a wrapped function may spend on reporting
-const maxReportingDelay = 3000;
+// (the flush is bounded to 1 s, plus a margin)
+const maxReportingDelay = 1500;
 
 type WrapperModule =
   typeof import("../../../functions/src/sentry-serverless-firebase.js");
