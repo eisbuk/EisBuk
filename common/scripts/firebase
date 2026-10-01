@@ -1,5 +1,17 @@
 #!/bin/sh
 
-dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+# Runs the Firebase CLI that `rush install` puts in @eisbuk/client, so every
+# caller (CI, rush commands, local shells) uses the firebase-tools version and
+# dependency tree recorded in common/config/rush/pnpm-lock.yaml.
+# A separate `npm install` of firebase-tools would resolve its dependencies
+# afresh and can pick versions that don't run on our Node version.
 
-exec node "$dir/install-run.js" firebase-tools@12.2.1 firebase $@
+dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+bin="$dir/../../packages/client/node_modules/.bin/firebase"
+
+if [ ! -x "$bin" ]; then
+  echo "firebase-tools is not installed: run 'rush install' first." >&2
+  exit 1
+fi
+
+exec "$bin" "$@"
