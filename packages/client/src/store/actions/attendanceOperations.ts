@@ -156,7 +156,7 @@ export const markAbsence: UpdateAttendance =
 
       await updateDocInTransaction(slotToUpdate, (data) => {
         const entry = data?.attendances?.[customerId];
-        if (!entry) return;
+        if (!entry) return undefined;
         return entry.bookedInterval
           ? { [`attendances.${customerId}.attendedInterval`]: null }
           : { [`attendances.${customerId}`]: DELETE_FIELD };
