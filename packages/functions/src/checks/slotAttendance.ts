@@ -19,6 +19,8 @@ import {
   SlotBookingsSanityCheckReport,
 } from "@eisbuk/shared";
 
+import { syncSlotAttendance } from "../slotSync";
+
 type Firestore = admin.firestore.Firestore;
 
 const relevantCollections = [
@@ -94,88 +96,27 @@ export const attendanceSlotMismatchAutofix = async (
   organization: string,
   mismatches: SlotAttendanceSanityCheckReport
 ): Promise<SlotAttendanceAutofixReport> => {
-  const batch = db.batch();
-
-  const { unpairedEntries, dateMismatches } = mismatches;
-
-  const orgRef = db.collection(Collection.Organizations).doc(organization);
-  const slots = orgRef.collection(OrgSubCollection.Slots);
-  const attendance = orgRef.collection(OrgSubCollection.Attendance);
-
-  const attendanceFromSlot = ({ date }: SlotInterface): SlotAttendnace => ({
-    date,
-    attendances: {},
+  const ids = new Set([
+    ...Object.keys(mismatches.unpairedEntries),
+    ...Object.keys(mismatches.dateMismatches),
+  ]);
+  const results = await Promise.all(
+    [...ids].map(async (id) => ({
+      id,
+      ...(await syncSlotAttendance(db, organization, id)),
+    }))
+  );
+  const created: Record<string, SlotAttendnace> = {};
+  const deleted: Record<string, SlotAttendnace> = {};
+  const updated: Record<string, SlotAttendanceUpdate> = {};
+  results.forEach(({ id, before, after }) => {
+    if (!before && after) created[id] = after;
+    else if (before && !after) deleted[id] = before;
+    else if (before && after && before.date !== after.date) {
+      updated[id] = { date: { before: before.date, after: after.date } };
+    }
   });
-
-  const created = {} as Record<string, SlotAttendnace>;
-  const deleted = {} as Record<string, SlotAttendnace>;
-  const updated = {} as Record<string, SlotAttendanceUpdate>;
-
-  // Create attendance entry for every slot entry without one
-  await Promise.all(
-    Object.entries(unpairedEntries).map(async ([id, { existing, missing }]) => {
-      // At this point there can only be two mismatch variants:
-      // - slot and no attendance
-      // - attendance and no slot
-      //
-      // TODO: update this when the check situation changes
-      switch (true) {
-        case existing.includes(OrgSubCollection.Slots) &&
-          missing.includes(OrgSubCollection.Attendance):
-          const slotRef = await slots.doc(id).get();
-          const slotData = slotRef.data() as SlotInterface;
-          const attendanceDoc = attendanceFromSlot(slotData);
-          batch.set(attendance.doc(id), attendanceDoc, { merge: true });
-
-          // Save the created data for report
-          created[id] = attendanceDoc;
-          break;
-
-        case existing.includes(OrgSubCollection.Attendance) &&
-          missing.includes(OrgSubCollection.Slots):
-          const toDelete = attendance.doc(id);
-
-          batch.delete(toDelete);
-
-          // Save the existing data before deletion (before batch.commit) and store for report
-          deleted[id] = await toDelete
-            .get()
-            .then((snap) => snap.data() as SlotAttendnace);
-          break;
-
-        default:
-          throw new Error(
-            "Found part of code that should be unreachable: slot attendance mismatches"
-          );
-      }
-    })
-  );
-
-  // Update mismatched dates so that attendance has the same date as the corresponding slot
-  await Promise.all(
-    Object.entries(dateMismatches).map(async ([id, { slots: date }]) => {
-      const toUpdate = attendance.doc(id);
-      batch.set(attendance.doc(id), { date }, { merge: true });
-
-      // Save the update for report
-      const before = await toUpdate
-        .get()
-        .then((snap) => snap.data() as SlotAttendnace)
-        .then(({ date }) => date);
-      updated[id] = {
-        date: { before, after: date },
-      };
-    })
-  );
-
-  await batch.commit();
-
-  return {
-    timestamp: DateTime.now().toISO(),
-    created,
-    deleted,
-    updated,
-  };
+  return { timestamp: DateTime.now().toISO(), created, deleted, updated };
 };
 
 export const bookingsAutofix = async (
