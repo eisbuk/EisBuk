@@ -10,6 +10,7 @@ import {
   SlotInterface,
   SlotType,
   calculateIntervalDuration,
+  getIntervalMinutes,
 } from "@eisbuk/shared";
 
 import { BookingCandidate, selectBooking } from "./bookingSync";
@@ -80,6 +81,8 @@ export const syncCustomerBookingStats = (
     selected.forEach(({ booking }, index) => {
       const slot = slots[index].data() as SlotInterface | undefined;
       if (!slot || slot.date !== booking.date || !(slot.type in stats)) return;
+      // A malformed historical interval must not poison the whole month's total.
+      if (getIntervalMinutes(booking.interval) === null) return;
       stats[slot.type] += calculateIntervalDuration(booking.interval);
     });
     if (!_.isEqual(customer.bookingStats?.[month], stats)) {
