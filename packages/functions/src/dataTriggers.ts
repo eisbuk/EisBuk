@@ -68,53 +68,50 @@ export const addCustomerIdAndSecretKey = functions
       "addCustomerIdAndSecretKey",
       async (change, context) => {
         const db = admin.firestore();
-        const batch = db.batch();
-
-        // this trigger should run only on create
-        const isCreate = change.after.exists && !change.before.exists;
-        const isDelete = !change.after.exists;
-
-        // exit early on delete
-        if (isDelete) {
-          return;
-        }
-
         const { organization, customerId } = context.params as Record<
           string,
           string
         >;
-        const customerData = change.after.data() as CustomerWithOptionalIDs;
-        const secretKey = customerData.secretKey || uuid();
-
         const orgRef = db
           .collection(Collection.Organizations)
           .doc(organization);
+        const customerRef = orgRef
+          .collection(OrgSubCollection.Customers)
+          .doc(customerId);
+        const bookingsRef = orgRef.collection(OrgSubCollection.Bookings);
 
-        // update customer entry with `id` and `secretKey` only on create
-        if (isCreate) {
-          batch.set(
-            orgRef.collection(OrgSubCollection.Customers).doc(customerId),
-            {
+        // Events may be delayed or repeated. Assign identity and mirror the current
+        // profile in one transaction so a retry cannot rotate the key or resurrect a customer.
+        await db.runTransaction(async (tx) => {
+          const current = await tx.get(customerRef);
+          const mirrors = await tx.get(
+            bookingsRef.where("id", "==", customerId)
+          );
+          const data = current.data() as CustomerWithOptionalIDs | undefined;
+          const secretKey = data ? data.secretKey || uuid() : undefined;
+
+          // Keep historical subcollections accessible to reconciliation, but prevent
+          // obsolete keys and hard-deleted profiles from authorizing new bookings.
+          mirrors.docs.forEach((mirror) => {
+            if (mirror.id !== secretKey) {
+              tx.update(mirror.ref, { deleted: true, categories: [] });
+            }
+          });
+          if (!data || !secretKey) return;
+
+          if (data.id !== customerId || data.secretKey !== secretKey) {
+            tx.update(customerRef, { id: customerId, secretKey });
+          }
+          tx.set(
+            bookingsRef.doc(secretKey),
+            sanitizeCustomer({
+              ...data,
               id: customerId,
               secretKey,
-            } as Pick<Customer, "id" | "secretKey">,
-            { merge: true }
+              ...(data.deleted ? { categories: [] } : {}),
+            } as Customer)
           );
-        }
-
-        // when customer is updated through customerSelfUpdate cloud fn
-        const customer = sanitizeCustomer({
-          ...customerData,
-          id: customerId,
-        } as Customer);
-
-        // create/update booking entry
-        batch.set(
-          orgRef.collection(OrgSubCollection.Bookings).doc(secretKey),
-          customer
-        );
-
-        await batch.commit();
+        });
       }
     )
   );
