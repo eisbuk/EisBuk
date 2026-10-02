@@ -74,7 +74,7 @@ const queryBookedSlots = (db: Firestore, from: string, to = from) =>
  * The bookings are read inside the same transaction that reads and writes the counter document, so concurrent
  * recounts are serialised by the counter and the last one to commit has seen every booking committed before it.
  *
- * @param date the date of the slot (and its bookings): we count the bookings with this date
+ * @param date a date in the month to recount; booking date changes can affect two months
  */
 export const syncSlotBookingsCount = (
   db: Firestore,
@@ -89,7 +89,10 @@ export const syncSlotBookingsCount = (
 
   return db.runTransaction(async (tx) => {
     const countsSnap = await tx.get(countsRef);
-    const bookings = await tx.get(queryBookedSlots(db, date));
+    const month = date.substring(0, 7);
+    const bookings = await tx.get(
+      queryBookedSlots(db, `${month}-01`, `${month}-31`)
+    );
 
     const before = (countsSnap.data() as SlotBookingsCounts | undefined)?.[
       slotId
