@@ -121,25 +121,21 @@ describe("Customer triggers", () => {
         ...saul,
         secretKey,
         categories: updatedCategory,
-        deleted: true,
       };
       await setDoc(saulDocRef, updatedSaul);
-
-      // check `bookings` entry updates
+      const bookingsRef = doc(db, getBookingsDocPath(organization, secretKey));
       await waitFor(async () => {
-        const snap = await getDoc(
-          doc(db, getBookingsDocPath(organization, secretKey))
+        expect((await getDoc(bookingsRef)).data()).toEqual(
+          sanitizeCustomer(updatedSaul)
         );
-        const data = snap.data();
-        expect(
-          Boolean(
-            data &&
-              updatedCategory.every((cat: Category) =>
-                data.categories.includes(cat)
-              ) &&
-              data.deleted === true
-          )
-        ).toEqual(true);
+      });
+
+      // Deleted athletes retain history but no longer expose active booking categories.
+      await setDoc(saulDocRef, { ...updatedSaul, deleted: true });
+      await waitFor(async () => {
+        expect((await getDoc(bookingsRef)).data()).toEqual(
+          sanitizeCustomer({ ...updatedSaul, deleted: true, categories: [] })
+        );
       });
     }
   );
