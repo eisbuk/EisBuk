@@ -434,6 +434,30 @@ export const buildSlotPlan = (
 
 export const countOperations = (plan: SlotPlan) =>
   plan.creates.length + plan.updates.length + plan.deletes.length;
+
+/**
+ * The changes of a plan the admin chose to keep: new slots by their position
+ * in `creates`, updates and deletions by slot id.
+ */
+export interface PlanSelection {
+  creates: number[];
+  updates: string[];
+  deletes: string[];
+}
+
+/**
+ * Narrows the plan down to the selected changes. A selection can only take
+ * changes away: whatever it holds that isn't in the plan is ignored.
+ */
+export const applySelection = (
+  plan: SlotPlan,
+  selection: PlanSelection,
+): SlotPlan => ({
+  creates: plan.creates.filter((_, i) => selection.creates.includes(i)),
+  updates: plan.updates.filter(({ id }) => selection.updates.includes(id)),
+  deletes: plan.deletes.filter(({ id }) => selection.deletes.includes(id)),
+  skipped: plan.skipped,
+});
 // #endregion planning
 
 // #region rendering
@@ -485,7 +509,7 @@ const describeLesson = (slot: SlotDraft) =>
 const describeSlot = (slot: SlotDraft) =>
   `${formatDayWithWeekday(slot.date)} — ${describeLesson(slot)}`;
 
-const describeChanges = (before: SlotInterface, after: SlotInterface) =>
+const listChanges = (before: SlotInterface, after: SlotInterface) =>
   [
     before.type !== after.type &&
       `tipo: ${slotTypeLabels[before.type]} → ${slotTypeLabels[after.type]}`,
@@ -499,9 +523,7 @@ const describeChanges = (before: SlotInterface, after: SlotInterface) =>
       `capienza: ${formatCapacity(before.capacity)} → ${formatCapacity(after.capacity)}`,
     (before.notes || "") !== (after.notes || "") &&
       `note: ${before.notes || "(nessuna)"} → ${after.notes || "(nessuna)"}`,
-  ]
-    .filter(Boolean)
-    .join("; ");
+  ].filter((change): change is string => Boolean(change));
 
 const capLines = (lines: string[]) =>
   lines.length > MAX_LINES_PER_SECTION
@@ -574,7 +596,7 @@ export const renderPlanPreview = (plan: SlotPlan): string => {
         ...capLines(
           plan.updates.map(
             ({ before, after }) =>
-              `• ${describeSlot(before)}\n   ${describeChanges(before, after)}`,
+              `• ${describeSlot(before)}\n   ${listChanges(before, after).join("; ")}`,
           ),
         ),
       ].join("\n"),
@@ -605,3 +627,110 @@ export const renderPlanPreview = (plan: SlotPlan): string => {
   return sections.join("\n\n");
 };
 // #endregion rendering
+
+// #region view
+const monthLabels = [
+  "gen",
+  "feb",
+  "mar",
+  "apr",
+  "mag",
+  "giu",
+  "lug",
+  "ago",
+  "set",
+  "ott",
+  "nov",
+  "dic",
+];
+
+/** "3 nov" */
+const formatShortDate = (date: string) => {
+  const { day, month } = DateTime.fromISO(date);
+  return `${day} ${monthLabels[month - 1]}`;
+};
+
+/**
+ * The plan as shown by the mini app: the same content as the text preview, with texts
+ * ready to display and a key for each change that can be left out
+ * (the keys are the ones a `PlanSelection` is made of).
+ */
+export interface PlanView {
+  period: string | null;
+  /** New slots, grouped by lesson and then by weekday */
+  creates: {
+    type: SlotType;
+    title: string;
+    subtitle: string;
+    weekdays: { label: string; dates: { index: number; label: string }[] }[];
+  }[];
+  updates: { id: string; title: string; changes: string[] }[];
+  deletes: { id: string; title: string }[];
+  skipped: { title: string; reason: string }[];
+}
+
+export const buildPlanView = (plan: SlotPlan): PlanView => {
+  const allDates = [
+    ...plan.creates,
+    ...plan.updates.map(({ before }) => before),
+    ...plan.deletes,
+  ]
+    .map(({ date }) => date)
+    .sort();
+  const formatFull = (date: string) =>
+    DateTime.fromISO(date).toFormat("dd/MM/yyyy");
+
+  const lessons = new Map<string, PlanView["creates"][number]>();
+  plan.creates
+    .map((slot, index) => ({ slot, index }))
+    .sort((a, b) => a.slot.date.localeCompare(b.slot.date))
+    .forEach(({ slot, index }) => {
+      const title = `${slotTypeLabels[slot.type] || slot.type} ${formatTimes(
+        slot,
+      )}`;
+      const subtitle = [
+        formatCategories(slot),
+        ...(slot.capacity ? [formatCapacity(slot.capacity)] : []),
+        ...(slot.notes ? [`note: ${slot.notes}`] : []),
+      ].join(" · ");
+      const key = `${title}|${subtitle}`;
+      const lesson = lessons.get(key) || {
+        type: slot.type,
+        title,
+        subtitle,
+        weekdays: [],
+      };
+      lessons.set(key, lesson);
+
+      const label = weekdayLabels[isoWeekday(slot.date) - 1];
+      let weekday = lesson.weekdays.find((entry) => entry.label === label);
+      if (!weekday) {
+        weekday = { label, dates: [] };
+        lesson.weekdays.push(weekday);
+      }
+      weekday.dates.push({ index, label: formatShortDate(slot.date) });
+    });
+
+  return {
+    period: allDates.length
+      ? `${formatFull(allDates[0])} – ${formatFull(
+          allDates[allDates.length - 1],
+        )}`
+      : null,
+    creates: [...lessons.values()],
+    updates: plan.updates.map(({ id, before, after }) => ({
+      id,
+      title: describeSlot(before),
+      changes: listChanges(before, after),
+    })),
+    deletes: plan.deletes.map((slot) => ({
+      id: slot.id,
+      title: describeSlot(slot),
+    })),
+    skipped: plan.skipped.map(({ slot, reason }) => ({
+      title: describeSlot(slot),
+      reason: skipReasonLabels[reason],
+    })),
+  };
+};
+// #endregion view

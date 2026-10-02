@@ -74,6 +74,7 @@ export class TelegramApi {
     const body = (await res.json().catch(() => ({}))) as {
       ok?: boolean;
       description?: string;
+      result?: { message_id?: number };
     };
     if (!res.ok || !body.ok) {
       // The request URL holds the bot token: keep it out of the error
@@ -81,24 +82,34 @@ export class TelegramApi {
         `Telegram ${method} failed (${res.status}): ${body.description || ""}`,
       );
     }
+    return body.result;
   }
 
   /**
    * Sends a plain text message. Long texts are sent as several messages,
    * with the reply markup (buttons) attached to the last one.
+   *
+   * @returns the id of the (last) message sent
    */
-  async sendMessage(chatId: number, text: string, replyMarkup?: ReplyMarkup) {
+  async sendMessage(
+    chatId: number,
+    text: string,
+    replyMarkup?: ReplyMarkup,
+  ): Promise<number | undefined> {
     const chunks = splitMessage(text);
+    let messageId: number | undefined;
     for (const [i, chunk] of chunks.entries()) {
       const isLast = i === chunks.length - 1;
       // One at a time: the chunks have to arrive in order
       // eslint-disable-next-line no-await-in-loop
-      await this.call("sendMessage", {
+      const result = await this.call("sendMessage", {
         chat_id: chatId,
         text: chunk,
         ...(isLast && replyMarkup ? { reply_markup: replyMarkup } : {}),
       });
+      messageId = result?.message_id;
     }
+    return messageId;
   }
 
   /** Shows "typing..." in the chat, for a few seconds or until the next message */

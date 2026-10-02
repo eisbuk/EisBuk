@@ -5,7 +5,6 @@ import crypto from "crypto";
 import { __functionsZone__ } from "../constants";
 
 import { wrapFirestoreOnCreateHandler } from "../sentry-serverless-firebase";
-import { getOrgAdmins, isOrgAdmin } from "../utils";
 
 import {
   BotConfig,
@@ -28,9 +27,23 @@ import {
   createLlmClient,
   runAgentTurn,
 } from "./agent";
+import {
+  createPendingPlan,
+  getChatRef,
+  getLinkedPhone,
+  getMiniAppUrl,
+  ignoreErrors,
+  isAdminPhone,
+  isLinkedAdmin,
+  resolvePlan,
+  setPlanPreviewMessage,
+  supersedePlans,
+} from "./botData";
+import { messages } from "./messages";
 import { SlotPlan, renderPlanPreview } from "./slotPlan";
 import { createToolExecutor } from "./tools";
-import { logOnlySlotWriter } from "./slotWriter";
+
+export { telegramMiniApp } from "./miniApp";
 
 // #region constants
 enum UpdateStatus {
@@ -40,19 +53,6 @@ enum UpdateStatus {
   Failed = "failed",
 }
 
-enum PlanStatus {
-  Pending = "pending",
-  /** Replaced by a newer proposal, or the turn that produced it didn't complete */
-  Superseded = "superseded",
-  Cancelled = "cancelled",
-  Expired = "expired",
-  Confirmed = "confirmed",
-  /** Confirmed and handed over to the (log only) writer */
-  Logged = "logged",
-}
-
-/** A proposal can be confirmed for this long: after that the calendar might have changed */
-const PLAN_TTL_MINUTES = 30;
 /** After this much silence the next message starts a new conversation */
 const CONVERSATION_IDLE_HOURS = 2;
 /** A conversation longer than this is started anew */
@@ -60,72 +60,42 @@ const MAX_CONVERSATION_MESSAGES = 60;
 /** How long a chat stays reserved for the message being processed */
 const CHAT_LEASE_SECONDS = 120;
 
-const messages = {
-  askForContact:
-    "Ciao! Per sapere chi sei ho bisogno del tuo numero di telefono: tocca il pulsante «📱 Condividi il mio numero» qui sotto. Se non lo vedi, apri la tastiera del bot con l'icona accanto al campo del messaggio.",
-  shareContactButton: "📱 Condividi il mio numero",
-  notOwnContact:
-    "Mi serve il tuo numero, non quello di un altro contatto: usa il pulsante «📱 Condividi il mio numero» qui sotto.",
-  welcomeAdmin:
-    "Numero verificato: sei tra gli amministratori. Scrivimi cosa ti serve sugli slot, ad esempio: «crea ghiaccio agonismo ogni martedì e giovedì di novembre dalle 17 alle 18».",
-  notAdmin:
-    "Il tuo numero non risulta tra gli amministratori. Per ora questo assistente è riservato a loro.",
-  notConfigured:
-    "L'assistente non è ancora configurato del tutto. Avvisa chi gestisce il sistema.",
-  textOnly: "Per ora capisco solo i messaggi di testo.",
-  newConversation: "Va bene, ricominciamo da capo. Cosa ti serve?",
-  busy: "Un attimo, sto ancora lavorando alla tua richiesta precedente.",
-  noAnswer:
-    "Non sono riuscito a rispondere a questa richiesta. Prova a riformularla.",
-  overloaded:
-    "In questo momento ci sono troppe richieste. Riprova tra un minuto.",
-  error: "Si è verificato un errore. Riprova tra poco.",
-  confirmQuestion: "Confermi?",
-  confirmButton: "✅ Conferma",
-  cancelButton: "❌ Annulla",
-  cancelled: "Annullato: non ho cambiato nulla.",
-  planNotValid:
-    "Questa proposta non è più valida. Dimmi di nuovo cosa vuoi fare.",
-  loggedOnly: (plan: SlotPlan) =>
-    `Confermato (${plan.creates.length} nuovi, ${plan.updates.length} modificati, ${plan.deletes.length} eliminati).\n\n⚠️ Modalità di prova: le modifiche sono state solo registrate, il calendario non è stato toccato.`,
-};
+const { FieldValue, Timestamp } = admin.firestore;
 // #endregion constants
 
-// #region helpers
-const { FieldValue, Timestamp } = admin.firestore;
-
-const isAdminPhone = async (organization: string, phone: string) =>
-  isOrgAdmin([phone], await getOrgAdmins(organization));
-
-const getLinkedPhone = async (
+// #region contact
+/**
+ * Asks for the user's phone number, with a button opening the mini app:
+ * it works the same on every Telegram client.
+ */
+const askForContact = (
+  api: TelegramApi,
   organization: string,
-  telegramUserId: number,
-): Promise<string | undefined> => {
-  const userSnap = await getBotRef(organization)
-    .collection("users")
-    .doc(String(telegramUserId))
-    .get();
-  return userSnap.data()?.phone;
-};
-
-const getChatRef = (organization: string, chatId: number) =>
-  getBotRef(organization).collection("chats").doc(String(chatId));
-
-const askForContact = (api: TelegramApi, chatId: number, text: string) =>
+  chatId: number,
+  text: string,
+) =>
   api.sendMessage(chatId, text, {
+    inline_keyboard: [
+      [
+        {
+          text: messages.shareContactButton,
+          web_app: { url: getMiniAppUrl(organization, { mode: "contact" }) },
+        },
+      ],
+    ],
+  });
+
+/**
+ * The same request, with Telegram's own "share contact" keyboard button: a fallback for
+ * clients that can't open mini apps (some clients keep this keyboard folded behind an icon).
+ */
+const askForContactWithKeyboard = (api: TelegramApi, chatId: number) =>
+  api.sendMessage(chatId, messages.askForContactKeyboard, {
     keyboard: [[{ text: messages.shareContactButton, request_contact: true }]],
     resize_keyboard: true,
-    // Some clients (Telegram Web among them) keep the keyboard folded behind
-    // an icon unless told otherwise. It's removed once the number is shared.
     is_persistent: true,
   });
 
-/** Failures of the niceties (typing indicator, button cleanup) shouldn't fail the update */
-const ignoreErrors = (promise: Promise<unknown>) =>
-  promise.catch((err) => functions.logger.warn(String(err)));
-// #endregion helpers
-
-// #region contact
 const handleContact = async (
   config: BotConfig,
   api: TelegramApi,
@@ -134,7 +104,12 @@ const handleContact = async (
   const chatId = message.chat.id;
   const phone = getOwnPhone(message);
   if (!phone || !message.from) {
-    await askForContact(api, chatId, messages.notOwnContact);
+    await askForContact(
+      api,
+      config.organization,
+      chatId,
+      messages.notOwnContact,
+    );
     return;
   }
 
@@ -196,28 +171,18 @@ const loadHistory = (chat: ChatData): AgentMessage[] => {
  * The tools the model can call, run with the privileges of the admin who wrote the message.
  */
 const createAdminToolExecutor = (params: {
+  organization: string;
   session: UserSession;
-  chatRef: admin.firestore.DocumentReference;
   telegramUserId: number;
   /** Called with each plan proposed during the turn */
   onPlan: (planId: string, plan: SlotPlan) => void;
 }) => {
-  const { session, chatRef, telegramUserId, onPlan } = params;
+  const { organization, session, telegramUserId, onPlan } = params;
 
   const executeTool = createToolExecutor({
     calendar: session,
     onPlan: async (plan) => {
-      const planRef = chatRef.collection("plans").doc();
-      await planRef.set({
-        status: PlanStatus.Pending,
-        telegramUserId,
-        createdAt: FieldValue.serverTimestamp(),
-        expiresAt: Timestamp.fromMillis(
-          Date.now() + PLAN_TTL_MINUTES * 60 * 1000,
-        ),
-        plan: JSON.stringify(plan),
-      });
-      onPlan(planRef.id, plan);
+      onPlan(await createPendingPlan(organization, telegramUserId, plan), plan);
     },
   });
 
@@ -247,6 +212,44 @@ const getErrorReply = (err: unknown) => {
   return err.status === 429 ? messages.overloaded : messages.error;
 };
 
+/**
+ * Puts a proposal forward: the exact list of changes, with buttons to confirm or cancel
+ * it as it is, and one opening the mini app, where single changes can be left out.
+ */
+const sendPlanPreview = async (
+  api: TelegramApi,
+  organization: string,
+  chatId: number,
+  planId: string,
+  plan: SlotPlan,
+) => {
+  const messageId = await api.sendMessage(
+    chatId,
+    `${renderPlanPreview(plan)}\n\n${messages.confirmQuestion}`,
+    {
+      inline_keyboard: [
+        [
+          {
+            text: messages.confirmButton,
+            callback_data: `plan:${planId}:confirm`,
+          },
+          {
+            text: messages.cancelButton,
+            callback_data: `plan:${planId}:cancel`,
+          },
+        ],
+        [
+          {
+            text: messages.openPreviewButton,
+            web_app: { url: getMiniAppUrl(organization, { plan: planId }) },
+          },
+        ],
+      ],
+    },
+  );
+  await setPlanPreviewMessage(organization, chatId, planId, messageId);
+};
+
 const handleText = async (
   config: BotConfig,
   api: TelegramApi,
@@ -257,9 +260,13 @@ const handleText = async (
   const text = (message.text || "").trim();
   if (!message.from) return;
 
+  if (text === "/tastiera") {
+    await askForContactWithKeyboard(api, chatId);
+    return;
+  }
   const phone = await getLinkedPhone(organization, message.from.id);
   if (!phone || text === "/start") {
-    await askForContact(api, chatId, messages.askForContact);
+    await askForContact(api, organization, chatId, messages.askForContact);
     return;
   }
   if (!text) {
@@ -300,19 +307,6 @@ const handleText = async (
 
     // Only the last proposal of the turn is put forward for confirmation
     const proposed: { planId: string; plan: SlotPlan }[] = [];
-    const plansRef = chatRef.collection("plans");
-    const supersede = (planIds: (string | undefined)[]) =>
-      Promise.all(
-        planIds.map(
-          (planId) =>
-            planId &&
-            plansRef
-              .doc(planId)
-              .update({ status: PlanStatus.Superseded })
-              // Already confirmed, cancelled or gone
-              .catch(() => undefined),
-        ),
-      );
 
     const { reply, history } = await runAgentTurn({
       llm: createLlmClient({
@@ -323,8 +317,8 @@ const handleText = async (
       userText: text,
       notes: chat.notes,
       executeTool: createAdminToolExecutor({
+        organization,
         session,
-        chatRef,
         telegramUserId: message.from.id,
         onPlan: (planId, plan) => proposed.push({ planId, plan }),
       }),
@@ -335,7 +329,11 @@ const handleText = async (
       .map(({ planId }) => planId)
       .filter((planId) => planId !== current?.planId);
     // A new proposal takes the place of the one still waiting from an earlier turn
-    await supersede(current ? [...outdated, chat.pendingPlanId] : outdated);
+    await supersedePlans(
+      organization,
+      chatId,
+      current ? [...outdated, chat.pendingPlanId] : outdated,
+    );
 
     await chatRef.set(
       {
@@ -352,23 +350,12 @@ const handleText = async (
 
     await api.sendMessage(chatId, reply || messages.noAnswer);
     if (current) {
-      await api.sendMessage(
+      await sendPlanPreview(
+        api,
+        organization,
         chatId,
-        `${renderPlanPreview(current.plan)}\n\n${messages.confirmQuestion}`,
-        {
-          inline_keyboard: [
-            [
-              {
-                text: messages.confirmButton,
-                callback_data: `plan:${current.planId}:confirm`,
-              },
-              {
-                text: messages.cancelButton,
-                callback_data: `plan:${current.planId}:cancel`,
-              },
-            ],
-          ],
-        },
+        current.planId,
+        current.plan,
       );
     }
   } finally {
@@ -378,21 +365,14 @@ const handleText = async (
 // #endregion conversation
 
 // #region confirmation
-type PlanOutcome =
-  | { status: PlanStatus.Confirmed; plan: SlotPlan }
-  | { status: PlanStatus.Cancelled | PlanStatus.Expired }
-  | null;
-
 /**
- * Handles the "Conferma" / "Annulla" buttons under a proposal. The language model
- * is not involved here: the plan stored with the proposal is the one that gets applied.
+ * Handles the "Conferma" / "Annulla" buttons under a proposal.
  */
 const handleCallbackQuery = async (
   config: BotConfig,
   api: TelegramApi,
   query: TelegramCallbackQuery,
 ) => {
-  const { organization } = config;
   await ignoreErrors(api.answerCallbackQuery(query.id));
 
   const chatId = query.message?.chat.id;
@@ -401,61 +381,20 @@ const handleCallbackQuery = async (
   const [, planId, action] = match;
 
   // The button might be pressed long after the proposal: check again who's asking
-  const phone = await getLinkedPhone(organization, query.from.id);
-  if (!phone || !(await isAdminPhone(organization, phone))) {
+  if (!(await isLinkedAdmin(config.organization, query.from.id))) {
     await api.sendMessage(chatId, messages.notAdmin);
     return;
   }
 
-  const chatRef = getChatRef(organization, chatId);
-  const planRef = chatRef.collection("plans").doc(planId);
-
-  const outcome = await admin
-    .firestore()
-    .runTransaction(async (tx): Promise<PlanOutcome> => {
-      const data = (await tx.get(planRef)).data();
-      if (
-        !data ||
-        data.status !== PlanStatus.Pending ||
-        data.telegramUserId !== query.from.id
-      ) {
-        return null;
-      }
-      const status =
-        data.expiresAt.toMillis() < Date.now()
-          ? PlanStatus.Expired
-          : action === "confirm"
-            ? PlanStatus.Confirmed
-            : PlanStatus.Cancelled;
-      tx.update(planRef, { status });
-      return status === PlanStatus.Confirmed
-        ? { status, plan: JSON.parse(data.plan) }
-        : { status };
-    });
-
   await ignoreErrors(api.removeButtons(chatId, query.message.message_id));
-
-  const tellModel = (note: string) =>
-    chatRef.set({ notes: FieldValue.arrayUnion(note) }, { merge: true });
-
-  if (outcome?.status === PlanStatus.Confirmed) {
-    await logOnlySlotWriter.apply(
-      { organization, planId, telegramUserId: query.from.id },
-      outcome.plan,
-    );
-    await planRef.update({ status: PlanStatus.Logged });
-    await tellModel(
-      "The administrator confirmed the last proposal. Test mode: the changes were recorded, the calendar was not changed.",
-    );
-    await api.sendMessage(chatId, messages.loggedOnly(outcome.plan));
-    return;
-  }
-  if (outcome?.status === PlanStatus.Cancelled) {
-    await tellModel("The administrator cancelled the last proposal.");
-    await api.sendMessage(chatId, messages.cancelled);
-    return;
-  }
-  await api.sendMessage(chatId, messages.planNotValid);
+  await resolvePlan({
+    config,
+    api,
+    telegramUserId: query.from.id,
+    planId,
+    action: action as "confirm" | "cancel",
+    buttonsRemoved: true,
+  });
 };
 // #endregion confirmation
 

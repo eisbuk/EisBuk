@@ -3,6 +3,7 @@
  */
 
 import http from "http";
+import crypto from "crypto";
 import { AddressInfo } from "net";
 import { v4 as uuid } from "uuid";
 import { afterAll, beforeAll, describe, expect } from "vitest";
@@ -25,6 +26,8 @@ const telegramCalls: Record<string, { method: string; body: Json }[]> = {};
 const modelRequests: Record<string, Json[]> = {};
 const modelResponses: Record<string, Json[]> = {};
 
+let lastMessageId = 1000;
+
 const fakeServer = http.createServer((req, res) => {
   let raw = "";
   req.on("data", (chunk) => (raw += chunk));
@@ -39,7 +42,8 @@ const fakeServer = http.createServer((req, res) => {
     if (telegram) {
       const [, token, method] = telegram;
       (telegramCalls[token] ||= []).push({ method, body });
-      return respond({ ok: true, result: {} });
+      // Messages get ids, like the ones Telegram assigns
+      return respond({ ok: true, result: { message_id: ++lastMessageId } });
     }
 
     const apiKey = String(req.headers.authorization).replace("Bearer ", "");
@@ -112,6 +116,8 @@ const setUpBot = async ({ isAdmin = true } = {}) => {
     llmBaseUrl: `${fakeServerUrl}/llm`,
   });
 
+  const miniAppUrl = `http://127.0.0.1:5002/eisbuk/europe-west6/telegramMiniApp?organization=${organization}`;
+
   const userId = randomInt();
   const chat = { id: userId, type: "private" };
   const from = { id: userId };
@@ -168,6 +174,40 @@ const setUpBot = async ({ isAdmin = true } = {}) => {
     say: (text: string, replies = 1) =>
       exchange(() => sendMessage({ text }), replies),
     shareContact: (contact: Json) => exchange(() => sendMessage({ contact })),
+    /**
+     * Calls the mini app's API the way its page does: with launch data
+     * signed by Telegram (here: signed the same way, with the bot token)
+     */
+    miniApp: async (body: Json, user: Json = from, botToken = token) => {
+      const fields: Record<string, string> = {
+        auth_date: String(Math.floor(Date.now() / 1000)),
+        query_id: uuid(),
+        user: JSON.stringify(user),
+      };
+      const secretKey = crypto
+        .createHmac("sha256", "WebAppData")
+        .update(botToken)
+        .digest();
+      const hash = crypto
+        .createHmac("sha256", secretKey)
+        .update(
+          Object.keys(fields)
+            .sort()
+            .map((key) => `${key}=${fields[key]}`)
+            .join("\n"),
+        )
+        .digest("hex");
+      const res = await fetch(miniAppUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...body,
+          initData: String(new URLSearchParams({ ...fields, hash })),
+        }),
+      });
+      return { status: res.status, body: (await res.json()) as Json };
+    },
+    miniAppUrl,
     pressButton: (callbackData: string, messageId: number) =>
       exchange(() =>
         sendUpdate({
@@ -266,11 +306,19 @@ describe("Telegram bot", () => {
       async () => {
         const bot = await setUpBot();
 
+        // The request comes with a button opening the mini app, which asks Telegram for the number
         const [askForContact] = await bot.say("Ciao");
-        expect(askForContact.reply_markup.keyboard[0][0]).toEqual(
-          expect.objectContaining({ request_contact: true }),
+        const [[shareButton]] = askForContact.reply_markup.inline_keyboard;
+        expect(shareButton.web_app.url).toEqual(
+          `https://europe-west6-eisbuk.cloudfunctions.net/telegramMiniApp?organization=${bot.organization}&mode=contact`,
         );
         expect(bot.modelRequests()).toEqual([]);
+
+        // Telegram's own "share contact" keyboard is there as a fallback
+        const [withKeyboard] = await bot.say("/tastiera");
+        expect(withKeyboard.reply_markup.keyboard[0][0]).toEqual(
+          expect.objectContaining({ request_contact: true }),
+        );
 
         // A contact card of somebody else (e.g. an admin's, picked from the address book)
         const [refused] = await bot.shareContact({
@@ -491,6 +539,150 @@ describe("Telegram bot", () => {
         ]);
         expect(messages[7].content).toContain(
           "[The administrator confirmed the last proposal. Test mode: the changes were recorded, the calendar was not changed.]",
+        );
+      },
+    );
+
+    testWithEmulator(
+      "should let the admin look at a proposal in the mini app, and confirm only part of it",
+      async () => {
+        const bot = await setUpBot();
+        await bot.link();
+
+        const dates = ["2026-12-01", "2026-12-03", "2026-12-08", "2026-12-10"];
+        bot.queueModelResponses(
+          callTool("call_1", "propose_slot_changes", {
+            create: dates.map((date) => ({
+              date,
+              type: "ice",
+              categories: ["competitive"],
+              intervals: [{ startTime: "17:00", endTime: "18:00" }],
+            })),
+          }),
+          answer("Ecco la proposta."),
+        );
+        const [, preview] = await bot.say("Agonismo martedì e giovedì...", 2);
+
+        // The proposal comes with a button opening it in the mini app
+        const [, [openButton]] = preview.reply_markup.inline_keyboard;
+        const planId = new URL(openButton.web_app.url).searchParams.get("plan");
+        expect(openButton.web_app.url).toEqual(
+          `https://europe-west6-eisbuk.cloudfunctions.net/telegramMiniApp?organization=${bot.organization}&plan=${planId}`,
+        );
+
+        // The page itself
+        const page = await fetch(bot.miniAppUrl);
+        expect(page.status).toEqual(200);
+        expect(page.headers.get("content-type")).toMatch(/text\/html/);
+        expect(await page.text()).toContain("telegram-web-app.js");
+
+        // Its API tells the proposal only to the admin it was made for
+        const getPlan = { action: "getPlan", planId };
+        expect(
+          await bot.miniApp(getPlan, bot.from, "somebody-else's-bot-token"),
+        ).toEqual({ status: 401, body: { error: "invalid-session" } });
+        expect(await bot.miniApp(getPlan, { id: bot.userId + 1 })).toEqual({
+          status: 403,
+          body: { error: "not-admin" },
+        });
+        const otherAdmin = { id: bot.userId + 2 };
+        await bot.botRef
+          .collection("users")
+          .doc(String(otherAdmin.id))
+          .set({ phone: bot.phone });
+        expect(await bot.miniApp(getPlan, otherAdmin)).toEqual({
+          status: 200,
+          body: { status: "not-found" },
+        });
+
+        expect(await bot.miniApp(getPlan)).toEqual({
+          status: 200,
+          body: {
+            status: "pending",
+            view: {
+              period: "01/12/2026 – 10/12/2026",
+              creates: [
+                {
+                  type: "ice",
+                  title: "Ghiaccio 17:00-18:00",
+                  subtitle: "agonismo",
+                  weekdays: [
+                    {
+                      label: "mar",
+                      dates: [
+                        { index: 0, label: "1 dic" },
+                        { index: 2, label: "8 dic" },
+                      ],
+                    },
+                    {
+                      label: "gio",
+                      dates: [
+                        { index: 1, label: "3 dic" },
+                        { index: 3, label: "10 dic" },
+                      ],
+                    },
+                  ],
+                },
+              ],
+              updates: [],
+              deletes: [],
+              skipped: [],
+            },
+          },
+        });
+
+        // Nothing left selected: nothing to confirm, the proposal stays
+        const nothing = { creates: [], updates: [], deletes: [] };
+        expect(
+          await bot.miniApp({ action: "confirm", planId, selection: nothing }),
+        ).toEqual({ status: 400, body: { error: "nothing-selected" } });
+
+        // The admin takes the Thursdays out and confirms the rest
+        const messagesBefore = bot.sentMessages().length;
+        const confirm = {
+          action: "confirm",
+          planId,
+          // What's not in the proposal (slot ids, positions out of range) is ignored
+          selection: { creates: [0, 2, 7], updates: ["x"], deletes: ["y"] },
+        };
+        expect(await bot.miniApp(confirm)).toEqual({
+          status: 200,
+          body: { status: "logged" },
+        });
+
+        const [confirmed] = bot.sentMessages().slice(messagesBefore);
+        expect(confirmed.text).toMatch(
+          /^Confermato \(2 nuovi, 0 modificati, 0 eliminati\)/,
+        );
+        const [plan] = (
+          await bot.botRef.collection(`chats/${bot.chat.id}/plans`).get()
+        ).docs.map((doc) => doc.data());
+        expect(plan.status).toEqual("logged");
+        expect(
+          JSON.parse(plan.confirmedPlan).creates.map(({ date }: Json) => date),
+        ).toEqual(["2026-12-01", "2026-12-08"]);
+        // The buttons are taken off the message that showed the proposal
+        expect(plan.previewMessageId).toEqual(expect.any(Number));
+        expect(bot.telegramCalls()).toContainEqual({
+          method: "editMessageReplyMarkup",
+          body: {
+            chat_id: bot.chat.id,
+            message_id: plan.previewMessageId,
+            reply_markup: { inline_keyboard: [] },
+          },
+        });
+
+        // Once resolved, the proposal can't be confirmed again
+        const again = await bot.miniApp(confirm);
+        expect(again).toEqual({ status: 200, body: { status: "not-found" } });
+        expect((await bot.miniApp(getPlan)).body.status).toEqual("logged");
+
+        // The model is told what the admin did
+        bot.queueModelResponses(answer("Va bene."));
+        await bot.say("Ok");
+        const { messages } = bot.modelRequests()[2];
+        expect(messages[messages.length - 1].content).toContain(
+          "[The administrator confirmed the last proposal, after taking 2 of its changes out.",
         );
       },
     );
