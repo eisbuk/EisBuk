@@ -2,6 +2,7 @@ import { DateTime } from "luxon";
 
 import {
   Customer,
+  CustomerBookingEntry,
   SlotInterface,
   CustomerBase,
   normalizeEmail,
@@ -22,11 +23,13 @@ import {
   deleteDoc,
   doc,
   setDoc,
+  setDocInTransaction,
+  TransactionNotRetriedError,
 } from "@/utils/firestore";
 import { getOrganization } from "@/lib/getters";
 
 interface UpdateBooking<
-  P extends Record<string, any> = Record<string, unknown>
+  P extends Record<string, any> = Record<string, unknown>,
 > {
   (
     payload: {
@@ -34,24 +37,109 @@ interface UpdateBooking<
       secretKey: Customer["secretKey"];
       date: string;
       interval: string;
-    } & P
+    } & P,
   ): FirestoreThunk;
 }
 
 /**
- * Dispatches booked interval to firestore.
- * Additionally, it cancels booked interval for the same slot if one is already booked.
+ * Thrown when the booking for the lesson isn't the one the write expects: the lesson is already booked
+ * (with an interval other than the one the athlete chose to replace), or the booking the athlete chose
+ * to replace no longer exists (`bookedInterval = null`, e.g. cancelled from another device).
  */
-export const bookInterval: UpdateBooking =
-  ({ slotId, secretKey, interval, date }): FirestoreThunk =>
-  async (dispatch, _, { getFirestore }) => {
-    try {
-      const db = getFirestore();
+export class BookingConflictError extends Error {
+  // eslint-disable-next-line require-jsdoc
+  constructor(public bookedInterval: string | null) {
+    super(`Unexpected booking for the lesson: ${bookedInterval}`);
+  }
+}
 
-      // update booked interval to firestore
-      await setDoc(
-        doc(db, getBookedSlotDocPath(getOrganization(), secretKey, slotId)),
-        { interval, date }
+/**
+ * Returns the booking document to write when booking `interval`, given the current `booking` for the lesson
+ * (`undefined` if not booked), or `undefined` if there's nothing to write (interval already booked).
+ *
+ * There is one booking per athlete per lesson: an existing booking is replaced only if `replacedInterval`
+ * (the interval the athlete explicitly confirmed to replace) matches it. A first booking (no `replacedInterval`)
+ * requires the lesson not to be booked yet. Otherwise throws `BookingConflictError`.
+ */
+export const getUpdatedBooking = (
+  booking: CustomerBookingEntry | undefined,
+  {
+    interval,
+    date,
+    replacedInterval,
+  }: { interval: string; date: string; replacedInterval?: string },
+): CustomerBookingEntry | undefined => {
+  // Interval already booked (e.g. a repeated click): nothing to do
+  if (booking?.interval === interval) return undefined;
+
+  if (booking?.interval !== replacedInterval) {
+    throw new BookingConflictError(booking?.interval ?? null);
+  }
+
+  // Keep the booking notes (if any) when replacing the interval
+  return booking?.bookingNotes
+    ? { interval, date, bookingNotes: booking.bookingNotes }
+    : { interval, date };
+};
+
+/** `true` if the browser reports no network connection */
+const isBrowserOffline = () =>
+  typeof navigator !== "undefined" && navigator.onLine === false;
+
+/**
+ * `true` if the booking transaction failed in a way that doesn't tell whether the booking was saved:
+ * connection lost (the commit might have been applied before it dropped), or a failed attempt that wasn't retried.
+ */
+const isUnconfirmedError = (err: unknown) =>
+  err instanceof TransactionNotRetriedError ||
+  ["unavailable", "deadline-exceeded"].includes(
+    (err as { code?: string } | null)?.code || "",
+  );
+
+/**
+ * Dispatches booked interval to firestore.
+ *
+ * Booking an interval of a lesson already booked replaces the booked interval only if `replacedInterval`
+ * is passed and matches the stored booking (see `getUpdatedBooking`). Otherwise the booking isn't changed
+ * and an error notification is shown.
+ *
+ * The check is done in a transaction against the stored booking (not the local store), so that a stale view
+ * (page still loading, another device, a second click while the first write is in flight) can't replace,
+ * or recreate, a booking.
+ *
+ * The transaction needs the server: if the browser is offline nothing is written (no queued write, which couldn't
+ * be checked against the stored booking) and the athlete is told the booking wasn't saved. If the transaction fails
+ * in a way that leaves its outcome unknown (connection lost during the commit), it isn't retried and the athlete
+ * is told the booking couldn't be confirmed.
+ */
+export const bookInterval: UpdateBooking<{ replacedInterval?: string }> =
+  ({ slotId, secretKey, interval, date, replacedInterval }): FirestoreThunk =>
+  async (dispatch, _, { getFirestore }) => {
+    const notifyOffline = () =>
+      dispatch(
+        enqueueNotification({
+          message: i18n.t(NotificationMessage.BookingOffline),
+          variant: NotifVariant.Error,
+        }),
+      );
+
+    if (isBrowserOffline()) {
+      notifyOffline();
+      return;
+    }
+
+    try {
+      await setDocInTransaction(
+        doc(
+          getFirestore(),
+          getBookedSlotDocPath(getOrganization(), secretKey, slotId),
+        ),
+        (booking) =>
+          getUpdatedBooking(booking as CustomerBookingEntry, {
+            interval,
+            date,
+            replacedInterval,
+          }),
       );
 
       // show success message
@@ -62,9 +150,37 @@ export const bookInterval: UpdateBooking =
             interval,
           }),
           variant: NotifVariant.Success,
-        })
+        }),
       );
     } catch (err) {
+      if (err instanceof BookingConflictError) {
+        dispatch(
+          enqueueNotification({
+            message: err.bookedInterval
+              ? i18n.t(NotificationMessage.BookingAlreadyExists, {
+                  date: DateTime.fromISO(date),
+                  interval: err.bookedInterval,
+                })
+              : i18n.t(NotificationMessage.BookingChangedMeanwhile, {
+                  date: DateTime.fromISO(date),
+                }),
+            variant: NotifVariant.Error,
+          }),
+        );
+        return;
+      }
+
+      // The booking might have been saved: don't say it wasn't (the bookings subscription shows what's stored)
+      if (isUnconfirmedError(err)) {
+        dispatch(
+          enqueueNotification({
+            message: i18n.t(NotificationMessage.BookingUnconfirmed),
+            variant: NotifVariant.Error,
+          }),
+        );
+        return;
+      }
+
       dispatch(
         enqueueNotification({
           message: i18n.t(NotificationMessage.BookingError, {
@@ -73,7 +189,7 @@ export const bookInterval: UpdateBooking =
           }),
           variant: NotifVariant.Error,
           error: err as Error,
-        })
+        }),
       );
     }
   };
@@ -89,7 +205,7 @@ export const cancelBooking: UpdateBooking =
 
       // remove the booking from firestore
       await deleteDoc(
-        doc(db, getBookedSlotDocPath(getOrganization(), secretKey, slotId))
+        doc(db, getBookedSlotDocPath(getOrganization(), secretKey, slotId)),
       );
 
       // show success message
@@ -100,7 +216,7 @@ export const cancelBooking: UpdateBooking =
             interval,
           }),
           variant: NotifVariant.Success,
-        })
+        }),
       );
     } catch (err) {
       dispatch(
@@ -111,7 +227,7 @@ export const cancelBooking: UpdateBooking =
           }),
           variant: NotifVariant.Error,
           error: err as Error,
-        })
+        }),
       );
     }
   };
@@ -128,7 +244,7 @@ export const updateBookingNotes: UpdateBooking<{ bookingNotes: string }> =
 
       const bookingDocRef = doc(
         db,
-        getBookedSlotDocPath(organization, secretKey, slotId)
+        getBookedSlotDocPath(organization, secretKey, slotId),
       );
 
       await setDoc(bookingDocRef, { ...booking, bookingNotes });
@@ -137,7 +253,7 @@ export const updateBookingNotes: UpdateBooking<{ bookingNotes: string }> =
         enqueueNotification({
           variant: NotifVariant.Success,
           message: i18n.t(NotificationMessage.BookingNotesUpdated),
-        })
+        }),
       );
     } catch (err) {
       dispatch(
@@ -145,7 +261,7 @@ export const updateBookingNotes: UpdateBooking<{ bookingNotes: string }> =
           variant: NotifVariant.Error,
           message: i18n.t(NotificationMessage.BookingNotesError),
           error: err as Error,
-        })
+        }),
       );
     }
   };
@@ -175,7 +291,7 @@ export const customerSelfUpdate: {
         enqueueNotification({
           variant: NotifVariant.Success,
           message: i18n.t(NotificationMessage.CustomerProfileUpdated),
-        })
+        }),
       );
     } catch (err) {
       dispatch(
@@ -183,13 +299,15 @@ export const customerSelfUpdate: {
           variant: NotifVariant.Error,
           message: i18n.t(NotificationMessage.CustomerProfileError),
           error: err as Error,
-        })
+        }),
       );
     }
   };
 
 export const customerSelfRegister: {
-  (paylod: CustomerBase & { registrationCode: string }): (
+  (
+    paylod: CustomerBase & { registrationCode: string },
+  ): (
     ...params: Parameters<FirestoreThunk>
   ) => Promise<{ id: string; secretKey: string; codeOk: boolean }>;
 } =
@@ -212,7 +330,7 @@ export const customerSelfRegister: {
       const res = await createFunctionCaller(
         getFunctions(),
         handler,
-        payload
+        payload,
       )();
       const { id, secretKey } = res.data;
 
@@ -220,7 +338,7 @@ export const customerSelfRegister: {
         enqueueNotification({
           variant: NotifVariant.Success,
           message: i18n.t(NotificationMessage.SelfRegSuccess),
-        })
+        }),
       );
       return {
         id,
@@ -233,7 +351,7 @@ export const customerSelfRegister: {
           variant: NotifVariant.Error,
           message: i18n.t(NotificationMessage.SelfRegError),
           error: err as Error,
-        })
+        }),
       );
       // Only report the registration code as wrong when the backend explicitly
       // rejected it ('unauthenticated'). For any other failure (network,
@@ -275,7 +393,7 @@ export const acceptPrivacyPolicy: {
         enqueueNotification({
           variant: NotifVariant.Success,
           message: i18n.t(NotificationMessage.SelectionSaved),
-        })
+        }),
       );
     } catch (err) {
       dispatch(
@@ -283,7 +401,7 @@ export const acceptPrivacyPolicy: {
           variant: NotifVariant.Error,
           message: i18n.t(NotificationMessage.Error),
           error: err as Error,
-        })
+        }),
       );
     }
   };

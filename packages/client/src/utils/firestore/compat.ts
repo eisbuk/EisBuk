@@ -24,6 +24,7 @@ import {
   getDocs as clientGetDocs,
   deleteDoc as deleteDocClient,
   writeBatch as writeBatchClient,
+  runTransaction as clientRunTransaction,
   DocumentData,
 } from "@firebase/firestore";
 
@@ -44,7 +45,7 @@ export const FirestoreVariant = variantModule({
   [FirestoreEnv.Server]: fields<{ instance: ServerFirestore }>(),
 });
 export type FirestoreVariant<
-  K extends TypeNames<typeof FirestoreVariant> = undefined
+  K extends TypeNames<typeof FirestoreVariant> = undefined,
 > = VariantOf<typeof FirestoreVariant, K>;
 
 /**
@@ -58,7 +59,7 @@ export const FirestoreDocVariant = variantModule({
   [FirestoreEnv.Server]: fields<{ instance: ServerDocumentReference }>(),
 });
 export type FirestoreDocVariant<
-  K extends TypeNames<typeof FirestoreDocVariant> = undefined
+  K extends TypeNames<typeof FirestoreDocVariant> = undefined,
 > = VariantOf<typeof FirestoreDocVariant, K>;
 
 /**
@@ -72,7 +73,7 @@ export const FirestoreCollectionVariant = variantModule({
   [FirestoreEnv.Server]: fields<{ instance: ServerCollectionReference }>(),
 });
 export type FirestoreCollectionVariant<
-  K extends TypeNames<typeof FirestoreCollectionVariant> = undefined
+  K extends TypeNames<typeof FirestoreCollectionVariant> = undefined,
 > = VariantOf<typeof FirestoreCollectionVariant, K>;
 // #endregion client/server variants
 
@@ -128,7 +129,7 @@ export const collection = (
         // it doesn't work well on unions because of slightly different type overloads, hence the typecast.
         instance: clientCollection(
           instance as ClientFirestore,
-          pathSegments.join("/")
+          pathSegments.join("/"),
         ),
       }),
     [FirestoreEnv.Server]: ({ instance }) =>
@@ -139,7 +140,7 @@ export const collection = (
 
 export const addDoc = async (
   collection: FirestoreCollectionVariant,
-  data: DocumentData
+  data: DocumentData,
 ) => {
   const res = await match(collection, {
     [FirestoreEnv.Client]: ({ instance }) => clientAddDoc(instance, data),
@@ -159,7 +160,7 @@ export const addDoc = async (
 export const setDoc = async (
   doc: FirestoreDocVariant,
   data: DocumentData,
-  options: SetOptions = {}
+  options: SetOptions = {},
 ) => {
   const res = await match(doc, {
     [FirestoreEnv.Client]: ({ instance }) =>
@@ -211,12 +212,69 @@ export const getDocs = async (collection: FirestoreCollectionVariant) => {
   return res;
 };
 
+/**
+ * Thrown by `setDocInTransaction` when the transaction would be run a second time: the first attempt failed
+ * to commit, and its outcome might be unknown (e.g. the commit was applied but the response was lost).
+ */
+export class TransactionNotRetriedError extends Error {
+  // eslint-disable-next-line require-jsdoc
+  constructor() {
+    super("Transaction attempt failed, not retried: outcome unconfirmed");
+  }
+}
+
+/**
+ * Reads a document and (conditionally) writes it in a single transaction, on all Firestore variants.
+ *
+ * `update` receives the current document data (`undefined` if the document doesn't exist) and returns the data to set,
+ * or `undefined` to leave the document as it is. Throwing from `update` aborts the transaction (the error is rethrown).
+ *
+ * The transaction is attempted only once: a failed commit might still have been applied (response lost), and a retry
+ * would decide again on data that changed in the meantime (e.g. recreate a document deleted after that commit).
+ * The SDK's retries are disabled (`maxAttempts: 1`) and, for SDKs ignoring that option, a second attempt is refused
+ * with `TransactionNotRetriedError`.
+ * @param doc document to read/write in form of a FirestoreDocVariant (used to match with correct behaviour)
+ * @param update function returning the new document data
+ */
+export const setDocInTransaction = async (
+  doc: FirestoreDocVariant,
+  update: (
+    data: DocumentData | undefined,
+  ) => DocumentData | undefined | Promise<DocumentData | undefined>,
+): Promise<void> => {
+  let attempts = 0;
+  const assertFirstAttempt = () => {
+    attempts++;
+    if (attempts > 1) throw new TransactionNotRetriedError();
+  };
+  const options = { maxAttempts: 1 };
+
+  await match(doc, {
+    [FirestoreEnv.Client]: ({ instance }) =>
+      clientRunTransaction(
+        instance.firestore,
+        async (tx) => {
+          assertFirstAttempt();
+          const data = await update((await tx.get(instance)).data());
+          if (data) tx.set(instance, data);
+        },
+        options,
+      ),
+    [FirestoreEnv.Server]: ({ instance }) =>
+      instance.firestore.runTransaction(async (tx) => {
+        assertFirstAttempt();
+        const data = await update((await tx.get(instance)).data());
+        if (data) tx.set(instance, data);
+      }, options),
+  });
+};
+
 // eslint-disable-next-line require-jsdoc
 class BatchMismatch extends Error {
   // eslint-disable-next-line require-jsdoc
   constructor(batchType: FirestoreEnv, docType: FirestoreEnv) {
     super(
-      `Write batch/document variant mismatch: batch type: ${batchType}, doc type: ${docType}`
+      `Write batch/document variant mismatch: batch type: ${batchType}, doc type: ${docType}`,
     );
     return this;
   }

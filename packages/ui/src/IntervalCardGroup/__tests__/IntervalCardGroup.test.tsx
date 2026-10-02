@@ -3,6 +3,8 @@ import React from "react";
 import { cleanup, render, screen } from "@testing-library/react";
 
 import { Category, SlotType } from "@eisbuk/shared";
+import i18n, { Alerts } from "@eisbuk/translations";
+import { testId } from "@eisbuk/testing/testIds";
 
 import IntervalCardGroup from "../IntervalCardGroup";
 
@@ -55,12 +57,44 @@ describe("IntervalCardGroup", () => {
         {...dummySlot}
         bookedInterval={"09:00-11:00"}
         onCancel={mockOnCancel}
-      />
+      />,
     );
     const [firstIntervalButton] = screen.getAllByRole("button");
 
     // First interval is booked, therefore, its button should be used to cancel
     firstIntervalButton.click();
     expect(mockOnCancel).toHaveBeenCalled();
+  });
+
+  test("should still show (as booked, cancellable) a booked interval no longer in the slot's intervals", () => {
+    const mockOnCancel = vi.fn();
+    const mockOnBook = vi.fn();
+    render(
+      <IntervalCardGroup
+        {...dummySlot}
+        // Interval removed from the slot after it was booked
+        bookedInterval={"08:00-09:00"}
+        onCancel={mockOnCancel}
+        onBook={mockOnBook}
+      />,
+    );
+
+    const cards = screen.getAllByTestId(testId("booking-interval-card"));
+    expect(cards).toHaveLength(4);
+    const removedCard = cards.find((c) =>
+      c.textContent?.includes("08:00 - 09:00"),
+    )!;
+    expect(removedCard.textContent).toContain(
+      i18n.t(Alerts.IntervalRemoved) as string,
+    );
+
+    // The removed booked interval is the active one: its button cancels the booking
+    (
+      removedCard.querySelector(
+        `[data-testid="${testId("book-button")}"]`,
+      ) as HTMLButtonElement
+    ).click();
+    expect(mockOnCancel).toHaveBeenCalled();
+    expect(mockOnBook).not.toHaveBeenCalled();
   });
 });

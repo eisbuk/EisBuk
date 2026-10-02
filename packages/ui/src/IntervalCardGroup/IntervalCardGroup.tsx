@@ -1,6 +1,7 @@
 import React from "react";
 
 import { SlotInterface, comparePeriodsLongestFirst } from "@eisbuk/shared";
+import { Alerts, useTranslation } from "@eisbuk/translations";
 
 import IntervalCard, {
   IntervalCardState,
@@ -44,35 +45,59 @@ const BookingCardGroup: React.FC<BookingCardGroupProps> = ({
   disabled: isDisabled,
   ...slot
 }) => {
-  const intervalsToRender = Object.keys(intervals || {}).sort(
-    comparePeriodsLongestFirst
+  const { t } = useTranslation();
+
+  // The booked interval might no longer exist in the slot (removed by an admin after it was booked).
+  // We still show it (as booked), so that the booking doesn't silently disappear and can be cancelled or replaced.
+  const bookedIntervalRemoved = Boolean(
+    bookedInterval && !intervals?.[bookedInterval],
+  );
+  const allIntervals = bookedIntervalRemoved
+    ? { ...intervals, [bookedInterval!]: toSlotInterval(bookedInterval!) }
+    : intervals || {};
+
+  const intervalsToRender = Object.keys(allIntervals).sort(
+    comparePeriodsLongestFirst,
   );
 
   return (
     <>
       {intervalsToRender.map((intervalKey) => {
         // Get `startTime` and `endTime`
-        const interval = intervals[intervalKey];
+        const interval = allIntervals[intervalKey];
 
         const isActive = intervalKey === bookedInterval;
 
         const state = isDisabled
           ? IntervalCardState.Disabled
           : isActive
-          ? IntervalCardState.Active
-          : IntervalCardState.Default;
+            ? IntervalCardState.Active
+            : IntervalCardState.Default;
+
+        const notes =
+          isActive && bookedIntervalRemoved
+            ? t(Alerts.IntervalRemoved)
+            : slot.notes;
 
         return (
           <IntervalCard
             key={intervalKey}
             variant={IntervalCardVariant.Booking}
             onBook={() => onBook(intervalKey)}
-            {...{ ...slot, interval, onCancel, state }}
+            {...{ ...slot, notes, interval, onCancel, state }}
           />
         );
       })}
     </>
   );
+};
+
+/**
+ * Interval key ("16:00-17:00") to `{ startTime, endTime }`
+ */
+const toSlotInterval = (interval: string) => {
+  const [startTime, endTime] = interval.split("-");
+  return { startTime, endTime };
 };
 
 export default BookingCardGroup;

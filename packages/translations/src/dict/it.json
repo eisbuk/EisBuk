@@ -235,6 +235,9 @@
     "ExtendBookingDateBody": "Conferma l'autorizzazione per {{ name }} {{ surname }} a prenotare fino al {{ extendedDate, EEEE d MMMM }}",
 
     "CancelBookingTitle": "Cancellare la prenotazione per",
+    "ReplaceBookingTitle": "Vuoi cambiare la prenotazione per questa lezione?",
+    "ReplaceBookingCurrent": "Prenotazione attuale",
+    "ReplaceBookingNew": "Nuova prenotazione",
     "FinalizeBookingsTitle": "Ho finito con le prenotazioni",
     "ConfirmFinalizeBookings": "Confermi le prenotazioni di {{ month, MMMM }}? Dopo aver confermato non potrai più cambiare le tue prenotazioni.",
     "EnterEmailTitle": "Inserisci la tua Email qui sotto",
@@ -281,7 +284,9 @@
     "Add": "Aggiungi",
     "Delete": "Elimina",
     "Saving": "Salvataggio",
-    "Accept": "Accetta"
+    "Accept": "Accetta",
+    "KeepBooking": "Mantieni la prenotazione attuale",
+    "ReplaceBooking": "Cambia prenotazione"
   },
 
   "Notification": {
@@ -291,6 +296,10 @@
     "BookingCanceledError": "Errore nel rimuovere la prenotazione: {{ date, EEEE d MMMM }}, {{ interval }}",
     "BookingNotesUpdated": "Nota della prenotazione aggiornata",
     "BookingNotesError": "Errore durante l'aggiornamento della nota alla prenotazione",
+    "BookingAlreadyExists": "Hai già una prenotazione per questa lezione: {{ date, EEEE d MMMM }}, {{ interval }}. Non è stato modificato nulla.",
+    "BookingChangedMeanwhile": "La tua prenotazione per questa lezione ({{ date, EEEE d MMMM }}) è stata modificata o cancellata nel frattempo. Non è stato modificato nulla: controlla le tue prenotazioni e riprova.",
+    "BookingOffline": "Nessuna connessione: la prenotazione non è stata salvata. Riprova quando sei online.",
+    "BookingUnconfirmed": "Connessione persa: non è stato possibile confermare la prenotazione. Controlla il Riepilogo quando sei di nuovo online.",
 
     "CopyPasteErrorWeek": "Errore nella copia della settimana",
     "CopyPasteErrorDay": "Errore nella copia del giorno",
@@ -423,7 +432,8 @@
     "IncompleteAttendance": "{{ count }} prenotazioni/presenze di questo mese non possono essere mostrate perché mancano i dati della lezione o dell'atleta (o sono ancora in caricamento). Le ore in questa tabella potrebbero essere incomplete.",
     "NoCategories": "Il tuo account deve ancora essere approvato. Contatta un amministratore se pensi che dovrebbe già esserlo.",
     "ContactEmail": "Per maggiori informazioni, contattaci: <a href=\"mailto:{{ email }}\"><strong>{{ email }}</strong></a>",
-    "ErrorBoundary": "Qualcosa è andato storto! Prova a contattare: <a href=\"mailto:{{ email }}\"><strong>{{ email }}</strong></a>"
+    "ErrorBoundary": "Qualcosa è andato storto! Prova a contattare: <a href=\"mailto:{{ email }}\"><strong>{{ email }}</strong></a>",
+    "IntervalRemoved": "Questo orario non è più previsto per questa lezione"
   },
   "PrintableAttendance": {
     "Start": "Inizio",
