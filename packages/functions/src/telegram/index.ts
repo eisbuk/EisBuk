@@ -62,10 +62,10 @@ const CHAT_LEASE_SECONDS = 120;
 
 const messages = {
   askForContact:
-    "Ciao! Per sapere chi sei ho bisogno del tuo numero di telefono: tocca il pulsante qui sotto per condividerlo.",
+    "Ciao! Per sapere chi sei ho bisogno del tuo numero di telefono: tocca il pulsante «📱 Condividi il mio numero» qui sotto. Se non lo vedi, apri la tastiera del bot con l'icona accanto al campo del messaggio.",
   shareContactButton: "📱 Condividi il mio numero",
   notOwnContact:
-    "Mi serve il tuo numero, non quello di un altro contatto: usa il pulsante qui sotto.",
+    "Mi serve il tuo numero, non quello di un altro contatto: usa il pulsante «📱 Condividi il mio numero» qui sotto.",
   welcomeAdmin:
     "Numero verificato: sei tra gli amministratori. Scrivimi cosa ti serve sugli slot, ad esempio: «crea ghiaccio agonismo ogni martedì e giovedì di novembre dalle 17 alle 18».",
   notAdmin:
@@ -115,7 +115,9 @@ const askForContact = (api: TelegramApi, chatId: number, text: string) =>
   api.sendMessage(chatId, text, {
     keyboard: [[{ text: messages.shareContactButton, request_contact: true }]],
     resize_keyboard: true,
-    one_time_keyboard: true,
+    // Some clients (Telegram Web among them) keep the keyboard folded behind
+    // an icon unless told otherwise. It's removed once the number is shared.
+    is_persistent: true,
   });
 
 /** Failures of the niceties (typing indicator, button cleanup) shouldn't fail the update */
