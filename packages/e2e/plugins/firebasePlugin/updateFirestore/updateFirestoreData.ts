@@ -133,34 +133,39 @@ export const updateAttendance = async (
 /**
  * Runs the callback with 50 ms interval until the assertion is fulfilled or it times out.
  * If it times out, it rejects with the latest error.
- * @param {Function} cb The callback to run (this would normally hold assertions)
+ * @param {Function} assertion The callback to run (this would normally hold assertions)
  * @param {number} [timeout] The timeout in ms
  */
-export const waitFor = (cb: () => any | Promise<any>, timeout = 10000) => {
+export const waitFor = (
+  assertion: () => any | Promise<any>,
+  timeout = 10000
+) => {
   return new Promise<void>((resolve, reject) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let error: any = null;
+    let finished = false;
+    let retry: ReturnType<typeof setTimeout>;
 
-    // Retry the assertion every 50ms
-    const interval = setInterval(() => {
-      // Run callback as a promise (this way we're able to .then/.catch regardless of the 'cb' being sync or async)
-      (async () => cb())()
-        .then(() => {
-          if (interval) {
-            clearInterval(interval);
-          }
-          return resolve();
-        })
-        .catch((err) => {
-          // Store the error to reject with later (if timed out)
-          error = err;
-        });
-    }, 50);
+    // Run one attempt at a time, including when the callback is asynchronous.
+    const attempt = async () => {
+      try {
+        await assertion();
+        if (finished) return;
+        finished = true;
+        clearTimeout(deadline);
+        resolve();
+      } catch (err) {
+        if (finished) return;
+        error = err;
+        retry = setTimeout(attempt, 50);
+      }
+    };
 
-    // When timed out, reject with the latest error
-    setTimeout(() => {
-      clearInterval(interval);
-      reject(error);
+    const deadline = setTimeout(() => {
+      finished = true;
+      clearTimeout(retry);
+      reject(error || new Error("Timed out waiting for emulator data"));
     }, timeout);
+    attempt();
   });
 };
