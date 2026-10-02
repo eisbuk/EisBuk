@@ -14,7 +14,7 @@ import {
   doc,
   getDoc,
   getSlotDocPath,
-  updateDoc,
+  updateDocInTransaction,
   DELETE_FIELD,
 } from "@/utils/firestore";
 import { upsertSlot } from "./slotOperations";
@@ -38,8 +38,8 @@ interface UpdateAttendance<
  * - if customer had not booked creates a new entry with `booked = null` and `attended` the value of provided interval
  *
  * Only the customer's attended interval is written (field path update): the booked interval is maintained by the
- * server from the bookings, and the local copy of the attendance can be older than the latest booking change.
- * A new entry (no entry in the local copy: the customer is added as attended without a booking) is written whole.
+ * server from the bookings. A transaction reads the current entry before deciding whether to update it or
+ * create a complete entry for an athlete without a booking.
  *
  * @param {Object} payload
  * @param {string} payload.slotId
@@ -50,33 +50,24 @@ interface UpdateAttendance<
  */
 export const markAttendance: UpdateAttendance<{ attendedInterval: string }> =
   ({ attendedInterval, slotId, customerId, name, surname }) =>
-  async (dispatch, getState, { getFirestore }) => {
+  async (dispatch, _, { getFirestore }) => {
     try {
-      const localState = getState();
-
       const db = getFirestore();
       const slotToUpdate = doc(
         db,
         getAttendanceDocPath(getOrganization(), slotId)
       );
 
-      const hasEntry = Boolean(
-        localState.firestore.data.attendance?.[slotId]?.attendances?.[
-          customerId
-        ]
-      );
-
-      await updateDoc(
-        slotToUpdate,
-        hasEntry
-          ? { [`attendances.${customerId}.attendedInterval`]: attendedInterval }
-          : {
-              [`attendances.${customerId}`]: {
-                bookedInterval: null,
-                attendedInterval,
-              } as CustomerAttendance,
-            }
-      );
+      await updateDocInTransaction(slotToUpdate, (data) => {
+        const entry = data?.attendances?.[customerId];
+        return {
+          [`attendances.${customerId}`]: {
+            ...entry,
+            bookedInterval: entry?.bookedInterval ?? null,
+            attendedInterval,
+          } as CustomerAttendance,
+        };
+      });
     } catch (err) {
       dispatch(
         enqueueNotification({
@@ -144,8 +135,8 @@ export const markAttendanceWithCustomInterval: UpdateAttendance<{
  * - if customer had booked and didn't arrive, marks attended interval as `null`
  * - if customer had not booked (attendance was there by mistake probably), removes customer from slots attendance
  *
- * Only the customer's entry is written (field path update): the rest of the document, which the local copy may have
- * out of date, is left as it is.
+ * Only the customer's entry is written. A transaction reads its current booking before choosing to mark
+ * absence or remove the entry; a cancelled entry is left absent.
  *
  * @param {Object} payload
  * @param {string} payload.slotId
@@ -155,29 +146,21 @@ export const markAttendanceWithCustomInterval: UpdateAttendance<{
  */
 export const markAbsence: UpdateAttendance =
   ({ slotId, customerId, name, surname }) =>
-  async (dispatch, getState, { getFirestore }) => {
+  async (dispatch, _, { getFirestore }) => {
     try {
-      const localState = getState();
-
       const db = getFirestore();
       const slotToUpdate = doc(
         db,
         getAttendanceDocPath(getOrganization(), slotId)
       );
 
-      const customerEntry =
-        localState.firestore.data.attendance?.[slotId]?.attendances?.[
-          customerId
-        ];
-
-      await updateDoc(
-        slotToUpdate,
-        // if booked, customer should stay in db (only mark absence)
-        customerEntry?.bookedInterval
+      await updateDocInTransaction(slotToUpdate, (data) => {
+        const entry = data?.attendances?.[customerId];
+        if (!entry) return;
+        return entry.bookedInterval
           ? { [`attendances.${customerId}.attendedInterval`]: null }
-          : // if not booked and not attended, remove the customer's entry
-            { [`attendances.${customerId}`]: DELETE_FIELD }
-      );
+          : { [`attendances.${customerId}`]: DELETE_FIELD };
+      });
     } catch (err) {
       dispatch(
         enqueueNotification({
