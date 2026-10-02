@@ -10,16 +10,15 @@ import {
   OrganizationData,
   CustomerFull,
   isValidPhoneNumber,
-  CustomerBookingEntry,
-  BookingSubCollection,
-  SlotsByDay,
   normalizeEmail,
 } from "@eisbuk/shared";
+
+import { syncCustomerBookingStats } from "./customerStats";
 
 import { __functionsZone__ } from "./constants";
 import { wrapHttpsOnCallHandler } from "./sentry-serverless-firebase";
 
-import { checkIsAdmin, getCustomerStats, throwUnauth } from "./utils";
+import { checkIsAdmin, throwUnauth } from "./utils";
 
 /**
  * Goes through all 'slotsByDay' entries, checks each date to see if there are no slots in the day and deletes the day if empty.
@@ -270,78 +269,21 @@ export const calculateBookingStatsThisAndNextMonths = functions
             .collection(Collection.Organizations)
             .doc(organization);
 
-          const allBookings = (
-            await orgRef.collection(OrgSubCollection.Bookings).get()
-          ).docs;
-
-          // Get current and next months
-          const currentMonthStr = DateTime.now().toISODate().substring(0, 7);
-          const nextMonthStr = DateTime.now()
-            .plus({ month: 1 })
-            .toISODate()
-            .substring(0, 7);
-
-          const currentMonthSlots = (
-            await db
-              .collection(Collection.Organizations)
-              .doc(organization)
-              .collection(OrgSubCollection.SlotsByDay)
-              .doc(currentMonthStr)
-              .get()
-          ).data() as SlotsByDay;
-
-          const nextMonthSlots = (
-            await db
-              .collection(Collection.Organizations)
-              .doc(organization)
-              .collection(OrgSubCollection.SlotsByDay)
-              .doc(nextMonthStr)
-              .get()
-          ).data() as SlotsByDay;
-          const batch = admin.firestore().batch();
-
-          const statsBatch = allBookings.map(async (booking) => {
-            const customerRef = orgRef
-              .collection(OrgSubCollection.Customers)
-              .doc(booking.data().id);
-
-            // Fetch documents from a subcollection of the booking
-            const bookedSlotsSnapshot = await booking.ref
-              .collection(BookingSubCollection.BookedSlots)
-              .get();
-            if (bookedSlotsSnapshot.empty) return Promise.resolve(null);
-
-            const bookedSlots: { [slotId: string]: CustomerBookingEntry } = {};
-            bookedSlotsSnapshot.forEach((doc) => {
-              bookedSlots[doc.id] = doc.data() as CustomerBookingEntry;
-            });
-
-            const thisMonthStats = getCustomerStats(
-              bookedSlots,
-              currentMonthSlots,
-              currentMonthStr
-            );
-            const nextMonthStats = getCustomerStats(
-              bookedSlots,
-              nextMonthSlots,
-              nextMonthStr
-            );
-
-            functions.logger.info(
-              `Calculated bookings stats for customer with id: ${
-                booking.data().id
-              }`
-            );
-
-            // Set stats into customers doc
-            return batch.set(
-              customerRef,
-              { bookingStats: { ...thisMonthStats, ...nextMonthStats } },
-              { merge: true }
-            );
-          });
-          await Promise.all(statsBatch);
-          await batch.commit();
+          const customers = await orgRef
+            .collection(OrgSubCollection.Customers)
+            .get();
+          const now = DateTime.now().setZone("Europe/Berlin");
+          const months = [
+            now.toFormat("yyyy-MM"),
+            now.plus({ months: 1 }).toFormat("yyyy-MM"),
+          ];
+          await Promise.all(
+            customers.docs.flatMap(({ id }) =>
+              months.map((month) =>
+                syncCustomerBookingStats(db, organization, id, month)
+              )
+            )
+          );
 
           return { success: true };
         } catch (error) {

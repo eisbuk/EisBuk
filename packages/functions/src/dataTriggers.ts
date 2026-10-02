@@ -11,7 +11,7 @@ import { __functionsZone__ } from "./constants";
 import {
   BookingSubCollection,
   Collection,
-  CustomerBookingEntry,
+  CustomerBookings,
   OrgSubCollection,
   SlotAttendnace,
   SlotInterface,
@@ -19,11 +19,13 @@ import {
   sanitizeCustomer,
   OrganizationData,
   Customer,
-  CustomerBookings,
-  SlotsByDay,
 } from "@eisbuk/shared";
 
-import { getCustomerStats } from "./utils";
+import {
+  getStatsDates,
+  syncCustomerBookingStats,
+  syncCustomerStatsForSlot,
+} from "./customerStats";
 import {
   getAttendedSlotInterval,
   getSecretKeys,
@@ -415,16 +417,22 @@ export const countSlotsBookings = functions
           string
         >;
 
-        // If the booking was merely updated, the number of bookings didn't change
-        if (change.before.exists && change.after.exists) {
+        // Interval/notes edits leave counts unchanged; date edits can move a booking between months.
+        if (
+          change.before.exists &&
+          change.after.exists &&
+          change.before.data()?.date === change.after.data()?.date
+        ) {
           return;
         }
 
         const db = admin.firestore();
 
-        const date: unknown = (change.before.data() || change.after.data())
-          ?.date;
-        if (typeof date !== "string" || !date) {
+        const dates = getStatsDates(
+          change.before.data()?.date,
+          change.after.data()?.date
+        );
+        if (!dates.length) {
           functions.logger.warn("countSlotsBookings: booking without a date");
           return;
         }
@@ -435,10 +443,13 @@ export const countSlotsBookings = functions
         //
         // Until the collection group index the recount needs is ready (right after a deploy), this fails and
         // is retried (`failurePolicy`).
-        await settleAll("countSlotsBookings", [
-          (async () =>
-            syncSlotBookingsCount(db, organization, bookingId, date))(),
-        ]);
+        const months = [...new Set(dates.map((date) => date.substring(0, 7)))];
+        await settleAll(
+          "countSlotsBookings",
+          months.map((month) =>
+            syncSlotBookingsCount(db, organization, bookingId, `${month}-01`)
+          )
+        );
       }
     )
   );
@@ -651,9 +662,7 @@ export const createAttendedSlotOnAttendance = functions
   );
 
 export const createCustomerStats = functions
-  .runWith({
-    memory: "512MB",
-  })
+  .runWith(bookingSyncRuntimeOptions)
   .region(__functionsZone__)
   .firestore.document(
     `${Collection.Organizations}/{organization}/${OrgSubCollection.Bookings}/{secretKey}/${BookingSubCollection.BookedSlots}/{bookingId}`
@@ -662,56 +671,66 @@ export const createCustomerStats = functions
     wrapFirestoreOnWriteHandler(
       "createCustomerStats",
       async (change, context) => {
+        if (isTooOldToRetry("createCustomerStats", context)) return;
         const { organization, secretKey } = context.params as Record<
           string,
           string
         >;
-        const { date } =
-          change.after.data() || (change.before.data() as CustomerBookingEntry);
-
-        if (!date) return;
+        const dates = getStatsDates(
+          change.before.data()?.date,
+          change.after.data()?.date
+        );
+        if (!dates.length) return;
         const db = admin.firestore();
+        await settleAll("createCustomerStats", [
+          (async () => {
+            const mirror = await db
+              .collection(Collection.Organizations)
+              .doc(organization)
+              .collection(OrgSubCollection.Bookings)
+              .doc(secretKey)
+              .get();
+            const customerId = mirror.data()?.id;
+            if (typeof customerId !== "string" || !customerId) return;
+            await Promise.all(
+              [...new Set(dates.map((date) => date.substring(0, 7)))].map(
+                (month) =>
+                  syncCustomerBookingStats(db, organization, customerId, month)
+              )
+            );
+          })(),
+        ]);
+      }
+    )
+  );
 
-        const bookingRef = db
-          .collection(Collection.Organizations)
-          .doc(organization)
-          .collection(OrgSubCollection.Bookings)
-          .doc(secretKey);
-
-        // Fetch the booking document
-        const { id: customerId } = (
-          await bookingRef.get()
-        ).data() as CustomerBookings;
-
-        // Fetch documents from a subcollection of the booking
-        const bookedSlotsSnapshot = await bookingRef
-          .collection(BookingSubCollection.BookedSlots)
-          .get();
-
-        const bookedSlots: { [slotId: string]: CustomerBookingEntry } = {};
-        bookedSlotsSnapshot.forEach((doc) => {
-          bookedSlots[doc.id] = doc.data() as CustomerBookingEntry;
-        });
-
-        const monthStr = date.substring(0, 7);
-        const monthSlots = (
-          await db
-            .collection(Collection.Organizations)
-            .doc(organization)
-            .collection(OrgSubCollection.SlotsByDay)
-            .doc(monthStr)
-            .get()
-        ).data() as SlotsByDay;
-
-        if (!monthSlots) return;
-        const stats = getCustomerStats(bookedSlots, monthSlots, monthStr);
-        // Set stats into customers doc
-        await db
-          .collection(Collection.Organizations)
-          .doc(organization)
-          .collection(OrgSubCollection.Customers)
-          .doc(customerId)
-          .set({ bookingStats: stats }, { merge: true });
+export const createCustomerStatsForSlot = functions
+  .runWith(bookingSyncRuntimeOptions)
+  .region(__functionsZone__)
+  .firestore.document(
+    `${Collection.Organizations}/{organization}/${OrgSubCollection.Slots}/{slotId}`
+  )
+  .onWrite(
+    wrapFirestoreOnWriteHandler(
+      "createCustomerStatsForSlot",
+      async (change, context) => {
+        if (isTooOldToRetry("createCustomerStatsForSlot", context)) return;
+        const { organization, slotId } = context.params as Record<
+          string,
+          string
+        >;
+        const db = admin.firestore();
+        await settleAll("createCustomerStatsForSlot", [
+          (async () => {
+            const current = await change.after.ref.get();
+            const dates = getStatsDates(
+              change.before.data()?.date,
+              change.after.data()?.date,
+              current.data()?.date
+            );
+            await syncCustomerStatsForSlot(db, organization, slotId, dates);
+          })(),
+        ]);
       }
     )
   );
