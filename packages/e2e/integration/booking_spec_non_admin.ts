@@ -102,10 +102,8 @@ describe("Booking flow", () => {
       // should be able to book slot
       cy.getAttrWith("aria-label", i18n.t(ActionButton.BookInterval))
         .eq(0)
-        .click({
-          // force true to avoid detatched error (happening because the button gets rerendered)
-          force: true,
-        });
+        .should("be.enabled")
+        .click({ scrollBehavior: "center" });
 
       cy.getByTestId("notification-toast").contains(
         i18n.t(NotificationMessage.BookingSuccess, {
@@ -131,9 +129,8 @@ describe("Booking flow", () => {
       // should be able to book interval
       cy.getAttrWith("aria-label", i18n.t(ActionButton.BookInterval))
         .eq(0)
-        .click({
-          force: true,
-        });
+        .should("be.enabled")
+        .click({ scrollBehavior: "center" });
       cy.getByTestId("notification-toast").contains(
         i18n.t(NotificationMessage.BookingSuccess, {
           date: DateTime.fromISO("2022-01-01"),
@@ -193,9 +190,10 @@ describe("Booking flow", () => {
       );
 
       // should be able to book interval
-      cy.getAttrWith("aria-label", i18n.t(BookingAria.BookButton)).eq(0).click({
-        force: true,
-      });
+      cy.getAttrWith("aria-label", i18n.t(BookingAria.BookButton))
+        .eq(0)
+        .should("be.enabled")
+        .click({ scrollBehavior: "center" });
 
       cy.getByTestId("notification-toast").contains(
         i18n.t(NotificationMessage.BookingSuccess, {
