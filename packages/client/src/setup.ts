@@ -82,7 +82,21 @@ if (__isDev__) {
   );
   console.warn("Using emulator for functions and authentication");
   // window.firebase = firebase as any;
-} else {
+}
+
+/**
+ * Browser tests can turn the IndexedDB persistence on in dev/test builds
+ * (e.g. to reproduce a broken browser storage). Production builds always have it on.
+ */
+const isPersistenceForced = () => {
+  try {
+    return localStorage.getItem("enableFirestorePersistence") === "true";
+  } catch {
+    return false;
+  }
+};
+
+if (!__isDev__ || isPersistenceForced()) {
   enableIndexedDbPersistence(db).catch((err) => {
     if (err.code === "failed-precondition") {
       console.warn(

@@ -290,6 +290,8 @@
     "BookingCanceledError": "Error cancelling booking: {{ date, EEEE d MMMM }}, {{ interval }}",
     "BookingNotesUpdated": "Booking notes updated",
     "BookingNotesError": "Error updating booking notes",
+    "StorageReloading": "There was a problem with the browser: reloading the page, then please try again.",
+    "StorageReloadNeeded": "There was a problem with the browser: please reload the page and try again.",
 
     "CopyPasteErrorWeek": "Error copying slots week",
     "CopyPasteErrorDay": "Error copying slots day",
