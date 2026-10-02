@@ -140,7 +140,7 @@ describe("Slot derived data", () => {
         .collection("slotsByDay")
         .doc(month)
         .set({ [date]: { [source.id]: obsolete } });
-      await slotsSlotsByDayAutofix(isolated as any, org.id, {
+      const report = await slotsSlotsByDayAutofix(isolated as any, org.id, {
         id: "test",
         missingSlotsByDayEntries: {},
         straySlotsByDayEntries: {},
@@ -156,6 +156,7 @@ describe("Slot derived data", () => {
           source.id
         ]
       ).toEqual(source);
+      await org.collection("reports").doc("fix").set(report);
     }
   );
   testWithEmulator(
@@ -207,6 +208,54 @@ describe("Slot derived data", () => {
         (await org.collection("attendance").doc(source.id).get()).data()
       ).toEqual(entry);
       expect(report.deleted).toEqual({});
+    }
+  );
+  testWithEmulator(
+    "attendance date changes refresh athlete attendance history",
+    async () => {
+      const { slot, attendance } = await setup();
+      const customer = slot.parent.parent!.collection("customers").doc();
+      const secretKey = customer.id;
+      await customer.set({
+        id: customer.id,
+        secretKey,
+        name: "Test",
+        surname: "Athlete",
+        categories: [Category.Competitive],
+      });
+      const history = slot.parent
+        .parent!.collection("bookings")
+        .doc(secretKey)
+        .collection("attendedSlots")
+        .doc(slot.id);
+      const entry = {
+        date,
+        attendances: {
+          [customer.id]: {
+            bookedInterval: null,
+            attendedInterval: "10:00-10:50",
+          },
+        },
+      };
+      await attendance.set(entry);
+      await waitFor(async () =>
+        expect((await history.get()).data()).toEqual({
+          date,
+          interval: "10:00-10:50",
+        })
+      );
+      const moved = { ...entry, date: "2031-11-10" };
+      await attendance.set(moved);
+      await deliverFirestoreWriteEvent(
+        "createAttendedSlotOnAttendance",
+        attendance.path,
+        entry,
+        moved
+      );
+      expect((await history.get()).data()).toEqual({
+        date: moved.date,
+        interval: "10:00-10:50",
+      });
     }
   );
 });

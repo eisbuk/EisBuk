@@ -243,12 +243,18 @@ export const slotsSlotsByDayAutofix = async (
       addLocation(id, slotDateNamespace(slots.date));
     }
   );
-  const results = await Promise.all(
-    [...locations].map(async ([id, namespaces]) => ({
-      id,
-      ...(await syncSlotAggregate(db, organization, id, [...namespaces])),
-    }))
-  );
+  // Repairs in the same month share a document; serialize them to avoid
+  // exhausting transaction retries by contending with our own repair writes.
+  const results: Array<
+    { id: string } & Awaited<ReturnType<typeof syncSlotAggregate>>
+  > = [];
+  for (const [id, namespaces] of locations) {
+    // eslint-disable-next-line no-await-in-loop
+    const result = await syncSlotAggregate(db, organization, id, [
+      ...namespaces,
+    ]);
+    results.push({ id, ...result });
+  }
   const created: DatedSlotId[] = [];
   const deleted: DatedSlotId[] = [];
   const updated: Record<DatedSlotId, SlotsByDayUpdate> = {};
@@ -320,5 +326,13 @@ const calcUpdateDiff = ({
         (key) => [key, { before: slotsByDay[key], after: slots[key] }] as const
       )
       .filter(([, { before, after }]) => !_.isEqual(before, after))
+      // An absent side denotes a removed/added field and must be Firestore-serializable.
+      .map(([key, { before, after }]) => [
+        key,
+        {
+          ...(before === undefined ? {} : { before }),
+          ...(after === undefined ? {} : { after }),
+        },
+      ])
   );
 // #endregion utils

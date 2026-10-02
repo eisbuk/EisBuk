@@ -501,6 +501,9 @@ export const createAttendedSlotOnAttendance = functions
           (change.after.data() as SlotAttendnace | undefined)?.attendances ||
           {};
 
+        const dateChanged =
+          change.before.data()?.date !== change.after.data()?.date;
+        // Date edits also move the athlete history even when intervals stay the same.
         // Customers whose attended slot this write changes
         const ids = [
           ...new Set([
@@ -509,8 +512,9 @@ export const createAttendedSlotOnAttendance = functions
           ]),
         ].filter(
           (id) =>
+            dateChanged ||
             getAttendedSlotInterval(previousAttendances[id]) !==
-            getAttendedSlotInterval(eventAttendances[id])
+              getAttendedSlotInterval(eventAttendances[id])
         );
 
         const db = admin.firestore();

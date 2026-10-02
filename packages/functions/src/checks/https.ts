@@ -134,7 +134,7 @@ export const dbSlotAttendanceAutofix = functions
           organization,
           report
         );
-        checker.writeReport({ ...report, attendanceFixes });
+        await checker.writeReport({ ...report, attendanceFixes });
 
         return attendanceFixes;
       }
@@ -169,7 +169,7 @@ export const dbSlotSlotsByDayAutofix = functions
           organization,
           report
         );
-        checker.writeReport({ ...report, slotsByDayFixes });
+        await checker.writeReport({ ...report, slotsByDayFixes });
 
         return slotsByDayFixes;
       }
