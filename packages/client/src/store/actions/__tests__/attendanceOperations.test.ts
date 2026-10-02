@@ -411,6 +411,74 @@ describe("Attendance operations", () => {
   });
 
   describe("with a local copy older than the attendance in the database", () => {
+    [markAttendance, markAbsence].forEach((operation) => {
+      [true, false].forEach((cancelled) => {
+        const markingPresent = operation === markAttendance;
+        testWithEmulator(
+          `${
+            markingPresent ? "markAttendance" : "markAbsence"
+          } uses the database when a booking was ${
+            cancelled ? "cancelled" : "created"
+          } since the local copy`,
+          async () => {
+            const store = getNewStore();
+            const entry = {
+              bookedInterval,
+              attendedInterval: bookedInterval,
+            };
+            const { db, organization } = await getTestEnv({
+              setup: async (db, { organization }) => {
+                await setupTestAttendance({
+                  store,
+                  db,
+                  attendance: {
+                    [slotId]: createDocumentWithObservedAttendance(
+                      cancelled ? { [saul.id]: entry } : {}
+                    ),
+                  },
+                  organization,
+                });
+                await setDoc(
+                  doc(db, getAttendanceDocPath(organization, slotId)),
+                  createDocumentWithObservedAttendance(
+                    cancelled ? {} : { [saul.id]: entry }
+                  )
+                );
+              },
+            });
+            getOrganizationSpy.mockReturnValue(organization);
+
+            await runThunk(
+              operation({ ...shortSaul, slotId, attendedInterval }),
+              store.dispatch,
+              store.getState,
+              { getFirestore: () => db }
+            );
+
+            const expectedEntry = cancelled
+              ? markingPresent
+                ? { bookedInterval: null, attendedInterval }
+                : undefined
+              : {
+                  bookedInterval,
+                  attendedInterval: markingPresent ? attendedInterval : null,
+                };
+            expect(
+              (
+                await getDoc(
+                  doc(db, getAttendanceDocPath(organization, slotId))
+                )
+              ).data()
+            ).toEqual(
+              createDocumentWithObservedAttendance(
+                expectedEntry ? { [saul.id]: expectedEntry } : {}
+              )
+            );
+          }
+        );
+      });
+    });
+
     /** The booked interval after the athlete changed the booking: the local copy still has `bookedInterval` */
     const changedInterval = "11:00-13:00";
     /** An entry added since the local copy (e.g. a new booking) */

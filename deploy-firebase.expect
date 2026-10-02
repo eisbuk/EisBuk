@@ -82,9 +82,28 @@ trap {
 } {SIGINT SIGTERM}
 
 set deletion_answered 0
+set retry_warning_seen 0
+set retry_answered 0
 set deploy_complete 0
 
 expect {
+    "*The following functions will newly be retried in case of failure:" {
+        set retry_warning_seen 1
+        exp_continue
+    }
+    "*Would you like to proceed with deployment?*" {
+        # Only acknowledge the retry policy declared in source. Other deployment
+        # confirmations require inspection instead of a blanket --force.
+        if {!$retry_warning_seen} {
+            kill_deploy
+            fail "unrecognised deployment confirmation" 1
+        }
+        if {!$retry_answered} {
+            send -- "Y\r"
+            set retry_answered 1
+        }
+        exp_continue
+    }
     "*Would you like to proceed with deletion?*" {
         # inquirer redraws the prompt on every key press: answer only once
         if {!$deletion_answered} {

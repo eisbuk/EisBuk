@@ -10,6 +10,8 @@ import type {
   Firestore as ServerFirestore,
   CollectionReference as ServerCollectionReference,
   DocumentReference as ServerDocumentReference,
+  UpdateData as ServerUpdateData,
+  DocumentData as ServerDocumentData,
 } from "@google-cloud/firestore";
 import {
   type Firestore as ClientFirestore,
@@ -24,7 +26,7 @@ import {
   getDocs as clientGetDocs,
   deleteDoc as deleteDocClient,
   writeBatch as writeBatchClient,
-  updateDoc as clientUpdateDoc,
+  runTransaction as clientRunTransaction,
   deleteField as clientDeleteField,
   DocumentData,
   UpdateData,
@@ -173,50 +175,59 @@ export const setDoc = async (
 };
 
 /**
- * Use as a value in `updateDoc` to delete the field (works on all Firestore variants).
+ * Use as a value in `updateDocInTransaction` to delete a field in the client SDK.
  */
 export const DELETE_FIELD = Symbol("deleteField");
 
 /**
- * Implementation of firestore `updateDoc` function that works on all Firestore variants: updates only the given fields
- * (dotted field paths, e.g. `"attendances.<customerId>.attendedInterval"`), leaving the rest of the document as it is.
- * The document must exist.
- * @param doc document to update in form of a FirestoreDocVariant (used to match with correct behaviour)
- * @param updates `{ [dottedFieldPath]: value }`, `DELETE_FIELD` as value deletes the field
+ * Reads a document and derives field updates in one transaction. Returning undefined skips the write.
+ * @param doc document to update (must exist)
+ * @param getUpdates derives dotted field updates from current data; DELETE_FIELD deletes a field
  */
-export const updateDoc = async (
+export const updateDocInTransaction = async (
   doc: FirestoreDocVariant,
-  updates: Record<string, unknown>
-) => {
-  const withClientSentinels = () =>
-    Object.fromEntries(
-      Object.entries(updates).map(([path, value]) => [
-        path,
-        value === DELETE_FIELD ? clientDeleteField() : value,
-      ])
-    ) as UpdateData<DocumentData>;
-
-  const res = await match(doc, {
+  getUpdates: (
+    data: DocumentData | undefined
+  ) => Record<string, unknown> | undefined
+): Promise<void> =>
+  match(doc, {
     [FirestoreEnv.Client]: ({ instance }) =>
-      clientUpdateDoc(instance, withClientSentinels()),
+      clientRunTransaction(instance.firestore, async (tx) => {
+        const updates = getUpdates((await tx.get(instance)).data());
+        if (!updates) return;
+        tx.update(
+          instance,
+          Object.fromEntries(
+            Object.entries(updates).map(([path, value]) => [
+              path,
+              value === DELETE_FIELD ? clientDeleteField() : value,
+            ])
+          ) as UpdateData<DocumentData>
+        );
+      }),
     [FirestoreEnv.Server]: ({ instance }) => {
       // The Firebase compat SDK (used by firestore-rules-unit-testing) wraps a client SDK document reference
       const delegate = (
         instance as unknown as { _delegate?: ClientDocumentReference }
       )._delegate;
       if (delegate) {
-        return clientUpdateDoc(delegate, withClientSentinels());
-      }
-      if (Object.values(updates).includes(DELETE_FIELD)) {
-        throw new Error(
-          "updateDoc: DELETE_FIELD isn't supported for this Firestore instance"
+        return updateDocInTransaction(
+          FirestoreDocVariant.client({ instance: delegate }),
+          getUpdates
         );
       }
-      return instance.update(updates);
+      return instance.firestore.runTransaction(async (tx) => {
+        const updates = getUpdates((await tx.get(instance)).data());
+        if (!updates) return;
+        if (Object.values(updates).includes(DELETE_FIELD)) {
+          throw new Error(
+            "updateDocInTransaction: DELETE_FIELD isn't supported for this Firestore instance"
+          );
+        }
+        tx.update(instance, updates as ServerUpdateData<ServerDocumentData>);
+      });
     },
   });
-  return res;
-};
 
 /**
  * Implementation of firestore `getDoc` function that works on all Firestore variants.
