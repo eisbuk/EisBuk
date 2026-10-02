@@ -74,6 +74,54 @@ describe("Customer booking statistics", () => {
   );
 
   testWithEmulator(
+    "malformed historical intervals do not prevent valid booked hours from updating",
+    async () => {
+      const { org, customer, slotData, booking } = await setup();
+      await booking.set({ date, interval });
+      await waitFor(async () =>
+        expect(await stats(customer, "2031-10")).toEqual({
+          ice: 1,
+          "off-ice": 0,
+        })
+      );
+
+      const invalidIntervals = ["malformed", "10:xx-11:00", "11:00-10:00", 123];
+      await Promise.all(
+        invalidIntervals.map(async (invalid, index) => {
+          const id = `invalid-interval-${index}`;
+          await org
+            .collection("slots")
+            .doc(id)
+            .set({ ...slotData, id });
+          await booking.parent.doc(id).set({ date, interval: invalid });
+        })
+      );
+      const id = "another-valid-slot";
+      await org
+        .collection("slots")
+        .doc(id)
+        .set({ ...slotData, id });
+      const second = booking.parent.doc(id);
+      const entry = { date, interval };
+      await second.set(entry);
+      await deliverFirestoreWriteEvent(
+        "createCustomerStats",
+        second.path,
+        null,
+        entry
+      );
+
+      expect(await stats(customer, "2031-10")).toEqual({
+        ice: 2,
+        "off-ice": 0,
+      });
+      expect(
+        (await booking.parent.doc("invalid-interval-0").get()).exists
+      ).toBe(true);
+    }
+  );
+
+  testWithEmulator(
     "date changes recalculate both the old and new months",
     async () => {
       const { org, customer, slot, slotData, booking } = await setup();
