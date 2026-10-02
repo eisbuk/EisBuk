@@ -1,8 +1,4 @@
-import {
-  CustomerAttendance,
-  SlotAttendnace,
-  SlotInterface,
-} from "@eisbuk/shared";
+import { CustomerAttendance, SlotInterface } from "@eisbuk/shared";
 import i18n, { NotificationMessage } from "@eisbuk/translations";
 
 import { NotifVariant } from "@/enums/store";
@@ -16,9 +12,10 @@ import { enqueueNotification } from "@/features/notifications/actions";
 import {
   getAttendanceDocPath,
   doc,
-  setDoc,
   getDoc,
   getSlotDocPath,
+  updateDocInTransaction,
+  DELETE_FIELD,
 } from "@/utils/firestore";
 import { upsertSlot } from "./slotOperations";
 
@@ -40,6 +37,10 @@ interface UpdateAttendance<
  * - if customer had booked, updates `attended` interval
  * - if customer had not booked creates a new entry with `booked = null` and `attended` the value of provided interval
  *
+ * Only the customer's attended interval is written (field path update): the booked interval is maintained by the
+ * server from the bookings. A transaction reads the current entry before deciding whether to update it or
+ * create a complete entry for an athlete without a booking.
+ *
  * @param {Object} payload
  * @param {string} payload.slotId
  * @param {string} payload.customerId
@@ -49,33 +50,24 @@ interface UpdateAttendance<
  */
 export const markAttendance: UpdateAttendance<{ attendedInterval: string }> =
   ({ attendedInterval, slotId, customerId, name, surname }) =>
-  async (dispatch, getState, { getFirestore }) => {
+  async (dispatch, _, { getFirestore }) => {
     try {
-      const localState = getState();
-
       const db = getFirestore();
       const slotToUpdate = doc(
         db,
         getAttendanceDocPath(getOrganization(), slotId)
       );
 
-      // get attendnace entry from local store (to not overwrite the rest of the doc when updating)
-      const localAttendnaceEntry =
-        localState.firestore.data.attendance![slotId];
-
-      // update customer attendance from local store with new values
-      const updatedCustomerAttendance: CustomerAttendance = {
-        bookedInterval:
-          localAttendnaceEntry.attendances[customerId]?.bookedInterval || null,
-        attendedInterval: attendedInterval,
-      };
-
-      // update month document with new values
-      await setDoc(
-        slotToUpdate,
-        { attendances: { [customerId]: updatedCustomerAttendance } },
-        { merge: true }
-      );
+      await updateDocInTransaction(slotToUpdate, (data) => {
+        const entry = data?.attendances?.[customerId];
+        return {
+          [`attendances.${customerId}`]: {
+            ...entry,
+            bookedInterval: entry?.bookedInterval ?? null,
+            attendedInterval,
+          } as CustomerAttendance,
+        };
+      });
     } catch (err) {
       dispatch(
         enqueueNotification({
@@ -143,6 +135,9 @@ export const markAttendanceWithCustomInterval: UpdateAttendance<{
  * - if customer had booked and didn't arrive, marks attended interval as `null`
  * - if customer had not booked (attendance was there by mistake probably), removes customer from slots attendance
  *
+ * Only the customer's entry is written. A transaction reads its current booking before choosing to mark
+ * absence or remove the entry; a cancelled entry is left absent.
+ *
  * @param {Object} payload
  * @param {string} payload.slotId
  * @param {string} payload.customerId
@@ -151,47 +146,21 @@ export const markAttendanceWithCustomInterval: UpdateAttendance<{
  */
 export const markAbsence: UpdateAttendance =
   ({ slotId, customerId, name, surname }) =>
-  async (dispatch, getState, { getFirestore }) => {
+  async (dispatch, _, { getFirestore }) => {
     try {
-      const localState = getState();
-
       const db = getFirestore();
       const slotToUpdate = doc(
         db,
         getAttendanceDocPath(getOrganization(), slotId)
       );
 
-      // get attendnace entry from local store (to not overwrite the rest of the doc when updating)
-      const localAttendnaceEntry =
-        localState.firestore.data.attendance![slotId];
-
-      // extract customer entry from slot's attendance
-      const { [customerId]: customerEntry, ...attendanceForSlot } =
-        localAttendnaceEntry.attendances;
-
-      // if booked not null, customer should stay in db (only mark absence)
-      const { bookedInterval } = customerEntry || {};
-      const updatedCustomerAttendance = bookedInterval
-        ? {
-            [customerId]: {
-              bookedInterval,
-              attendedInterval: null,
-            },
-          }
-        : // if not booked and not attended, omit customer from updated document
-          {};
-
-      // create proper structure for attendance entry
-      const attendanceEntry: SlotAttendnace = {
-        ...localAttendnaceEntry,
-        attendances: {
-          ...attendanceForSlot,
-          ...updatedCustomerAttendance,
-        },
-      };
-
-      // update month document with new values
-      await setDoc(slotToUpdate, attendanceEntry);
+      await updateDocInTransaction(slotToUpdate, (data) => {
+        const entry = data?.attendances?.[customerId];
+        if (!entry) return undefined;
+        return entry.bookedInterval
+          ? { [`attendances.${customerId}.attendedInterval`]: null }
+          : { [`attendances.${customerId}`]: DELETE_FIELD };
+      });
     } catch (err) {
       dispatch(
         enqueueNotification({

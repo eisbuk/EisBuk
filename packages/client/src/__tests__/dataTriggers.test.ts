@@ -47,6 +47,9 @@ const testMonth = testDate.substring(0, 7);
 
 describe("Cloud functions -> Data triggers ->", () => {
   describe("createAttendanceForBooking", () => {
+    // A lesson in the future: for past lessons the trigger only updates the booked interval of an existing entry
+    // (see the past lesson tests in bookingSync.test.ts)
+    const lessonDate = "2030-03-01";
     /** Test params of each of the booking -> attendance data trigger table tests */
     interface BookingAttendanceTestCase {
       /** Test name */
@@ -89,7 +92,7 @@ describe("Cloud functions -> Data triggers ->", () => {
     // This structure is used as a base setup of the attendance document for the slot
     // we're using in tests. It's here to ensure no other data (than the data in focus) should be touched.
     const baseAttendance = {
-      date: baseSlot.date,
+      date: lessonDate,
       attendances: {
         ["dummy-customer"]: {
           bookedInterval: Object.keys(baseSlot.intervals)[0],
@@ -175,7 +178,7 @@ describe("Cloud functions -> Data triggers ->", () => {
         initialAttendance: null,
         initialBooking: null,
         update: {
-          date: baseSlot.date,
+          date: lessonDate,
           interval: Object.keys(baseSlot.intervals)[0],
         },
         wantAttendance: {
@@ -189,7 +192,7 @@ describe("Cloud functions -> Data triggers ->", () => {
         initialAttendance: null,
         initialBooking: null,
         update: {
-          date: baseSlot.date,
+          date: lessonDate,
           interval: Object.keys(baseSlot.intervals)[0],
           bookingNotes: "This is a booking note",
         },
@@ -203,7 +206,7 @@ describe("Cloud functions -> Data triggers ->", () => {
       {
         name: "update booking: interval only",
         initialBooking: {
-          date: baseSlot.date,
+          date: lessonDate,
           interval: Object.keys(baseSlot.intervals)[0],
         },
         initialAttendance: {
@@ -211,7 +214,7 @@ describe("Cloud functions -> Data triggers ->", () => {
           attendedInterval: Object.keys(baseSlot.intervals)[0],
         },
         update: {
-          date: baseSlot.date,
+          date: lessonDate,
           interval: Object.keys(baseSlot.intervals)[1],
         },
         wantAttendance: {
@@ -223,7 +226,7 @@ describe("Cloud functions -> Data triggers ->", () => {
       {
         name: "update booking: interval with notes",
         initialBooking: {
-          date: baseSlot.date,
+          date: lessonDate,
           interval: Object.keys(baseSlot.intervals)[0],
         },
         initialAttendance: {
@@ -231,7 +234,7 @@ describe("Cloud functions -> Data triggers ->", () => {
           attendedInterval: Object.keys(baseSlot.intervals)[0],
         },
         update: {
-          date: baseSlot.date,
+          date: lessonDate,
           interval: Object.keys(baseSlot.intervals)[1],
           bookingNotes: "This is a booking note",
         },
@@ -245,7 +248,7 @@ describe("Cloud functions -> Data triggers ->", () => {
       {
         name: "update booking: notes only",
         initialBooking: {
-          date: baseSlot.date,
+          date: lessonDate,
           interval: Object.keys(baseSlot.intervals)[0],
         },
         initialAttendance: {
@@ -266,7 +269,7 @@ describe("Cloud functions -> Data triggers ->", () => {
       {
         name: "remove booking notes",
         initialBooking: {
-          date: baseSlot.date,
+          date: lessonDate,
           interval: Object.keys(baseSlot.intervals)[0],
           bookingNotes: "This is a booking note",
         },
@@ -276,7 +279,7 @@ describe("Cloud functions -> Data triggers ->", () => {
           bookingNotes: "This is a booking note",
         },
         update: {
-          date: baseSlot.date,
+          date: lessonDate,
           interval: Object.keys(baseSlot.intervals)[0],
         },
         wantAttendance: {
@@ -288,7 +291,7 @@ describe("Cloud functions -> Data triggers ->", () => {
       {
         name: "delete booking",
         initialBooking: {
-          date: baseSlot.date,
+          date: lessonDate,
           interval: Object.keys(baseSlot.intervals)[0],
         },
         initialAttendance: {

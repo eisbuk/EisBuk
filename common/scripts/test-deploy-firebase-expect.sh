@@ -33,6 +33,21 @@ sed -i.bak -e '/workspace:/d' ../functions/package.json && rm ../functions/packa
 case "$FAKE_MODE" in
   complete)
     echo "Deploy complete!"; exit 0 ;;
+  retry-complete|retry-then-delete)
+    echo 'The following functions will newly be retried in case of failure: countSlotsBookings(europe-west6).'
+    printf '? Would you like to proceed with deployment? (y/N) '
+    read -r answer
+    [ "$answer" = Y ] || { echo "got [$answer] instead of Y"; exit 9; }
+    if [ "$FAKE_MODE" = retry-then-delete ]; then
+      printf '? Would you like to proceed with deletion? (y/N) '
+      read -r answer
+      [ "$answer" = N ] || { echo "got [$answer] instead of N"; exit 9; }
+    fi
+    echo 'Deploy complete!'; exit 0 ;;
+  unknown-deployment-prompt)
+    printf '? Would you like to proceed with deployment? (y/N) '
+    read -r answer
+    exit 9 ;;
   prompt-complete|prompt-silent)
     printf '? Would you like to proceed with deletion? Selecting no will continue the rest of the deployments. (y/N) '
     read -r answer
@@ -81,6 +96,9 @@ check() { # check <mode> <expected exit code>
 
 check complete 0
 check prompt-complete 0
+check retry-complete 0
+check retry-then-delete 0
+check unknown-deployment-prompt 1
 check silent 1
 check prompt-silent 1
 check fail 2

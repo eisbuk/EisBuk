@@ -8,14 +8,17 @@ import { wrapHttpsOnCallHandler } from "../sentry-serverless-firebase";
 
 import { checkIsAdmin, throwUnauth } from "../utils";
 
-import { newSanityChecker } from "./api";
+import { newSanityChecker, runBookedSlotsAttendanceAutofix } from "./api";
 
 import {
   attendanceSlotMismatchAutofix,
   bookingsAutofix,
 } from "./slotAttendance";
 import { slotsSlotsByDayAutofix } from "./slotSlotsByDay";
-import { bookedSlotsAttendanceAutofix } from "./bookingsAttendance";
+import {
+  reconcileBookingDerivedData,
+  summarizeReport,
+} from "./bookingDerivedData";
 
 /**
  * Goes through all 'slotsByDay' entries, checks each date to see if there are no slots in the day and deletes the day if empty.
@@ -214,25 +217,58 @@ export const dbBookedSlotsAttendanceAutofix = functions
       async ({ organization }: { organization: string }, { auth }) => {
         if (!(await checkIsAdmin(organization, auth))) throwUnauth();
 
-        const db = admin.firestore();
-        const checker = newSanityChecker(
-          db,
+        return runBookedSlotsAttendanceAutofix(admin.firestore(), organization);
+      }
+    )
+  );
+
+/**
+ * Checks the data derived from bookings (slot booking counts, booked part of attendance) against the bookings for
+ * the lessons in the months `from`-`to` ("YYYY-MM"), from fresh reads. Dry run unless `apply` is `true`: then it
+ * repairs the differences (see `bookingDerivedData.ts`) and logs what it wrote.
+ */
+export const dbBookingDerivedDataReconcile = functions
+  .runWith({
+    memory: "512MB",
+    timeoutSeconds: 300,
+  })
+  .region(__functionsZone__)
+  .https.onCall(
+    wrapHttpsOnCallHandler(
+      "dbBookingDerivedDataReconcile",
+      async (
+        {
           organization,
-          SanityCheckKind.BookedSlotsAttendance
-        );
+          from,
+          to,
+          apply,
+        }: { organization: string; from: string; to: string; apply?: boolean },
+        { auth }
+      ) => {
+        if (!(await checkIsAdmin(organization, auth))) throwUnauth();
 
-        const report = await checker
-          .getLatestReport()
-          .then((r) => (!r || r.attendanceFixes ? checker.checkAndWrite() : r));
+        const isMonth = (month: unknown) =>
+          typeof month === "string" && /^\d{4}-\d{2}$/.test(month);
+        if (!isMonth(from) || !isMonth(to) || from > to) {
+          throw new functions.https.HttpsError(
+            "invalid-argument",
+            "'from' and 'to' must be months (YYYY-MM), 'from' not after 'to'"
+          );
+        }
 
-        const attendanceFixes = await bookedSlotsAttendanceAutofix(
-          db,
+        const report = await reconcileBookingDerivedData(
+          admin.firestore(),
           organization,
-          report
+          { from, to, apply: apply === true }
         );
-        checker.writeReport({ ...report, attendanceFixes });
-
-        return attendanceFixes;
+        if (report.applied) {
+          // Record of the repair: ids, intervals and totals only (no booking notes)
+          functions.logger.info(
+            "dbBookingDerivedDataReconcile: applied",
+            summarizeReport(report)
+          );
+        }
+        return report;
       }
     )
   );
