@@ -11,6 +11,16 @@
   ],
   "fieldOverrides": [
     {
+      "collectionGroup": "bookedSlots",
+      "fieldPath": "date",
+      "indexes": [
+        { "queryScope": "COLLECTION", "order": "ASCENDING" },
+        { "queryScope": "COLLECTION", "order": "DESCENDING" },
+        { "queryScope": "COLLECTION", "arrayConfig": "CONTAINS" },
+        { "queryScope": "COLLECTION_GROUP", "order": "ASCENDING" }
+      ]
+    },
+    {
       "collectionGroup": "data",
       "fieldPath": "start",
       "indexes": [{ "queryScope": "COLLECTION_GROUP", "order": "DESCENDING" }]

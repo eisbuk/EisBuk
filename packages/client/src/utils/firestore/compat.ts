@@ -24,7 +24,10 @@ import {
   getDocs as clientGetDocs,
   deleteDoc as deleteDocClient,
   writeBatch as writeBatchClient,
+  updateDoc as clientUpdateDoc,
+  deleteField as clientDeleteField,
   DocumentData,
+  UpdateData,
 } from "@firebase/firestore";
 
 export enum FirestoreEnv {
@@ -165,6 +168,52 @@ export const setDoc = async (
     [FirestoreEnv.Client]: ({ instance }) =>
       clientSetDoc(instance, data, options),
     [FirestoreEnv.Server]: ({ instance }) => instance.set(data, options),
+  });
+  return res;
+};
+
+/**
+ * Use as a value in `updateDoc` to delete the field (works on all Firestore variants).
+ */
+export const DELETE_FIELD = Symbol("deleteField");
+
+/**
+ * Implementation of firestore `updateDoc` function that works on all Firestore variants: updates only the given fields
+ * (dotted field paths, e.g. `"attendances.<customerId>.attendedInterval"`), leaving the rest of the document as it is.
+ * The document must exist.
+ * @param doc document to update in form of a FirestoreDocVariant (used to match with correct behaviour)
+ * @param updates `{ [dottedFieldPath]: value }`, `DELETE_FIELD` as value deletes the field
+ */
+export const updateDoc = async (
+  doc: FirestoreDocVariant,
+  updates: Record<string, unknown>
+) => {
+  const withClientSentinels = () =>
+    Object.fromEntries(
+      Object.entries(updates).map(([path, value]) => [
+        path,
+        value === DELETE_FIELD ? clientDeleteField() : value,
+      ])
+    ) as UpdateData<DocumentData>;
+
+  const res = await match(doc, {
+    [FirestoreEnv.Client]: ({ instance }) =>
+      clientUpdateDoc(instance, withClientSentinels()),
+    [FirestoreEnv.Server]: ({ instance }) => {
+      // The Firebase compat SDK (used by firestore-rules-unit-testing) wraps a client SDK document reference
+      const delegate = (
+        instance as unknown as { _delegate?: ClientDocumentReference }
+      )._delegate;
+      if (delegate) {
+        return clientUpdateDoc(delegate, withClientSentinels());
+      }
+      if (Object.values(updates).includes(DELETE_FIELD)) {
+        throw new Error(
+          "updateDoc: DELETE_FIELD isn't supported for this Firestore instance"
+        );
+      }
+      return instance.update(updates);
+    },
   });
   return res;
 };

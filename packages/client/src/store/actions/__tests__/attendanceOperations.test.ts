@@ -30,6 +30,7 @@ import {
   getAttendanceDocPath,
   getDoc,
   getSlotDocPath,
+  setDoc,
 } from "@/utils/firestore";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
@@ -403,6 +404,101 @@ describe("Attendance operations", () => {
             }),
             variant: NotifVariant.Error,
             error: testError,
+          })
+        );
+      }
+    );
+  });
+
+  describe("with a local copy older than the attendance in the database", () => {
+    /** The booked interval after the athlete changed the booking: the local copy still has `bookedInterval` */
+    const changedInterval = "11:00-13:00";
+    /** An entry added since the local copy (e.g. a new booking) */
+    const newcomer: CustomerAttendance = {
+      bookedInterval: "10:00-11:00",
+      attendedInterval: "10:00-11:00",
+    };
+
+    /**
+     * Sets up the local copy (store) with saul's old booking, and the database with the booking changed and an
+     * athlete booked since.
+     */
+    const setUpStaleCopy = async () => {
+      const store = getNewStore();
+      const { db, organization } = await getTestEnv({
+        setup: async (db, { organization }) => {
+          await setupTestAttendance({
+            store,
+            db,
+            attendance: {
+              [slotId]: createDocumentWithObservedAttendance({
+                [saul.id]: { bookedInterval, attendedInterval: bookedInterval },
+              }),
+            },
+            organization,
+          });
+          await setDoc(
+            doc(db, getAttendanceDocPath(organization, slotId)),
+            createDocumentWithObservedAttendance({
+              [saul.id]: {
+                bookedInterval: changedInterval,
+                attendedInterval: changedInterval,
+              },
+              newcomer,
+            })
+          );
+        },
+      });
+      getOrganizationSpy.mockReturnValue(organization);
+      return { store, db, organization };
+    };
+
+    testWithEmulator(
+      "markAttendance writes only the attended interval: the booked interval in the database and other entries stay",
+      async () => {
+        const { store, db, organization } = await setUpStaleCopy();
+
+        await runThunk(
+          markAttendance({ ...shortSaul, slotId, attendedInterval }),
+          store.dispatch,
+          store.getState,
+          { getFirestore: () => db }
+        );
+
+        const resData = (
+          await getDoc(doc(db, getAttendanceDocPath(organization, slotId)))
+        ).data();
+        expect(resData).toEqual(
+          createDocumentWithObservedAttendance({
+            [saul.id]: { bookedInterval: changedInterval, attendedInterval },
+            newcomer,
+          })
+        );
+      }
+    );
+
+    testWithEmulator(
+      "markAbsence writes only the athlete's attended interval: the booked interval in the database and other entries stay",
+      async () => {
+        const { store, db, organization } = await setUpStaleCopy();
+
+        await runThunk(
+          markAbsence({ ...shortSaul, slotId }),
+          store.dispatch,
+          store.getState,
+          { getFirestore: () => db }
+        );
+
+        const resData = (
+          await getDoc(doc(db, getAttendanceDocPath(organization, slotId)))
+        ).data();
+        expect(resData).toEqual(
+          createDocumentWithObservedAttendance({
+            [saul.id]: {
+              bookedInterval: changedInterval,
+              attendedInterval: null,
+            },
+            newcomer,
           })
         );
       }
