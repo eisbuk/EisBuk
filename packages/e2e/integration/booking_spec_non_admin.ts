@@ -190,9 +190,10 @@ describe("Booking flow", () => {
       );
 
       // should be able to book interval
-      cy.getAttrWith("aria-label", i18n.t(BookingAria.BookButton)).eq(0).click({
-        force: true,
-      });
+      cy.getAttrWith("aria-label", i18n.t(BookingAria.BookButton))
+        .eq(0)
+        .should("be.enabled")
+        .click({ scrollBehavior: "center" });
 
       cy.getByTestId("notification-toast").contains(
         i18n.t(NotificationMessage.BookingSuccess, {
