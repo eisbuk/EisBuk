@@ -3,9 +3,9 @@ name: Add rush directory to PATH
 run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
 #@ end
 
-#@ def rush_update():
+#@ def rush_install():
 name: Install dependencies
-run: rush update
+run: rush install
 #@ end
 
 #@ def rush_build():

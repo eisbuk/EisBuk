@@ -51,17 +51,18 @@ PATH_add common/scripts/
 
 to your .envrc file. The scripts directory also contains utility scripts, for instace to start the emulators or run firebase.
 
-```bash
-npm install -g @microsoft/rush
-```
-
-Additionally, we're using **pnpm**, which you can install manually or have Rush install for you. To install manually, run:
+Use the Node version selected by `.nvmrc` and install dependencies from the committed lockfile:
 
 ```bash
-npm install -g pnpm
+nvm install
+nvm use
+export PATH="$PWD/common/scripts:$PATH"
+git submodule update --init --recursive
+rush install
+rush build
 ```
 
-With management tools installed, run `rush update` from any point in the repo to install all dependencies per package basis. Additionally, it makes sense to run `rush build` in order to build all of the _lib_ styled packages (shared, functions, etc.). The client app is built manually.
+Install Java 21 or newer for Firebase emulator runs. Use `rush update` when changing dependencies. The client app is built separately with `rushx build:prod` in `packages/client`.
 
 ### Day to day workflow
 
@@ -84,9 +85,11 @@ To remove a dependency, simply remove it from `package.json` and run `rush updat
 
 ### Monorepo debugging
 
-The tooling of the monorepo (rush, pnpm, vite, vitest, the Firebase CLI and emulators) runs on Node 18, as stated in `.nvmrc` and in `nodeSupportedVersionRange` in `rush.json`. Newer Node versions do not work with the pinned pnpm 6 (installs fail with `ERR_INVALID_THIS`). If you're using nvm (and have the given node version installed), it's sufficient to run `nvm use` anywhere in the repo to switch to appropriate version.
+The monorepo tooling runs on Node 24 by default (`.nvmrc`), with Node 22 also supported by `nodeSupportedVersionRange` in `rush.json`. Use `nvm install && nvm use` to select the default. Rush 5.180.0 and pnpm 10.34.6 are installed by the repository wrappers; global installations are unnecessary. Firebase emulators require Java 21 or newer.
 
-The deployed Cloud Functions run on a different Node version: the one in the `engines` field of `packages/functions/package.json` (currently Node 22). The Firebase CLI reads that field to choose the runtime in the cloud. The two versions don't need to change together.
+The deployed Cloud Functions use the `engines.node` field in `packages/functions/package.json` (currently Node 22). Tooling and cloud runtime versions can change independently. Use `rush install` to reproduce the committed lockfile; reserve `rush update` for dependency changes. The Firebase CLI wrapper uses the version pinned in `packages/client/package.json` and the Rush lockfile.
+
+See [the modernization plan](./docs/toolchain-modernization.md) for runtime deadlines and the separate functions migration.
 
 Some unexpected and cryptic errors might arise from a corrupt shrinkwrap file, at which point running the following might prove useful:
 
@@ -152,7 +155,7 @@ There's no need to spin up the emulators as unit tests use different emulator se
 Running `test` as in the above example runs all of the unit tests with full emulators support
 Alternatively, you can run `rushx test:quicktest` to run the tests without the emulators. This, however will skip all of the tests requiring emulator support.
 
-For a one-shot run of the emulator test suite that matches CI, use Node 18, then:
+For a one-shot run of the emulator test suite that matches CI, use Node 24 and Java 21 or newer, then:
 
 ```bash
 git submodule update --init packages/jest-smtp

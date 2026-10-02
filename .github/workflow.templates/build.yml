@@ -1,7 +1,7 @@
 #! YAML library files must be named *.lib.yml
 #@ load("setup.lib.yml", "checkout")
 #@ load("cache.lib.yml", "cache_node", "cache_cypress")
-#@ load("rush.lib.yml", "rush_add_path", "rush_update", "rush_build")
+#@ load("rush.lib.yml", "rush_add_path", "rush_install", "rush_build")
 #@ load("secrets.lib.yml", "check_secrets")
 #@ load("rclone.lib.yml", "install_rclone")
 #@ load("rclone.lib.yml", "install_gcloud_credentials")
@@ -21,18 +21,23 @@ env:
   BROWSERSLIST_IGNORE_OLD_DATA: "1"
 
 jobs:
-  build_v18:
+  build_v24:
     name: Build and deploy to preview channel
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       -  #@ checkout()
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-java@v5
         with:
-          node-version: "18"
+          distribution: temurin
+          java-version: "21"
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
       -  #@ cache_node()
       -  #@ rush_add_path()
-      -  #@ rush_update()
+      -  #@ rush_install()
       -  #@ rush_build()
       - name: Inject slug/short variables
         uses: rlespinasse/github-slug-action@v4
@@ -104,18 +109,23 @@ jobs:
           echo Preview channels deployed: >> $GITHUB_STEP_SUMMARY
           echo $igoriceteam >> $GITHUB_STEP_SUMMARY
           echo $eisbuk >> $GITHUB_STEP_SUMMARY
-  test_v18:
+  test_v24:
     name: Run tests
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       -  #@ checkout()
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-java@v5
         with:
-          node-version: "18"
+          distribution: temurin
+          java-version: "21"
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
       -  #@ cache_node()
       -  #@ rush_add_path()
-      -  #@ rush_update()
+      -  #@ rush_install()
       -  #@ rush_build()
       - name: Run tests
         run: cd packages/client && rushx test:emulators:ci
@@ -158,12 +168,17 @@ jobs:
     timeout-minutes: 10
     steps:
       -  #@ checkout()
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-java@v5
         with:
-          node-version: "18"
+          distribution: temurin
+          java-version: "21"
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
       -  #@ cache_node()
       -  #@ rush_add_path()
-      -  #@ rush_update()
+      -  #@ rush_install()
       -  #@ rush_build()
       - name: Lint all the packages
         run: rush lint:strict
@@ -174,12 +189,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       -  #@ checkout()
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-java@v5
         with:
-          node-version: "18"
+          distribution: temurin
+          java-version: "21"
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
       -  #@ cache_cypress()
       -  #@ rush_add_path()
-      -  #@ rush_update()
+      -  #@ rush_install()
       -  #@ rush_build()
       - name: Build app
         run: cd packages/client && NODE_OPTIONS="--max-old-space-size=8192" rushx build:test
@@ -238,7 +258,7 @@ jobs:
     name: Coveralls finish
     needs:
       - cypress-run
-      - test_v18
+      - test_v24
     runs-on: ubuntu-latest
     steps:
       -  #@ check_secrets()
@@ -255,12 +275,17 @@ jobs:
     timeout-minutes: 10
     steps:
       -  #@ checkout()
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-java@v5
         with:
-          node-version: "18"
+          distribution: temurin
+          java-version: "21"
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
       -  #@ cache_node()
       -  #@ rush_add_path()
-      -  #@ rush_update()
+      -  #@ rush_install()
       - name: Check dependency consistency
         run: ./.github/check-rush.sh
 
