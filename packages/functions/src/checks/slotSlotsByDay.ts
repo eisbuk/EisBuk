@@ -21,6 +21,8 @@ import {
   wrapIter,
 } from "@eisbuk/shared";
 
+import { syncSlotAggregate, slotDateNamespace } from "../slotSync";
+
 type Firestore = admin.firestore.Firestore;
 
 /** A structure commonly used in different pipelines while checking for 'slots' / 'slotsByDay' mismatches */
@@ -223,105 +225,54 @@ export const slotsSlotsByDayAutofix = async (
   organization: string,
   mismatches: SlotSlotsByDaySanityCheckReport
 ): Promise<SlotsByDayAutofixReport> => {
-  const {
-    missingSlotsByDayEntries,
-    straySlotsByDayEntries,
-    mismatchedEntries,
-  } = mismatches;
-
-  // We're writing the updates in-memory before committing them to the db (this will result in max 4 writes to the db)
-  const updates: {
-    [month: string]: {
-      [date: string]: {
-        [id: string]: SlotInterface | admin.firestore.FieldValue;
-      };
-    };
-  } = {};
-
-  const upsertSlotsByDay = ({
-    id,
-    date,
-    month,
-    ...entry
-  }: SlotInterface & { month: string }) => {
-    _.set(updates, `${month}.${date}.${id}`, { id, date, ...entry });
+  const locations = new Map<string, Set<DateNamespace>>();
+  const addLocation = (id: string, location: DateNamespace) => {
+    const entries = locations.get(id) || new Set<DateNamespace>();
+    entries.add(location);
+    locations.set(id, entries);
   };
-  const deleteSlotsByDay = ({
-    id,
-    date,
-    month,
-  }: SlotInterface & { month: string }) => {
-    _.set(
-      updates,
-      `${month}.${date}.${id}`,
-      admin.firestore.FieldValue.delete()
-    );
-  };
-
-  // Prepare the update actions for each action type
-  const toCreate = Object.entries(missingSlotsByDayEntries).map(
-    ([id, slot]) => ({ ...slot, month: slot.date.substring(0, 7), id })
+  Object.entries(mismatches.missingSlotsByDayEntries).forEach(([id, slot]) =>
+    addLocation(id, slotDateNamespace(slot.date))
   );
-  const toDelete = Object.entries(straySlotsByDayEntries).flatMap(
-    ([id, slots]) =>
-      slots.map((slot) => ({ ...slot, month: slot.date.substring(0, 7), id }))
+  Object.entries(mismatches.straySlotsByDayEntries).forEach(([id, slots]) =>
+    slots.forEach(({ dateNamespace }) => addLocation(id, dateNamespace))
   );
-  const toUpdate = Object.entries(mismatchedEntries).map(([id, { slots }]) => ({
-    ...slots,
-    month: slots.date.substring(0, 7),
-    id,
-  }));
-
-  // Apply updates to buffered in-memory 'slotsByDay'
-  toCreate.forEach(upsertSlotsByDay);
-  toUpdate.forEach(upsertSlotsByDay);
-  toDelete.forEach(deleteSlotsByDay);
-
-  // Collect 'slotsByDay' updates for the report
-  const created = toCreate.map(
-    ({ id, date }): DatedSlotId => `${date.substring(0, 7)}/${date}/${id}`
+  Object.entries(mismatches.mismatchedEntries).forEach(
+    ([id, { slots, slotsByDay }]) => {
+      addLocation(id, slotsByDay.dateNamespace);
+      addLocation(id, slotDateNamespace(slots.date));
+    }
   );
-  const deleted = toDelete.map(
-    ({ id, date }): DatedSlotId => `${date.substring(0, 7)}/${date}/${id}`
+  const results = await Promise.all(
+    [...locations].map(async ([id, namespaces]) => ({
+      id,
+      ...(await syncSlotAggregate(db, organization, id, [...namespaces])),
+    }))
   );
-  const updated = Object.fromEntries(
-    toUpdate.map(({ id, date }): [DatedSlotId, SlotsByDayUpdate] => [
-      `${date.substring(0, 7)}/${date}/${id}`,
-      calcUpdateDiff(mismatchedEntries[id]),
-    ])
+  const created: DatedSlotId[] = [];
+  const deleted: DatedSlotId[] = [];
+  const updated: Record<DatedSlotId, SlotsByDayUpdate> = {};
+  results.forEach(({ id, changes }) =>
+    changes.forEach(({ namespace, before, after }) => {
+      const fullId: DatedSlotId = `${namespace}/${id}`;
+      if (!before && after) {
+        created.push(fullId);
+      } else if (before && !after) {
+        deleted.push(fullId);
+      } else if (before && after) {
+        updated[fullId] = calcUpdateDiff({
+          slots: after,
+          slotsByDay: { ...before, dateNamespace: namespace },
+        });
+      }
+    })
   );
-
-  // Collect updates for 'slots' collection (this will only happen in case a 'slots' entry is missing an id)
-  const slotsMissingIds = wrapIter(Object.entries(mismatchedEntries))
-    .filter(([, { slots }]) => !slots.id)
-    .map(([id]) => id)
-    ._array();
-
-  // Write updates to the db
-  const batch = db.batch();
-
-  const orgRef = db.collection(Collection.Organizations).doc(organization);
-  const slotsByDayCollRef = orgRef.collection(OrgSubCollection.SlotsByDay);
-  const slotsCollRef = orgRef.collection(OrgSubCollection.Slots);
-
-  // Slots by day db updates
-  Object.entries(updates).forEach(([month, data]) =>
-    batch.set(slotsByDayCollRef.doc(month), data, { merge: true })
-  );
-
-  // Slots db updates
-  slotsMissingIds.forEach((id) =>
-    batch.set(slotsCollRef.doc(id), { id }, { merge: true })
-  );
-
-  await batch.commit();
-
   return {
     timestamp: DateTime.now().toISO(),
     created,
     deleted,
     updated,
-    addedIds: slotsMissingIds,
+    addedIds: results.filter(({ addedId }) => addedId).map(({ id }) => id),
   };
 };
 

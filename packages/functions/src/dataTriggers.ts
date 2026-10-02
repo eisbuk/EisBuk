@@ -14,13 +14,16 @@ import {
   CustomerBookings,
   OrgSubCollection,
   SlotAttendnace,
-  SlotInterface,
-  SlotInterval,
   sanitizeCustomer,
   OrganizationData,
   Customer,
 } from "@eisbuk/shared";
 
+import {
+  syncSlotAggregate,
+  syncSlotAttendance,
+  slotDateNamespace,
+} from "./slotSync";
 import {
   getStatsDates,
   syncCustomerBookingStats,
@@ -124,17 +127,23 @@ const settleAll = async (name: string, syncs: Promise<unknown>[]) => {
 };
 
 export const addIdToSlot = functions
-  .runWith({
-    memory: "512MB",
-  })
+  .runWith(bookingSyncRuntimeOptions)
   .region(__functionsZone__)
   .firestore.document(
     `${Collection.Organizations}/{organization}/${OrgSubCollection.Slots}/{slotId}`
   )
   .onCreate(
     wrapFirestoreOnCreateHandler("addIdToSlot", async ({ ref }, context) => {
+      if (isTooOldToRetry("addIdToSlot", context)) return;
       const { slotId } = context.params as Record<string, string>;
-      ref.update({ id: slotId });
+      await settleAll("addIdToSlot", [
+        ref.firestore.runTransaction(async (tx) => {
+          const current = await tx.get(ref);
+          if (current.exists && current.data()?.id !== slotId) {
+            tx.update(ref, { id: slotId });
+          }
+        }),
+      ]);
     })
   );
 
@@ -205,17 +214,9 @@ export const addCustomerIdAndSecretKey = functions
     )
   );
 
-/**
- * Data trigger listening to create/delete slot document and creates/deletes attendance entry for given slot.
- * Doesn't run if slot is only updated.
- */
+/** Keeps the attendance container and date aligned with the current source slot. */
 export const triggerAttendanceEntryForSlot = functions
-  .runWith({
-    memory: "512MB",
-  })
-  .runWith({
-    memory: "512MB",
-  })
+  .runWith(bookingSyncRuntimeOptions)
   .region(__functionsZone__)
   .firestore.document(
     `${Collection.Organizations}/{organization}/${OrgSubCollection.Slots}/{slotId}`
@@ -223,57 +224,15 @@ export const triggerAttendanceEntryForSlot = functions
   .onWrite(
     wrapFirestoreOnWriteHandler(
       "triggerAttendanceEntryForSlot",
-      async (change, context) => {
-        const db = admin.firestore();
-
+      async (_change, context) => {
+        if (isTooOldToRetry("triggerAttendanceEntryForSlot", context)) return;
         const { organization, slotId } = context.params as Record<
           string,
           string
         >;
-
-        const isCreate = !change.before.exists;
-        const isDelete = !change.after.exists;
-
-        const orgRef = db
-          .collection(Collection.Organizations)
-          .doc(organization);
-        const attendanceEntryRef = orgRef
-          .collection(OrgSubCollection.Attendance)
-          .doc(slotId);
-        const slotRef = orgRef.collection(OrgSubCollection.Slots).doc(slotId);
-
-        switch (true) {
-          case isCreate:
-            // Firestore triggers are at-least-once and unordered: when a slot is
-            // created and deleted in quick succession, this create event can be
-            // processed *after* the delete event, which would resurrect the
-            // attendance entry as an orphan. Re-read the slot inside a
-            // transaction and only create the entry if the slot still exists.
-            await db.runTransaction(async (tx) => {
-              const slotSnap = await tx.get(slotRef);
-              if (!slotSnap.exists) {
-                return;
-              }
-              // check if attendance entry already exists (in case we're dumping/restoring the data)
-              const attendanceSnap = await tx.get(attendanceEntryRef);
-              if (attendanceSnap.exists) {
-                return;
-              }
-              // add empty entry for slot's attendance
-              tx.set(attendanceEntryRef, {
-                date: slotSnap.data()!.date,
-                attendances: {},
-              } as SlotAttendnace);
-            });
-            break;
-          case isDelete:
-            // delete attendance entry for slot
-            await attendanceEntryRef.delete();
-            break;
-          default:
-            // exit if slot was just updated
-            return;
-        }
+        await settleAll("triggerAttendanceEntryForSlot", [
+          syncSlotAttendance(admin.firestore(), organization, slotId),
+        ]);
       }
     )
   );
@@ -282,121 +241,25 @@ export const triggerAttendanceEntryForSlot = functions
  * Maintain a copy of each slot in a different structure aggregated by month.
  * This allows to update small documents while still being able to get data for
  * a whole month in a single read.
- * The cost is one extra write per each update to the slots.
+ * Each sync reads the current slot and affected months, then writes changed leaves.
  */
 export const aggregateSlots = functions
-  .runWith({
-    memory: "512MB",
-  })
+  .runWith(bookingSyncRuntimeOptions)
   .region(__functionsZone__)
   .firestore.document(
     `${Collection.Organizations}/{organization}/${OrgSubCollection.Slots}/{slotId}`
   )
   .onWrite(
     wrapFirestoreOnWriteHandler("aggregateSlots", async (change, context) => {
-      const { organization, slotId: id } = context.params as Record<
-        string,
-        string
-      >;
-
-      const db = admin.firestore();
-
-      const deleteSentinel = admin.firestore.FieldValue.delete();
-
-      const orgRef = db.collection(Collection.Organizations).doc(organization);
-      const slotRef = orgRef.collection(OrgSubCollection.Slots).doc(id);
-      const getMonthRef = (date: string) =>
-        orgRef
-          .collection(OrgSubCollection.SlotsByDay)
-          .doc(date.substring(0, 7));
-
-      const beforeData = change.before.data() as SlotInterface | undefined;
-      const eventDate = (change.after.data() || change.before.data())!
-        .date as string;
-
-      // Firestore triggers are at-least-once and unordered: when a slot is
-      // created (or updated) and deleted within a short period, this handler can
-      // process the create event *after* the delete event, overwriting the
-      // delete sentinel and resurrecting the slot in the (publicly readable)
-      // aggregate - a "ghost" slot athletes see but can never book, and which
-      // the admin can't remove (deleting the already-absent slot doc fires no
-      // trigger). Instead of trusting the event snapshot, re-read the slot
-      // inside a transaction and write the aggregate from current truth.
-      await db.runTransaction(async (tx) => {
-        const currentSlot = await tx.get(slotRef);
-
-        if (!currentSlot.exists) {
-          // Slot is gone (delete event, or a stale create/update event arriving
-          // after deletion): remove the aggregate entry wherever the event saw it
-          tx.set(
-            getMonthRef(eventDate),
-            { [eventDate]: { [id]: deleteSentinel } },
-            { merge: true }
-          );
-          // If the event also saw an older date (date-edit), clear that location too
-          if (beforeData && beforeData.date !== eventDate) {
-            tx.set(
-              getMonthRef(beforeData.date),
-              { [beforeData.date]: { [id]: deleteSentinel } },
-              { merge: true }
-            );
-          }
-          return;
-        }
-
-        const { intervals: newIntervals, ...updatedData } =
-          currentSlot.data() as Omit<SlotInterface, "id">;
-        const date = updatedData.date;
-
-        // we're using {merge: true} flag for setting the document so
-        // we need to process intervals in order to make sure the old intervals get deleted
-        // and only the updated values remain (prevent merging of the old values with the new)
-        const deletedIntervals = Object.keys(
-          beforeData?.intervals || {}
-        ).reduce(
-          (acc, intervalString) => ({
-            ...acc,
-            [intervalString]: deleteSentinel,
-          }),
-          {} as Record<string, typeof deleteSentinel>
-        );
-        const updatedIntervals = Object.keys(newIntervals).reduce(
-          (acc, intervalString) => ({
-            ...acc,
-            [intervalString]: newIntervals[intervalString],
-          }),
-          {} as Record<string, SlotInterval>
-        );
-
-        // we're merging old intervals as delete sentinels and new intervals as they are
-        // this way old intervals get deleted and in case some interval should stay (wasn't changed/deleted),
-        // the delete sentinel gets overwritten with the new value
-        const intervals = {
-          ...deletedIntervals,
-          ...updatedIntervals,
-        } as Record<string, SlotInterval>;
-
-        const newSlot = { ...updatedData, intervals, id } as SlotInterface;
-
-        // If the slot's date was edited, remove the aggregate entry from the old
-        // date/month (previously the old entry was left behind, duplicating the
-        // slot across months)
-        if (beforeData && beforeData.date !== date) {
-          tx.set(
-            getMonthRef(beforeData.date),
-            { [beforeData.date]: { [id]: deleteSentinel } },
-            { merge: true }
-          );
-        }
-
-        tx.set(
-          getMonthRef(date),
-          { [date]: { [id]: newSlot } },
-          { merge: true }
-        );
-      });
-
-      return change.after;
+      if (isTooOldToRetry("aggregateSlots", context)) return;
+      const { organization, slotId } = context.params as Record<string, string>;
+      const locations = getStatsDates(
+        change.before.data()?.date,
+        change.after.data()?.date
+      ).map(slotDateNamespace);
+      await settleAll("aggregateSlots", [
+        syncSlotAggregate(admin.firestore(), organization, slotId, locations),
+      ]);
     })
   );
 
