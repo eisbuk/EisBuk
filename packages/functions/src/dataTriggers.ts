@@ -39,8 +39,7 @@ type CustomerWithOptionalIDs = Omit<Customer, "id" | "secretKey"> &
   Partial<{ secretKey: string; id: string }>;
 
 /**
- * Runtime options of the triggers keeping booking-derived data in sync (`countSlotsBookings`,
- * `createAttendanceForBooking`, `createAttendedSlotOnAttendance`).
+ * Runtime options of the triggers keeping booking-derived data and customer mirrors in sync.
  *
  * Their handlers derive the data from the current state, so running them again is safe: a failed run (a
  * transaction that ran out of attempts, the recount's index still building after a deploy) is retried instead of
@@ -143,12 +142,7 @@ export const addIdToSlot = functions
  * anonymous users who have access to `secretKey`.
  */
 export const addCustomerIdAndSecretKey = functions
-  .runWith({
-    memory: "512MB",
-  })
-  .runWith({
-    memory: "512MB",
-  })
+  .runWith(bookingSyncRuntimeOptions)
   .region(__functionsZone__)
   .firestore.document(
     `${Collection.Organizations}/{organization}/${OrgSubCollection.Customers}/{customerId}`
@@ -157,6 +151,7 @@ export const addCustomerIdAndSecretKey = functions
     wrapFirestoreOnWriteHandler(
       "addCustomerIdAndSecretKey",
       async (change, context) => {
+        if (isTooOldToRetry("addCustomerIdAndSecretKey", context)) return;
         const db = admin.firestore();
         const { organization, customerId } = context.params as Record<
           string,
@@ -172,36 +167,38 @@ export const addCustomerIdAndSecretKey = functions
 
         // Events may be delayed or repeated. Assign identity and mirror the current
         // profile in one transaction so a retry cannot rotate the key or resurrect a customer.
-        await db.runTransaction(async (tx) => {
-          const current = await tx.get(customerRef);
-          const mirrors = await tx.get(
-            bookingsRef.where("id", "==", customerId)
-          );
-          const data = current.data() as CustomerWithOptionalIDs | undefined;
-          const secretKey = data ? data.secretKey || uuid() : undefined;
+        await settleAll("addCustomerIdAndSecretKey", [
+          db.runTransaction(async (tx) => {
+            const current = await tx.get(customerRef);
+            const mirrors = await tx.get(
+              bookingsRef.where("id", "==", customerId)
+            );
+            const data = current.data() as CustomerWithOptionalIDs | undefined;
+            const secretKey = data ? data.secretKey || uuid() : undefined;
 
-          // Keep historical subcollections accessible to reconciliation, but prevent
-          // obsolete keys and hard-deleted profiles from authorizing new bookings.
-          mirrors.docs.forEach((mirror) => {
-            if (mirror.id !== secretKey) {
-              tx.update(mirror.ref, { deleted: true, categories: [] });
+            // Keep historical subcollections accessible to reconciliation, but prevent
+            // obsolete keys and hard-deleted profiles from authorizing new bookings.
+            mirrors.docs.forEach((mirror) => {
+              if (mirror.id !== secretKey) {
+                tx.update(mirror.ref, { deleted: true, categories: [] });
+              }
+            });
+            if (!data || !secretKey) return;
+
+            if (data.id !== customerId || data.secretKey !== secretKey) {
+              tx.update(customerRef, { id: customerId, secretKey });
             }
-          });
-          if (!data || !secretKey) return;
-
-          if (data.id !== customerId || data.secretKey !== secretKey) {
-            tx.update(customerRef, { id: customerId, secretKey });
-          }
-          tx.set(
-            bookingsRef.doc(secretKey),
-            sanitizeCustomer({
-              ...data,
-              id: customerId,
-              secretKey,
-              ...(data.deleted ? { categories: [] } : {}),
-            } as Customer)
-          );
-        });
+            tx.set(
+              bookingsRef.doc(secretKey),
+              sanitizeCustomer({
+                ...data,
+                id: customerId,
+                secretKey,
+                ...(data.deleted ? { categories: [] } : {}),
+              } as Customer)
+            );
+          }),
+        ]);
       }
     )
   );
