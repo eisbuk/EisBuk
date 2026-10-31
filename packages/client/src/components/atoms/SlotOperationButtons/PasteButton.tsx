@@ -15,12 +15,22 @@ import {
   __noDatePaste,
 } from "@/lib/errorMessages";
 
-import { pasteSlotsDay, pasteSlotsWeek } from "@/store/actions/copyPaste";
+import {
+  isPasteLocked,
+  pasteSlotsDay,
+  pasteSlotsWeek,
+} from "@/store/actions/copyPaste";
 
 import { testId } from "@eisbuk/testing/testIds";
 
 interface Props {
+  /** Called when a paste starts */
   onPaste?: () => void;
+  /**
+   * Called when a started paste ended without writing any slots (it failed, or the
+   * clipboard was empty): no slots will change, so nothing else ends the paste.
+   */
+  onPasteAborted?: () => void;
 }
 
 /**
@@ -33,7 +43,7 @@ interface Props {
  * - trying to render within `contextType = "slot"` as it makes no sense to paste into the existing slot
  * - no value for `date` has been provided within the context (as it is needed for full functionality)
  */
-export const PasteButton: React.FC<Props> = ({ onPaste }) => {
+export const PasteButton: React.FC<Props> = ({ onPaste, onPasteAborted }) => {
   const dispatch = useDispatch();
 
   const { t } = useTranslation();
@@ -73,11 +83,19 @@ export const PasteButton: React.FC<Props> = ({ onPaste }) => {
     [ButtonContextType.Day]: pasteSlotsDay,
     [ButtonContextType.Week]: pasteSlotsWeek,
   };
-  const handlePaste = () => {
-    dispatch(pasteActionLookup[contextType](date));
+  const handlePaste = async () => {
+    // An ignored click must not call `onPaste`: the page disables the buttons until
+    // the slots change, and a paste that doesn't happen would never change them.
+    if (isPasteLocked(contextType, date)) return;
+
+    const pasted = dispatch(pasteActionLookup[contextType](date) as any);
     // Optionally call 'onPaste' callback (if provided)
     if (onPaste) {
       onPaste();
+    }
+
+    if (!(await pasted) && onPasteAborted) {
+      onPasteAborted();
     }
   };
 

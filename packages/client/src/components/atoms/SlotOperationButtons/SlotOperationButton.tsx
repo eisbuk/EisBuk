@@ -7,7 +7,10 @@ const SlotOperationButton: React.FC<ButtonProps> = ({
   disabled,
   ...props
 }) => {
-  const color = disabled ? "!text-gray-300" : "hover:bg-gray-200";
+  // `!bg-transparent` overrides the grey background `Button` applies when disabled
+  const color = disabled
+    ? "!text-gray-300 !bg-transparent"
+    : "hover:bg-gray-200";
   const cursor = disabled ? "cursor-default" : "cursor-pointer";
 
   return (
@@ -18,6 +21,7 @@ const SlotOperationButton: React.FC<ButtonProps> = ({
         cursor,
         className,
       ].join(" ")}
+      disabled={disabled}
       {...props}
     />
   );
