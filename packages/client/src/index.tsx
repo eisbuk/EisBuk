@@ -14,6 +14,8 @@ import {
   __sentryRelease__,
 } from "@/lib/constants";
 
+import { scrubSecretKeys } from "@/lib/scrubSecretKeys";
+
 import App from "@/App";
 
 if (__sentryDSN__) {
@@ -40,6 +42,8 @@ if (__sentryDSN__) {
     ],
     tracesSampleRate: 1.0,
   });
+  // No secret keys (in the page URL, breadcrumbs, messages) in the events we send
+  Sentry.addGlobalEventProcessor((event) => scrubSecretKeys(event));
   console.log("Sentry initialized");
 }
 
