@@ -28,7 +28,7 @@ vi.mock("react-redux", () => ({
   useDispatch: () => mockDispatch,
 }));
 
-describe.skip("SlotOperationButtons", () => {
+describe("SlotOperationButtons", () => {
   afterEach(() => {
     vi.clearAllMocks();
     cleanup();
@@ -47,10 +47,10 @@ describe.skip("SlotOperationButtons", () => {
       // - create a test action object
       // - mock implementation within the component
       const mockPasteDayImplementation = (date: DateTime) =>
-        ({ type: "paste_day", date } as any);
+        ({ type: "paste_day", date }) as any;
       // mock implementation of `newPasteSlotDay` within the component
       vi.spyOn(copyPasteActions, "pasteSlotsDay").mockImplementation(
-        mockPasteDayImplementation
+        mockPasteDayImplementation,
       );
       render(
         <SlotOperationButtons
@@ -59,12 +59,12 @@ describe.skip("SlotOperationButtons", () => {
           slotsToCopy={slotsToCopy}
         >
           <PasteButton />
-        </SlotOperationButtons>
+        </SlotOperationButtons>,
       );
       screen.getByTestId(testId("paste-button")).click();
       // test dispatch being called with the result of `newPasteSlotDay` mocked implementation
       expect(mockDispatch).toHaveBeenCalledWith(
-        mockPasteDayImplementation(dummyDate)
+        mockPasteDayImplementation(dummyDate),
       );
     });
 
@@ -73,10 +73,10 @@ describe.skip("SlotOperationButtons", () => {
       // - create a test action object
       // - mock implementation within the component
       const mockPasteWeekImplementation = (date: DateTime) =>
-        ({ type: "paste_week", date } as any);
+        ({ type: "paste_week", date }) as any;
       // mock implementation of `newPasteSlotWeek` within the component
       vi.spyOn(copyPasteActions, "pasteSlotsWeek").mockImplementation(
-        mockPasteWeekImplementation
+        mockPasteWeekImplementation,
       );
       render(
         <SlotOperationButtons
@@ -85,12 +85,12 @@ describe.skip("SlotOperationButtons", () => {
           slotsToCopy={slotsToCopy}
         >
           <PasteButton />
-        </SlotOperationButtons>
+        </SlotOperationButtons>,
       );
       screen.getByTestId(testId("paste-button")).click();
       // test dispatch being called with the result of `newPasteSlotWeek` mocked implementation
       expect(mockDispatch).toHaveBeenCalledWith(
-        mockPasteWeekImplementation(dummyDate)
+        mockPasteWeekImplementation(dummyDate),
       );
     });
 
@@ -101,7 +101,7 @@ describe.skip("SlotOperationButtons", () => {
           contextType={ButtonContextType.Week}
         >
           <PasteButton />
-        </SlotOperationButtons>
+        </SlotOperationButtons>,
       );
       const buttonOnScreen = screen.getByTestId(testId("paste-button"));
       expect(buttonOnScreen).toHaveProperty("disabled", true);
@@ -122,12 +122,12 @@ describe.skip("SlotOperationButtons", () => {
       render(
         <SlotOperationButtons contextType={ButtonContextType.Slot}>
           <PasteButton />
-        </SlotOperationButtons>
+        </SlotOperationButtons>,
       );
       const buttonOnScreen = screen.queryByTestId(testId("paste-button"));
       expect(buttonOnScreen).toEqual(null);
       expect(spyConsoleError).toHaveBeenCalledWith(
-        __pasteButtonWrongContextError
+        __pasteButtonWrongContextError,
       );
     });
 
@@ -135,7 +135,7 @@ describe.skip("SlotOperationButtons", () => {
       render(
         <SlotOperationButtons contextType={ButtonContextType.Day}>
           <PasteButton />
-        </SlotOperationButtons>
+        </SlotOperationButtons>,
       );
       const buttonOnScreen = screen.queryByTestId(testId("paste-button"));
       expect(buttonOnScreen).toEqual(null);

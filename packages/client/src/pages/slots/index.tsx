@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { DateTime } from "luxon";
+import { isEqual } from "lodash";
 
 import {
   OrgSubCollection,
@@ -60,14 +61,16 @@ const SlotsPage: React.FC = () => {
     { collection: OrgSubCollection.Attendance },
   ]);
 
-  const slotsToShow = useSelector(getAdminSlots);
+  // `getAdminSlots` builds a new object on each store update: compare by value,
+  // so that the effect below only runs when the slots really change
+  const slotsToShow = useSelector(getAdminSlots, isEqual);
   const daysToShow = Object.keys(slotsToShow);
 
   const weekToPaste = useSelector(getWeekFromClipboard);
   const dayToPaste = useSelector(getDayFromClipboard);
 
   const attendance = useSelector(
-    (state: LocalStore) => state.firestore.data.attendance || {}
+    (state: LocalStore) => state.firestore.data.attendance || {},
   );
 
   const { t } = useTranslation();
@@ -76,10 +79,17 @@ const SlotsPage: React.FC = () => {
   // to signal to the user that the operation is in progress.
   //
   // Each time slots to display change (by the paste being aggregated in the db or switching view), we enable the buttons again.
+  // A paste that wrote nothing changes no slots, so it enables them through `onPasteAborted`.
   const [slotButtonsDisabled, setSlotButtonsDisabled] = useState(false);
   useEffect(() => {
     setSlotButtonsDisabled(false);
   }, [slotsToShow]);
+  const pasteButton = (
+    <PasteButton
+      onPaste={() => setSlotButtonsDisabled(true)}
+      onPasteAborted={() => setSlotButtonsDisabled(false)}
+    />
+  );
 
   const [canEdit, setCanEdit] = useState(false);
   const toggleEdit = () => setCanEdit((a) => !a);
@@ -107,7 +117,7 @@ const SlotsPage: React.FC = () => {
           {...{ date }}
         >
           <CopyButton />
-          <PasteButton onPaste={() => setSlotButtonsDisabled(true)} />
+          {pasteButton}
         </SlotOperationButtons>
       )}
       {toggleEditButton}
@@ -174,7 +184,7 @@ const SlotsPage: React.FC = () => {
               >
                 <NewSlotButton />
                 <CopyButton />
-                <PasteButton onPaste={() => setSlotButtonsDisabled(true)} />
+                {pasteButton}
               </SlotOperationButtons>
             );
 
@@ -183,7 +193,7 @@ const SlotsPage: React.FC = () => {
                 const aTimeString = getSlotTimespan(a.intervals);
                 const bTimeString = getSlotTimespan(b.intervals);
                 return comparePeriodsEarliestFirst(aTimeString, bTimeString);
-              }
+              },
             );
 
             return (
@@ -207,7 +217,7 @@ const SlotsPage: React.FC = () => {
                     const slotAttendance =
                       attendance[slot.id]?.attendances || {};
                     const hasBookings = Boolean(
-                      Object.values(slotAttendance).length
+                      Object.values(slotAttendance).length,
                     );
 
                     return (
@@ -241,7 +251,7 @@ const SlotsPage: React.FC = () => {
               {...{ date }}
             >
               <CopyButton />
-              <PasteButton onPaste={() => setSlotButtonsDisabled(true)} />
+              {pasteButton}
               <Button
                 onClick={() => setCanEdit(false)}
                 className="w-11 h-11 text-gray-600"
@@ -274,13 +284,13 @@ const SlotsPage: React.FC = () => {
 
 const checkSelected = (
   slotId: SlotInterface["id"],
-  weekToPaste: SlotsWeek | null
+  weekToPaste: SlotsWeek | null,
 ): boolean => {
   // exit early if no weekToPaste
   if (!weekToPaste) return false;
 
   const slotInClipboard = Object.values(weekToPaste.slots).find(
-    ({ id }) => id === slotId
+    ({ id }) => id === slotId,
   );
 
   return Boolean(slotInClipboard);

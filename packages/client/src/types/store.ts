@@ -90,8 +90,8 @@ export type AuthReducerAction<A extends AuthAction> =
         payload: AuthState;
       }
     : A extends Action.UpdateAdminStatus
-    ? { type: A; payload: boolean }
-    : { type: string };
+      ? { type: A; payload: boolean }
+      : { type: string };
 /**
  * `authInfoEisbuuk` portion of the local store
  */
@@ -173,18 +173,18 @@ export interface ThunkExtraArgument {
  * Async Thunk in charge of updating the firestore and dispatching action
  * to local store with respect to firestore update outcome
  */
-export interface FirestoreThunk {
+export interface FirestoreThunk<R = void> {
   (
     dispatch: Dispatch<any>,
     getState: GetState,
-    extraArgument: ThunkExtraArgument
-  ): Promise<void>;
+    extraArgument: ThunkExtraArgument,
+  ): Promise<R>;
 }
 
 /** Interface used for factory functions returning reducer for a slice of the store */
 export interface ReducerFactory<
   S extends Record<string, any>,
-  A extends ReducerAction<any>
+  A extends ReducerAction<any>,
 > {
   (initialState?: S extends any[] ? S : Partial<S>): Reducer<S, A>;
 }
