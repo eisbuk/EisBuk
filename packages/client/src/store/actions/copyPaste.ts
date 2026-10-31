@@ -82,10 +82,11 @@ export const setSlotWeekToClipboard = (
 // #region pasteGuard
 
 /**
- * How long a paste target stays locked after its commit resolved: long enough to
- * cover the second click of a double-click when the commit is faster than the click.
+ * How long a paste target stays locked after its commit resolved. It covers the second
+ * click of a double-click, and a click made because only the first few pasted slots
+ * have appeared: the slots are aggregated one by one, and they can take a few seconds.
  */
-export const PASTE_COOLDOWN_MS = 1000;
+export const PASTE_COOLDOWN_MS = 10000;
 
 type PasteType = ButtonContextType.Day | ButtonContextType.Week;
 

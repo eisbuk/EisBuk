@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { DateTime } from "luxon";
 import { isEqual } from "lodash";
@@ -50,6 +50,8 @@ import {
 } from "@/store/actions/copyPaste";
 import { changeCalendarDate } from "@/store/actions/appActions";
 
+import { usePasteInProgress } from "./usePasteInProgress";
+
 const SlotsPage: React.FC = () => {
   const dispatch = useDispatch();
 
@@ -80,10 +82,8 @@ const SlotsPage: React.FC = () => {
   //
   // Each time slots to display change (by the paste being aggregated in the db or switching view), we enable the buttons again.
   // A paste that wrote nothing changes no slots, so it enables them through `onPasteAborted`.
-  const [slotButtonsDisabled, setSlotButtonsDisabled] = useState(false);
-  useEffect(() => {
-    setSlotButtonsDisabled(false);
-  }, [slotsToShow]);
+  const [slotButtonsDisabled, setSlotButtonsDisabled] =
+    usePasteInProgress(slotsToShow);
   const pasteButton = (
     <PasteButton
       onPaste={() => setSlotButtonsDisabled(true)}
