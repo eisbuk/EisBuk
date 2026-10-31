@@ -113,7 +113,7 @@ describe("Customer triggers", () => {
         const snap = await getDoc(
           doc(db, getBookingsDocPath(organization, secretKey))
         );
-        expect(Boolean(snap.data())).toEqual(true);
+        expect(snap.data()).toEqual(sanitizeCustomer(saul));
       });
       // add update to db
       const updatedCategory = [Category.CourseAdults];
@@ -121,7 +121,7 @@ describe("Customer triggers", () => {
         ...saul,
         secretKey,
         categories: updatedCategory,
-        deleted: true,
+        deleted: false,
       };
       await setDoc(saulDocRef, updatedSaul);
 
@@ -130,16 +130,39 @@ describe("Customer triggers", () => {
         const snap = await getDoc(
           doc(db, getBookingsDocPath(organization, secretKey))
         );
-        const data = snap.data();
-        expect(
-          Boolean(
-            data &&
-              updatedCategory.every((cat: Category) =>
-                data.categories.includes(cat)
-              ) &&
-              data.deleted === true
-          )
-        ).toEqual(true);
+        expect(snap.data()).toEqual(sanitizeCustomer(updatedSaul));
+      });
+    }
+  );
+
+  testWithEmulator(
+    "should disable a deleted customer's booking categories and restore them on reactivation",
+    async () => {
+      const { organization } = await setUpOrganization();
+      const customerRef = doc(db, getCustomerDocPath(organization, saul.id));
+      const bookingsRef = doc(
+        db,
+        getBookingsDocPath(organization, saul.secretKey)
+      );
+      // Older deleted profiles can still carry categories in their source document.
+      const deleted = {
+        ...saul,
+        deleted: true,
+        categories: [Category.CourseAdults],
+      };
+      await setDoc(customerRef, deleted);
+      await waitFor(async () => {
+        expect((await getDoc(bookingsRef)).data()).toEqual(
+          sanitizeCustomer({ ...deleted, categories: [] })
+        );
+      });
+
+      const reactivated = { ...deleted, deleted: false };
+      await setDoc(customerRef, reactivated);
+      await waitFor(async () => {
+        expect((await getDoc(bookingsRef)).data()).toEqual(
+          sanitizeCustomer(reactivated)
+        );
       });
     }
   );
