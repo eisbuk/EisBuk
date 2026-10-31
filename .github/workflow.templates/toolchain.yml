@@ -1,0 +1,44 @@
+#@ load("setup.lib.yml", "checkout")
+#@ load("rush.lib.yml", "rush_add_path", "rush_install", "rush_build")
+
+name: Node 22 compatibility
+
+"on":
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+env:
+  BROWSERSLIST_IGNORE_OLD_DATA: "1"
+
+jobs:
+  node22:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - #@ checkout()
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "21"
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+          package-manager-cache: false
+      - #@ rush_add_path()
+      - #@ rush_install()
+      - name: Check deployment tooling
+        run: |
+          node common/scripts/preflight-deploy.js
+          node --test common/scripts/preflight-deploy.test.js common/scripts/verify-deployment.test.js
+      - #@ rush_build()
+      - name: Typecheck packages
+        run: rush typecheck
+      - name: Build client
+        working-directory: packages/client
+        run: rushx build:prod
+      - name: Run emulator tests
+        working-directory: packages/client
+        run: npm run test:emulators:run

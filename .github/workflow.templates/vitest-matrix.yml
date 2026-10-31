@@ -1,7 +1,7 @@
 #! YAML library files must be named *.lib.yml
 #@ load("setup.lib.yml", "checkout")
 #@ load("cache.lib.yml", "cache_node")
-#@ load("rush.lib.yml", "rush_add_path", "rush_update", "rush_build")
+#@ load("rush.lib.yml", "rush_add_path", "rush_install", "rush_build")
 
 #! You can run this workflow bu pushing to a branch with the name
 #! cypress-matrix/<anything>
@@ -20,7 +20,7 @@ env:
   BROWSERSLIST_IGNORE_OLD_DATA: "1"
 
 jobs:
-  test-v18:
+  test-v24:
     name: Run tests
     runs-on: ubuntu-latest
     strategy:
@@ -30,12 +30,17 @@ jobs:
         dummy2: [1, 2, 3, 4, 5, 6]
     steps:
       -  #@ checkout()
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-java@v5
         with:
-          node-version: "18"
+          distribution: temurin
+          java-version: "21"
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
       -  #@ cache_node()
       -  #@ rush_add_path()
-      -  #@ rush_update()
+      -  #@ rush_install()
       -  #@ rush_build()
       - name: Run tests
         run: cd packages/client && rushx test:emulators:ci

@@ -1,0 +1,13 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/rush/v5/pnpm-config.schema.json",
+  "globalOnlyBuiltDependencies": [
+    "@firebase/util",
+    "core-js",
+    "core-js-pure",
+    "cypress",
+    "esbuild",
+    "protobufjs"
+  ],
+  "preventManualShrinkwrapChanges": true,
+  "useWorkspaces": true
+}
