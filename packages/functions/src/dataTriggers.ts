@@ -111,13 +111,13 @@ const settleAll = async (name: string, syncs: Promise<unknown>[]) => {
     throw new Error(
       `${name}: ${transient.length} of ${
         results.length
-      } syncs failed with transient errors (codes: ${transient.join(", ")})`
+      } syncs failed with transient errors (codes: ${transient.join(", ")})`,
     );
   }
   if (codes.length) {
     functions.logger.error(
       `${name}: ${codes.length} of ${results.length} syncs failed, not retried`,
-      { codes: codes.map((code) => String(code ?? "none")) }
+      { codes: codes.map((code) => String(code ?? "none")) },
     );
   }
 };
@@ -128,13 +128,13 @@ export const addIdToSlot = functions
   })
   .region(__functionsZone__)
   .firestore.document(
-    `${Collection.Organizations}/{organization}/${OrgSubCollection.Slots}/{slotId}`
+    `${Collection.Organizations}/{organization}/${OrgSubCollection.Slots}/{slotId}`,
   )
   .onCreate(
     wrapFirestoreOnCreateHandler("addIdToSlot", async ({ ref }, context) => {
       const { slotId } = context.params as Record<string, string>;
       ref.update({ id: slotId });
-    })
+    }),
   );
 
 /**
@@ -151,7 +151,7 @@ export const addCustomerIdAndSecretKey = functions
   })
   .region(__functionsZone__)
   .firestore.document(
-    `${Collection.Organizations}/{organization}/${OrgSubCollection.Customers}/{customerId}`
+    `${Collection.Organizations}/{organization}/${OrgSubCollection.Customers}/{customerId}`,
   )
   .onWrite(
     wrapFirestoreOnWriteHandler(
@@ -188,7 +188,7 @@ export const addCustomerIdAndSecretKey = functions
               id: customerId,
               secretKey,
             } as Pick<Customer, "id" | "secretKey">,
-            { merge: true }
+            { merge: true },
           );
         }
 
@@ -201,12 +201,12 @@ export const addCustomerIdAndSecretKey = functions
         // create/update booking entry
         batch.set(
           orgRef.collection(OrgSubCollection.Bookings).doc(secretKey),
-          customer
+          customer,
         );
 
         await batch.commit();
-      }
-    )
+      },
+    ),
   );
 
 /**
@@ -222,7 +222,7 @@ export const triggerAttendanceEntryForSlot = functions
   })
   .region(__functionsZone__)
   .firestore.document(
-    `${Collection.Organizations}/{organization}/${OrgSubCollection.Slots}/{slotId}`
+    `${Collection.Organizations}/{organization}/${OrgSubCollection.Slots}/{slotId}`,
   )
   .onWrite(
     wrapFirestoreOnWriteHandler(
@@ -271,15 +271,23 @@ export const triggerAttendanceEntryForSlot = functions
             });
             break;
           case isDelete:
-            // delete attendance entry for slot
-            await attendanceEntryRef.delete();
+            // Pasted slots reuse their ids, so by the time this event is processed
+            // the slot may exist again: its attendance entry must stay. Re-read the
+            // slot inside a transaction and only delete the entry if it's still gone.
+            await db.runTransaction(async (tx) => {
+              const slotSnap = await tx.get(slotRef);
+              if (slotSnap.exists) {
+                return;
+              }
+              tx.delete(attendanceEntryRef);
+            });
             break;
           default:
             // exit if slot was just updated
             return;
         }
-      }
-    )
+      },
+    ),
   );
 
 /**
@@ -294,7 +302,7 @@ export const aggregateSlots = functions
   })
   .region(__functionsZone__)
   .firestore.document(
-    `${Collection.Organizations}/{organization}/${OrgSubCollection.Slots}/{slotId}`
+    `${Collection.Organizations}/{organization}/${OrgSubCollection.Slots}/{slotId}`,
   )
   .onWrite(
     wrapFirestoreOnWriteHandler("aggregateSlots", async (change, context) => {
@@ -335,14 +343,14 @@ export const aggregateSlots = functions
           tx.set(
             getMonthRef(eventDate),
             { [eventDate]: { [id]: deleteSentinel } },
-            { merge: true }
+            { merge: true },
           );
           // If the event also saw an older date (date-edit), clear that location too
           if (beforeData && beforeData.date !== eventDate) {
             tx.set(
               getMonthRef(beforeData.date),
               { [beforeData.date]: { [id]: deleteSentinel } },
-              { merge: true }
+              { merge: true },
             );
           }
           return;
@@ -356,20 +364,20 @@ export const aggregateSlots = functions
         // we need to process intervals in order to make sure the old intervals get deleted
         // and only the updated values remain (prevent merging of the old values with the new)
         const deletedIntervals = Object.keys(
-          beforeData?.intervals || {}
+          beforeData?.intervals || {},
         ).reduce(
           (acc, intervalString) => ({
             ...acc,
             [intervalString]: deleteSentinel,
           }),
-          {} as Record<string, typeof deleteSentinel>
+          {} as Record<string, typeof deleteSentinel>,
         );
         const updatedIntervals = Object.keys(newIntervals).reduce(
           (acc, intervalString) => ({
             ...acc,
             [intervalString]: newIntervals[intervalString],
           }),
-          {} as Record<string, SlotInterval>
+          {} as Record<string, SlotInterval>,
         );
 
         // we're merging old intervals as delete sentinels and new intervals as they are
@@ -389,26 +397,26 @@ export const aggregateSlots = functions
           tx.set(
             getMonthRef(beforeData.date),
             { [beforeData.date]: { [id]: deleteSentinel } },
-            { merge: true }
+            { merge: true },
           );
         }
 
         tx.set(
           getMonthRef(date),
           { [date]: { [id]: newSlot } },
-          { merge: true }
+          { merge: true },
         );
       });
 
       return change.after;
-    })
+    }),
   );
 
 export const countSlotsBookings = functions
   .runWith(bookingSyncRuntimeOptions)
   .region(__functionsZone__)
   .firestore.document(
-    `${Collection.Organizations}/{organization}/${OrgSubCollection.Bookings}/{secretKey}/${BookingSubCollection.BookedSlots}/{bookingId}`
+    `${Collection.Organizations}/{organization}/${OrgSubCollection.Bookings}/{secretKey}/${BookingSubCollection.BookedSlots}/{bookingId}`,
   )
   .onWrite(
     wrapFirestoreOnWriteHandler(
@@ -445,8 +453,8 @@ export const countSlotsBookings = functions
           (async () =>
             syncSlotBookingsCount(db, organization, bookingId, date))(),
         ]);
-      }
-    )
+      },
+    ),
   );
 
 /**
@@ -462,7 +470,7 @@ export const createAttendanceForBooking = functions
   .runWith(bookingSyncRuntimeOptions)
   .region(__functionsZone__)
   .firestore.document(
-    `${Collection.Organizations}/{organization}/${OrgSubCollection.Bookings}/{secretKey}/${BookingSubCollection.BookedSlots}/{bookingId}`
+    `${Collection.Organizations}/{organization}/${OrgSubCollection.Bookings}/{secretKey}/${BookingSubCollection.BookedSlots}/{bookingId}`,
   )
   .onWrite(
     wrapFirestoreOnWriteHandler(
@@ -496,8 +504,8 @@ export const createAttendanceForBooking = functions
           ]);
         };
         await settleAll("createAttendanceForBooking", [sync()]);
-      }
-    )
+      },
+    ),
   );
 
 /**
@@ -546,14 +554,14 @@ export const registerCreatedOrgSecret = functions
         const smtpConfig = ["smtpHost", "smtpPort", "smtpUser", "smtpPass"];
 
         const smtpConfigured = smtpConfig.every((element) =>
-          updatedSecrets.includes(element)
+          updatedSecrets.includes(element),
         );
         await organizationRef.set(
           { existingSecrets: updatedSecrets, smtpConfigured },
-          { merge: true }
+          { merge: true },
         );
-      }
-    )
+      },
+    ),
   );
 
 export const createPublicOrgInfo = functions
@@ -590,11 +598,11 @@ export const createPublicOrgInfo = functions
         ].reduce(
           (acc, curr) =>
             orgData[curr] ? { ...acc, [curr]: orgData[curr] } : acc,
-          {}
+          {},
         );
         await publicOrgInfoDocRef.set(updates, { merge: true });
-      }
-    )
+      },
+    ),
   );
 
 /**
@@ -613,7 +621,7 @@ export const createAttendedSlotOnAttendance = functions
   .runWith(bookingSyncRuntimeOptions)
   .region(__functionsZone__)
   .firestore.document(
-    `${Collection.Organizations}/{organization}/${OrgSubCollection.Attendance}/{slotId}`
+    `${Collection.Organizations}/{organization}/${OrgSubCollection.Attendance}/{slotId}`,
   )
   .onWrite(
     wrapFirestoreOnWriteHandler(
@@ -642,18 +650,18 @@ export const createAttendedSlotOnAttendance = functions
         ].filter(
           (id) =>
             getAttendedSlotInterval(previousAttendances[id]) !==
-            getAttendedSlotInterval(eventAttendances[id])
+            getAttendedSlotInterval(eventAttendances[id]),
         );
 
         const db = admin.firestore();
         await settleAll(
           "createAttendedSlotOnAttendance",
           ids.map((customerId) =>
-            syncAttendedSlot(db, organization, slotId, customerId)
-          )
+            syncAttendedSlot(db, organization, slotId, customerId),
+          ),
         );
-      }
-    )
+      },
+    ),
   );
 
 export const createCustomerStats = functions
@@ -662,7 +670,7 @@ export const createCustomerStats = functions
   })
   .region(__functionsZone__)
   .firestore.document(
-    `${Collection.Organizations}/{organization}/${OrgSubCollection.Bookings}/{secretKey}/${BookingSubCollection.BookedSlots}/{bookingId}`
+    `${Collection.Organizations}/{organization}/${OrgSubCollection.Bookings}/{secretKey}/${BookingSubCollection.BookedSlots}/{bookingId}`,
   )
   .onWrite(
     wrapFirestoreOnWriteHandler(
@@ -718,6 +726,6 @@ export const createCustomerStats = functions
           .collection(OrgSubCollection.Customers)
           .doc(customerId)
           .set({ bookingStats: stats }, { merge: true });
-      }
-    )
+      },
+    ),
   );

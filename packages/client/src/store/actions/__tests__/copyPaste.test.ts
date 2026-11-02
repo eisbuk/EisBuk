@@ -25,6 +25,7 @@ import {
   copySlotsWeek,
   pasteSlotsDay,
   pasteSlotsWeek,
+  getPastedSlotId,
 } from "../copyPaste";
 import { enqueueNotification } from "@/features/notifications/actions";
 
@@ -35,10 +36,16 @@ import {
 
 import {
   getSlotsPath,
+  getSlotDocPath,
   collection,
+  createMissingDocs,
+  doc,
   getDocs,
+  setDoc,
   FirestoreVariant,
 } from "@/utils/firestore";
+
+import { adminDb } from "@/__testSetup__/firestoreSetup";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 import { setupCopyPaste, setupTestSlots } from "../__testUtils__/firestore";
@@ -114,6 +121,9 @@ export const expectedWeek = {
 };
 
 // #endregion testData
+
+/** A slot document, whichever Firestore SDK has read it */
+type SlotDoc = { id: string; data: () => Record<string, any> };
 
 const mockDispatch = vi.fn();
 
@@ -212,21 +222,35 @@ describe("Copy Paste actions", () => {
       async () => {
         // set up test state
         const store = getNewStore();
+        // we're pasting to wednesday of test week
+        const newDate = testDateLuxon.plus({ days: 2 });
+        const newDateISO = luxon2ISODate(newDate);
+        const existingSlot = {
+          ...baseSlot,
+          id: "existing-slot",
+          date: newDateISO,
+          notes: "existing",
+        };
         const { db, organization } = await getTestEnv({
-          setup: (db) =>
-            setupCopyPaste({
-              day: testDay,
-              store,
-              db,
-            }),
+          setup: (db, { organization }) =>
+            Promise.all([
+              setupCopyPaste({
+                day: testDay,
+                store,
+                db,
+              }),
+              setupTestSlots({
+                slots: { [existingSlot.id]: existingSlot },
+                db,
+                store,
+                organization,
+              }),
+            ]),
         });
         // make sure test generated organziation is used
         getOrganizationSpy.mockReturnValue(organization);
         // make sure the tests use the test db
         const getFirestore = () => db as any;
-        // we're pasting to wednesday of test week
-        const newDate = testDateLuxon.plus({ days: 2 });
-        const newDateISO = luxon2ISODate(newDate);
         // run the thunk against the store
         const testThunk = pasteSlotsDay(newDate);
         await runThunk(testThunk, mockDispatch, store.getState, {
@@ -241,12 +265,98 @@ describe("Copy Paste actions", () => {
               getSlotsPath(organization),
             ),
           );
-          expect(slotsInStore.docs.length).toEqual(numSlotsToPaste);
+          expect(slotsInStore.docs.length).toEqual(numSlotsToPaste + 1);
           slotsInStore.forEach((slot) => {
             const data = slot.data();
             expect(data.date).toEqual(newDateISO);
           });
+          // the slot which was on the target day survives, unchanged
+          const docs = slotsInStore.docs as SlotDoc[];
+          const existing = docs.find(({ id }) => id === existingSlot.id);
+          expect(existing?.data()).toEqual(existingSlot);
+          // the new slots have the id of the format: <target date>-<uuid>, stored in the document too
+          const pasted = docs.filter(({ id }) => id !== existingSlot.id);
+          expect(pasted).toHaveLength(numSlotsToPaste);
+          pasted.forEach((slot) => {
+            expect(slot.id).toMatch(
+              new RegExp(
+                `^${newDateISO}-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`,
+              ),
+            );
+            expect(slot.data().id).toEqual(slot.id);
+          });
         });
+      },
+    );
+
+    testWithEmulator(
+      "should not overwrite a slot which exists in the database, but not in the store of this tab",
+      async () => {
+        const store = getNewStore();
+        const newDate = testDateLuxon.plus({ days: 3 });
+        const newDateISO = luxon2ISODate(newDate);
+        const editedId = getPastedSlotId(newDateISO, "slot-0");
+        const edited = {
+          ...baseSlot,
+          id: editedId,
+          date: newDateISO,
+          notes: "edited by an admin",
+        };
+        const { db, organization } = await getTestEnv({
+          setup: (db, { organization }) =>
+            Promise.all([
+              setupCopyPaste({ day: testDay, store, db }),
+              setDoc(doc(db, getSlotDocPath(organization, editedId)), edited),
+            ]),
+        });
+        getOrganizationSpy.mockReturnValue(organization);
+
+        const result = await pasteSlotsDay(newDate)(
+          mockDispatch,
+          store.getState,
+          { getFirestore: () => db as any } as any,
+        );
+
+        expect(result).toBe(true);
+        expect(mockDispatch).toHaveBeenCalledWith(
+          enqueueNotification({
+            message: i18n.t(NotificationMessage.PasteSlotsSkipped, {
+              skipped: 1,
+            }),
+            variant: NotifVariant.Success,
+          }),
+        );
+        const slots = await getDocs(collection(db, getSlotsPath(organization)));
+        expect(slots.docs.length).toEqual(2);
+        expect(
+          (slots.docs as SlotDoc[]).find(({ id }) => id === editedId)?.data(),
+        ).toEqual(edited);
+      },
+    );
+
+    testWithEmulator(
+      "createMissingDocs: should create only the missing documents with the server SDK",
+      async () => {
+        const db = FirestoreVariant.server({ instance: adminDb });
+        const organization = `org-${Date.now()}`;
+        const ref = (id: string) => doc(db, getSlotDocPath(organization, id));
+        await setDoc(ref("existing"), { notes: "old" });
+
+        const written = await createMissingDocs([
+          { doc: ref("existing"), data: { notes: "new" } },
+          { doc: ref("missing"), data: { notes: "new" } },
+        ]);
+
+        expect(written).toEqual(1);
+        const slots = await getDocs(collection(db, getSlotsPath(organization)));
+        expect(
+          Object.fromEntries(
+            (slots.docs as SlotDoc[]).map((slot) => [
+              slot.id,
+              slot.data().notes,
+            ]),
+          ),
+        ).toEqual({ existing: "old", missing: "new" });
       },
     );
 

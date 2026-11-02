@@ -28,7 +28,8 @@ interface Props {
   onPaste?: () => void;
   /**
    * Called when a started paste ended without writing any slots (it failed, the
-   * clipboard was empty, or all of its slots were already there): no slots will change, so nothing else ends the paste.
+   * clipboard was empty, or all of its slots were already there): no slots will change,
+   * so nothing else ends the paste.
    */
   onPasteAborted?: () => void;
 }

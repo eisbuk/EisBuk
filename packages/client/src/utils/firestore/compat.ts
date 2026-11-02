@@ -49,7 +49,7 @@ export const FirestoreVariant = variantModule({
   [FirestoreEnv.Server]: fields<{ instance: ServerFirestore }>(),
 });
 export type FirestoreVariant<
-  K extends TypeNames<typeof FirestoreVariant> = undefined
+  K extends TypeNames<typeof FirestoreVariant> = undefined,
 > = VariantOf<typeof FirestoreVariant, K>;
 
 /**
@@ -63,7 +63,7 @@ export const FirestoreDocVariant = variantModule({
   [FirestoreEnv.Server]: fields<{ instance: ServerDocumentReference }>(),
 });
 export type FirestoreDocVariant<
-  K extends TypeNames<typeof FirestoreDocVariant> = undefined
+  K extends TypeNames<typeof FirestoreDocVariant> = undefined,
 > = VariantOf<typeof FirestoreDocVariant, K>;
 
 /**
@@ -77,7 +77,7 @@ export const FirestoreCollectionVariant = variantModule({
   [FirestoreEnv.Server]: fields<{ instance: ServerCollectionReference }>(),
 });
 export type FirestoreCollectionVariant<
-  K extends TypeNames<typeof FirestoreCollectionVariant> = undefined
+  K extends TypeNames<typeof FirestoreCollectionVariant> = undefined,
 > = VariantOf<typeof FirestoreCollectionVariant, K>;
 // #endregion client/server variants
 
@@ -133,7 +133,7 @@ export const collection = (
         // it doesn't work well on unions because of slightly different type overloads, hence the typecast.
         instance: clientCollection(
           instance as ClientFirestore,
-          pathSegments.join("/")
+          pathSegments.join("/"),
         ),
       }),
     [FirestoreEnv.Server]: ({ instance }) =>
@@ -144,7 +144,7 @@ export const collection = (
 
 export const addDoc = async (
   collection: FirestoreCollectionVariant,
-  data: DocumentData
+  data: DocumentData,
 ) => {
   const res = await match(collection, {
     [FirestoreEnv.Client]: ({ instance }) => clientAddDoc(instance, data),
@@ -164,7 +164,7 @@ export const addDoc = async (
 export const setDoc = async (
   doc: FirestoreDocVariant,
   data: DocumentData,
-  options: SetOptions = {}
+  options: SetOptions = {},
 ) => {
   const res = await match(doc, {
     [FirestoreEnv.Client]: ({ instance }) =>
@@ -187,8 +187,8 @@ export const DELETE_FIELD = Symbol("deleteField");
 export const updateDocInTransaction = async (
   doc: FirestoreDocVariant,
   getUpdates: (
-    data: DocumentData | undefined
-  ) => Record<string, unknown> | undefined
+    data: DocumentData | undefined,
+  ) => Record<string, unknown> | undefined,
 ): Promise<void> =>
   match(doc, {
     [FirestoreEnv.Client]: ({ instance }) =>
@@ -201,8 +201,8 @@ export const updateDocInTransaction = async (
             Object.entries(updates).map(([path, value]) => [
               path,
               value === DELETE_FIELD ? clientDeleteField() : value,
-            ])
-          ) as UpdateData<DocumentData>
+            ]),
+          ) as UpdateData<DocumentData>,
         );
       }),
     [FirestoreEnv.Server]: ({ instance }) => {
@@ -213,7 +213,7 @@ export const updateDocInTransaction = async (
       if (delegate) {
         return updateDocInTransaction(
           FirestoreDocVariant.client({ instance: delegate }),
-          getUpdates
+          getUpdates,
         );
       }
       return instance.firestore.runTransaction(async (tx) => {
@@ -221,13 +221,62 @@ export const updateDocInTransaction = async (
         if (!updates) return;
         if (Object.values(updates).includes(DELETE_FIELD)) {
           throw new Error(
-            "updateDocInTransaction: DELETE_FIELD isn't supported for this Firestore instance"
+            "updateDocInTransaction: DELETE_FIELD isn't supported for this Firestore instance",
           );
         }
         tx.update(instance, updates as ServerUpdateData<ServerDocumentData>);
       });
     },
   });
+
+/**
+ * Writes each of the documents which doesn't exist yet, in one transaction, and leaves the
+ * existing ones as they are.
+ *
+ * A transaction reads from the server, so it can't be queued: offline it rejects.
+ * @returns the number of documents written
+ */
+export const createMissingDocs = async (
+  docs: { doc: FirestoreDocVariant; data: DocumentData }[],
+): Promise<number> => {
+  if (!docs.length) return 0;
+
+  const writeMissing = (exists: boolean[], set: (index: number) => void) => {
+    const missing = docs.flatMap((_, i) => (exists[i] ? [] : [i]));
+    missing.forEach(set);
+    return missing.length;
+  };
+
+  // The Firebase compat SDK (used by firestore-rules-unit-testing) wraps a client SDK document reference
+  const clientRefs = docs.map(({ doc }) =>
+    match(doc, {
+      [FirestoreEnv.Client]: ({ instance }) => instance,
+      [FirestoreEnv.Server]: ({ instance }) =>
+        (instance as unknown as { _delegate?: ClientDocumentReference })
+          ._delegate,
+    }),
+  );
+
+  if (clientRefs[0]) {
+    const refs = clientRefs as ClientDocumentReference[];
+    return clientRunTransaction(refs[0].firestore, async (tx) => {
+      const snaps = await Promise.all(refs.map((ref) => tx.get(ref)));
+      return writeMissing(
+        snaps.map((snap) => snap.exists()),
+        (i) => tx.set(refs[i], docs[i].data),
+      );
+    });
+  }
+
+  const refs = docs.map(({ doc }) => doc.instance as ServerDocumentReference);
+  return refs[0].firestore.runTransaction(async (tx) => {
+    const snaps = await tx.getAll(...refs);
+    return writeMissing(
+      snaps.map((snap) => snap.exists),
+      (i) => tx.set(refs[i], docs[i].data),
+    );
+  });
+};
 
 /**
  * Implementation of firestore `getDoc` function that works on all Firestore variants.
@@ -276,7 +325,7 @@ class BatchMismatch extends Error {
   // eslint-disable-next-line require-jsdoc
   constructor(batchType: FirestoreEnv, docType: FirestoreEnv) {
     super(
-      `Write batch/document variant mismatch: batch type: ${batchType}, doc type: ${docType}`
+      `Write batch/document variant mismatch: batch type: ${batchType}, doc type: ${docType}`,
     );
     return this;
   }
