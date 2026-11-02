@@ -25,6 +25,7 @@ import {
   copySlotsWeek,
   pasteSlotsDay,
   pasteSlotsWeek,
+  getPastedSlotId,
 } from "../copyPaste";
 import { enqueueNotification } from "@/features/notifications/actions";
 
@@ -35,10 +36,16 @@ import {
 
 import {
   getSlotsPath,
+  getSlotDocPath,
   collection,
+  createMissingDocs,
+  doc,
   getDocs,
+  setDoc,
   FirestoreVariant,
 } from "@/utils/firestore";
+
+import { adminDb } from "@/__testSetup__/firestoreSetup";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 import { setupCopyPaste, setupTestSlots } from "../__testUtils__/firestore";
@@ -54,6 +61,7 @@ export const testDay = {
   ["slot-1"]: {
     ...baseSlot,
     id: "slot-1",
+    notes: "slot-1",
   },
 };
 
@@ -70,11 +78,13 @@ const testWeekWednesday = {
     ...baseSlot,
     id: "slot-3",
     date: newDateISO,
+    notes: "slot-3",
   },
   ["slot-4"]: {
     ...baseSlot,
     id: "slot-4",
     date: newDateISO,
+    notes: "slot-4",
   },
 };
 
@@ -111,6 +121,9 @@ export const expectedWeek = {
 };
 
 // #endregion testData
+
+/** A slot document, whichever Firestore SDK has read it */
+type SlotDoc = { id: string; data: () => Record<string, any> };
 
 const mockDispatch = vi.fn();
 
@@ -156,7 +169,7 @@ describe("Copy Paste actions", () => {
         expect(getDayFromClipboard(store.getState())).toEqual(testDay);
         // check that week slots have been removed from the clipboard
         expect(getWeekFromClipboard(store.getState())).toEqual(null);
-      }
+      },
     );
   });
 
@@ -199,31 +212,45 @@ describe("Copy Paste actions", () => {
         expect(getWeekFromClipboard(store.getState())).toEqual(expectedWeek);
         // check that day slots have been removed from the clipboard
         expect(getDayFromClipboard(store.getState())).toEqual(null);
-      }
+      },
     );
   });
 
   describe("pasteSlotsDay", () => {
     testWithEmulator(
-      "should update firestore with slots day from clipboard pasted to new day (with new slots having uuid generated ids and without messing up the new day)",
+      "should update firestore with slots day from clipboard pasted to new day (with new slots having ids generated from the date and source slot, and without messing up the new day)",
       async () => {
         // set up test state
         const store = getNewStore();
+        // we're pasting to wednesday of test week
+        const newDate = testDateLuxon.plus({ days: 2 });
+        const newDateISO = luxon2ISODate(newDate);
+        const existingSlot = {
+          ...baseSlot,
+          id: "existing-slot",
+          date: newDateISO,
+          notes: "existing",
+        };
         const { db, organization } = await getTestEnv({
-          setup: (db) =>
-            setupCopyPaste({
-              day: testDay,
-              store,
-              db,
-            }),
+          setup: (db, { organization }) =>
+            Promise.all([
+              setupCopyPaste({
+                day: testDay,
+                store,
+                db,
+              }),
+              setupTestSlots({
+                slots: { [existingSlot.id]: existingSlot },
+                db,
+                store,
+                organization,
+              }),
+            ]),
         });
         // make sure test generated organziation is used
         getOrganizationSpy.mockReturnValue(organization);
         // make sure the tests use the test db
         const getFirestore = () => db as any;
-        // we're pasting to wednesday of test week
-        const newDate = testDateLuxon.plus({ days: 2 });
-        const newDateISO = luxon2ISODate(newDate);
         // run the thunk against the store
         const testThunk = pasteSlotsDay(newDate);
         await runThunk(testThunk, mockDispatch, store.getState, {
@@ -235,16 +262,102 @@ describe("Copy Paste actions", () => {
           const slotsInStore = await getDocs(
             collection(
               FirestoreVariant.server({ instance: context.firestore() }),
-              getSlotsPath(organization)
-            )
+              getSlotsPath(organization),
+            ),
           );
-          expect(slotsInStore.docs.length).toEqual(numSlotsToPaste);
+          expect(slotsInStore.docs.length).toEqual(numSlotsToPaste + 1);
           slotsInStore.forEach((slot) => {
             const data = slot.data();
             expect(data.date).toEqual(newDateISO);
           });
+          // the slot which was on the target day survives, unchanged
+          const docs = slotsInStore.docs as SlotDoc[];
+          const existing = docs.find(({ id }) => id === existingSlot.id);
+          expect(existing?.data()).toEqual(existingSlot);
+          // the new slots have the id of the format: <target date>-<uuid>, stored in the document too
+          const pasted = docs.filter(({ id }) => id !== existingSlot.id);
+          expect(pasted).toHaveLength(numSlotsToPaste);
+          pasted.forEach((slot) => {
+            expect(slot.id).toMatch(
+              new RegExp(
+                `^${newDateISO}-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`,
+              ),
+            );
+            expect(slot.data().id).toEqual(slot.id);
+          });
         });
-      }
+      },
+    );
+
+    testWithEmulator(
+      "should not overwrite a slot which exists in the database, but not in the store of this tab",
+      async () => {
+        const store = getNewStore();
+        const newDate = testDateLuxon.plus({ days: 3 });
+        const newDateISO = luxon2ISODate(newDate);
+        const editedId = getPastedSlotId(newDateISO, "slot-0");
+        const edited = {
+          ...baseSlot,
+          id: editedId,
+          date: newDateISO,
+          notes: "edited by an admin",
+        };
+        const { db, organization } = await getTestEnv({
+          setup: (db, { organization }) =>
+            Promise.all([
+              setupCopyPaste({ day: testDay, store, db }),
+              setDoc(doc(db, getSlotDocPath(organization, editedId)), edited),
+            ]),
+        });
+        getOrganizationSpy.mockReturnValue(organization);
+
+        const result = await pasteSlotsDay(newDate)(
+          mockDispatch,
+          store.getState,
+          { getFirestore: () => db as any } as any,
+        );
+
+        expect(result).toBe(true);
+        expect(mockDispatch).toHaveBeenCalledWith(
+          enqueueNotification({
+            message: i18n.t(NotificationMessage.PasteSlotsSkipped, {
+              skipped: 1,
+            }),
+            variant: NotifVariant.Success,
+          }),
+        );
+        const slots = await getDocs(collection(db, getSlotsPath(organization)));
+        expect(slots.docs.length).toEqual(2);
+        expect(
+          (slots.docs as SlotDoc[]).find(({ id }) => id === editedId)?.data(),
+        ).toEqual(edited);
+      },
+    );
+
+    testWithEmulator(
+      "createMissingDocs: should create only the missing documents with the server SDK",
+      async () => {
+        const db = FirestoreVariant.server({ instance: adminDb });
+        const organization = `org-${Date.now()}`;
+        const ref = (id: string) => doc(db, getSlotDocPath(organization, id));
+        await setDoc(ref("existing"), { notes: "old" });
+
+        const written = await createMissingDocs([
+          { doc: ref("existing"), data: { notes: "new" } },
+          { doc: ref("missing"), data: { notes: "new" } },
+        ]);
+
+        expect(written).toEqual(1);
+        const slots = await getDocs(collection(db, getSlotsPath(organization)));
+        expect(
+          Object.fromEntries(
+            (slots.docs as SlotDoc[]).map((slot) => [
+              slot.id,
+              slot.data().notes,
+            ]),
+          ),
+        ).toEqual({ existing: "old", missing: "new" });
+      },
     );
 
     testWithEmulator("should display error message on fail", async () => {
@@ -255,7 +368,7 @@ describe("Copy Paste actions", () => {
       };
       // run the faulty thunk
       const testThunk = pasteSlotsDay(testDateLuxon);
-      runThunk(testThunk, mockDispatch, () => ({} as any), {
+      runThunk(testThunk, mockDispatch, () => ({}) as any, {
         getFirestore,
       });
       // check the error message being enqueued
@@ -264,7 +377,7 @@ describe("Copy Paste actions", () => {
           message: i18n.t(NotificationMessage.CopyPasteErrorDay),
           variant: NotifVariant.Error,
           error: testError,
-        })
+        }),
       );
     });
   });
@@ -311,7 +424,7 @@ describe("Copy Paste actions", () => {
           .sort((a, b) => (a < b ? -1 : 1));
         // if sorted dates match, the update was successful
         expect(updatedDates).toEqual(slotsDates);
-      }
+      },
     );
 
     testWithEmulator(
@@ -324,7 +437,7 @@ describe("Copy Paste actions", () => {
         };
         // run the failing thunk
         const testThunk = pasteSlotsWeek(testDateLuxon);
-        await runThunk(testThunk, mockDispatch, () => ({} as any), {
+        await runThunk(testThunk, mockDispatch, () => ({}) as any, {
           getFirestore,
         });
         // check the error message being enqueued
@@ -333,9 +446,9 @@ describe("Copy Paste actions", () => {
             message: i18n.t(NotificationMessage.CopyPasteErrorWeek),
             variant: NotifVariant.Error,
             error: testError,
-          })
+          }),
         );
-      }
+      },
     );
   });
 });

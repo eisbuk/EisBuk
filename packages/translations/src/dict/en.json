@@ -293,6 +293,7 @@
 
     "CopyPasteErrorWeek": "Error copying slots week",
     "CopyPasteErrorDay": "Error copying slots day",
+    "PasteSlotsSkipped": "Slots skipped because they already exist: {{ skipped }}",
 
     "SlotAdded": "Slot Added",
     "SlotAddError": "Error adding slot",

@@ -323,6 +323,7 @@ export enum NotificationMessage {
 
   CopyPasteErrorDay = "Notification.CopyPasteErrorDay",
   CopyPasteErrorWeek = "Notification.CopyPasteErrorWeek",
+  PasteSlotsSkipped = "Notification.PasteSlotsSkipped",
 
   LogoutSuccess = "Notification.LogoutSuccess",
   LogoutError = "Notification.LogoutError",

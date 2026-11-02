@@ -1,7 +1,10 @@
 import { DateTime } from "luxon";
+import { isEqual } from "lodash";
+import { v5 as uuidv5 } from "uuid";
 
 import {
   SlotInterface,
+  SlotsByDay,
   SlotsById,
   luxon2ISODate,
   fromISO,
@@ -17,7 +20,13 @@ import { FirestoreThunk, SlotsWeek } from "@/types/store";
 
 import { enqueueNotification } from "@/features/notifications/actions";
 
-import { getSlotsPath, collection, doc, writeBatch } from "@/utils/firestore";
+import {
+  getSlotsPath,
+  collection,
+  doc,
+  createMissingDocs,
+  FirestoreVariant,
+} from "@/utils/firestore";
 
 /**
  * Creates Redux 'remove slot from clipboard' action for copyPaste reducer
@@ -103,38 +112,147 @@ export const isPasteLocked = (type: PasteType, date: DateTime) =>
   lockedPasteTargets.has(getPasteKey(type, date));
 
 /**
- * Commits the batch unless the same target is already locked. The lock is taken
+ * Runs the write unless the same target is already locked. The lock is taken
  * synchronously, before any `await`, so that concurrent dispatches can't both pass.
  *
- * The lock is released right away on failure (allowing for a retry) and after
- * `PASTE_COOLDOWN_MS` on success. An offline commit stays pending, keeping the lock:
- * the write is queued and will still land, so another paste would be a duplicate.
+ * The lock is released right away on failure (allowing for a retry) or if nothing was
+ * written (no slots will appear), and after `PASTE_COOLDOWN_MS` otherwise. The write is a
+ * transaction, which can't be queued: offline it rejects, the paste fails with the error
+ * notification and the lock is released.
  *
- * @returns `true` if the batch was committed, `false` if the target was locked
+ * @returns the number of slots written, `null` if the target was locked
  */
 const commitPasteOnce = async (
   type: PasteType,
   date: DateTime,
-  createBatch: () => { commit: () => Promise<unknown> },
+  write: () => Promise<number>,
 ) => {
-  if (isPasteLocked(type, date)) return false;
+  if (isPasteLocked(type, date)) return null;
 
   const key = getPasteKey(type, date);
   lockedPasteTargets.add(key);
 
   try {
-    await createBatch().commit();
-    setTimeout(() => lockedPasteTargets.delete(key), PASTE_COOLDOWN_MS);
-    return true;
+    const written = await write();
+    if (written) {
+      setTimeout(() => lockedPasteTargets.delete(key), PASTE_COOLDOWN_MS);
+    } else {
+      lockedPasteTargets.delete(key);
+    }
+    return written;
   } catch (err) {
     lockedPasteTargets.delete(key);
     throw err;
   }
 };
 
+/** Namespace of the ids of pasted slots (see `getPastedSlotId`). Changing it would change the ids. */
+const PASTED_SLOT_ID_NAMESPACE = "0f1c4a52-7d3e-4b8a-9c61-2e5d8a7b3f10";
+
+/**
+ * The same slot pasted to the same date always gets the same id, so a paste repeated in
+ * another tab or device finds that document and doesn't create a duplicate.
+ *
+ * The source id is hashed to keep the length fixed: a pasted slot can be copied and pasted
+ * again without limit. Hashing the whole source id (rather than removing the date of a
+ * previously pasted slot) keeps the ids of different slots different: a slot and its edited
+ * copy pasted to one date are two slots.
+ */
+export const getPastedSlotId = (date: string, sourceId: string) =>
+  `${date}-${uuidv5(sourceId, PASTED_SLOT_ID_NAMESPACE)}`;
+
+/** What makes two slots with no capacity the same slot. Lodash `isEqual` doesn't depend on key order. */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const getSlotContent = ({ id, ...content }: SlotInterface) => ({
+  ...content,
+  categories: [...content.categories].sort(),
+});
+
+/**
+ * Prepares the slots for writing, leaving out each slot which:
+ * - has an id which already exists: an admin may have edited that slot, or athletes booked it
+ * - has no capacity, and has the same content as a slot on the target date or as a previous slot
+ *   in the clipboard: a duplicate which got here from some other source shouldn't spread any further.
+ *   Slots with a capacity are kept: parallel private lessons (capacity 1) can be identical
+ *
+ * This is a cheap first filter: only the loaded slots can be checked, and they can be stale.
+ * `createPasteSlots` is what guarantees that no existing slot is overwritten.
+ *
+ * @param slots the slots from the clipboard, each one with its target date
+ * @param slotsByDay the loaded slots
+ */
+const getSlotsToWrite = (
+  slots: SlotInterface[],
+  slotsByDay: Record<string, SlotsByDay> | null | undefined,
+) => {
+  const knownSlots = Object.values(slotsByDay || {})
+    .flatMap((month) => Object.values(month))
+    .flatMap((day) => Object.values(day));
+  const knownIds = new Set(knownSlots.map(({ id }) => id));
+
+  return slots.reduce((slotsToWrite, slot) => {
+    const id = getPastedSlotId(slot.date, slot.id);
+    const content = getSlotContent(slot);
+    const isDuplicate =
+      !slot.capacity &&
+      [...knownSlots, ...slotsToWrite].some(
+        (other) =>
+          other.date === slot.date && isEqual(getSlotContent(other), content),
+      );
+    return knownIds.has(id) || isDuplicate
+      ? slotsToWrite
+      : [...slotsToWrite, { ...slot, id }];
+  }, [] as SlotInterface[]);
+};
+
 // #endregion pasteGuard
 
 // #region updatedActions
+
+/**
+ * Creates the slots which don't exist in the database, whatever this tab has loaded.
+ * @returns the number of slots written
+ */
+const createPasteSlots = (db: FirestoreVariant, slots: SlotInterface[]) => {
+  const slotsCollRef = collection(db, getSlotsPath(getOrganization()));
+  return createMissingDocs(
+    slots.map((slot) => ({ doc: doc(slotsCollRef, slot.id), data: slot })),
+  );
+};
+
+/**
+ * Writes the slots to the target, and tells the admin how many were skipped as already there.
+ * A click ignored because of the lock is not reported: the slots were not checked.
+ * @param slots the slots from the clipboard, each one with its target date
+ * @returns `true` if any slots were written
+ */
+const pasteSlots = async (
+  type: PasteType,
+  date: DateTime,
+  slots: SlotInterface[],
+  db: FirestoreVariant,
+  dispatch: Parameters<FirestoreThunk>[0],
+  getState: Parameters<FirestoreThunk>[1],
+) => {
+  const written = await commitPasteOnce(type, date, () =>
+    createPasteSlots(
+      db,
+      getSlotsToWrite(slots, getState().firestore.data.slotsByDay),
+    ),
+  );
+  if (written === null) return false;
+
+  const skipped = slots.length - written;
+  if (skipped) {
+    dispatch(
+      enqueueNotification({
+        message: i18n.t(NotificationMessage.PasteSlotsSkipped, { skipped }),
+        variant: NotifVariant.Success,
+      }),
+    );
+  }
+  return written > 0;
+};
 
 /**
  * Creates Redux action to add a complete day of slots to clipboard for copyPaste reducer
@@ -174,17 +292,11 @@ export const copySlotsWeek =
 
     // get week start and date keys
     const weekStart = state.app.calendarDay.startOf("week");
-    const weekStartISO = luxon2ISODate(weekStart);
-    const monthStr = weekStartISO.substr(0, 7);
 
     // get slots week to copy from store
     const slotsByDay = state.firestore.data.slotsByDay;
     // exit if no slots in store
     if (!slotsByDay) return;
-
-    const slotsMonth = slotsByDay[monthStr];
-    // exit if no slots for given month
-    if (!slotsMonth) return;
 
     // process slots month to return an array of slots for given week
     const slots = Array(7)
@@ -192,7 +304,9 @@ export const copySlotsWeek =
       .reduce((acc, baseDate, i) => {
         const dateISO = luxon2ISODate(baseDate.plus({ days: i }));
         // get slots for a given day of the week (if any)
-        const slotsInADay = slotsMonth[dateISO] || {};
+        // (a week can span two months, so each day is read from its own month)
+        const slotsInADay =
+          slotsByDay[dateISO.substring(0, 7)]?.[dateISO] || {};
         // return slots in a day flattened with acc array
         return [...acc, ...Object.values(slotsInADay)];
       }, [] as SlotInterface[]);
@@ -202,7 +316,7 @@ export const copySlotsWeek =
 
 /**
  * Creates Redux action to paste the day of slots from clipboard to a new day
- * @returns Redux thunk, resolving to `true` if any slots were written
+ * @returns Redux thunk, resolving to `true` if any slots were written (see `getSlotsToWrite`)
  */
 export const pasteSlotsDay =
   (newDate: DateTime): FirestoreThunk<boolean> =>
@@ -218,19 +332,14 @@ export const pasteSlotsDay =
       // get iso date for new slots
       const date = luxon2ISODate(newDate);
 
-      return await commitPasteOnce(ButtonContextType.Day, newDate, () => {
-        // add updated slots to firestore
-        const slotsCollRef = collection(db, getSlotsPath(getOrganization()));
-        const batch = writeBatch(db);
-
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        Object.values(slotsToCopy).forEach(({ id, ...slotData }) => {
-          const newSlotRef = doc(slotsCollRef);
-          batch.set(newSlotRef, { ...slotData, date });
-        });
-
-        return batch;
-      });
+      return await pasteSlots(
+        ButtonContextType.Day,
+        newDate,
+        Object.values(slotsToCopy).map((slot) => ({ ...slot, date })),
+        db,
+        dispatch,
+        getState,
+      );
     } catch (err) {
       dispatch(
         enqueueNotification({
@@ -245,7 +354,7 @@ export const pasteSlotsDay =
 
 /**
  * Creates Redux action to paste a week of slots from clipboard to new week (starting with provided date)
- * @returns Redux thunk, resolving to `true` if any slots were written
+ * @returns Redux thunk, resolving to `true` if any slots were written (see `getSlotsToWrite`)
  */
 export const pasteSlotsWeek =
   (newWeekStart: DateTime): FirestoreThunk<boolean> =>
@@ -267,21 +376,17 @@ export const pasteSlotsWeek =
       // calculate jump in weeks
       const jump = newWeekStart.diff(weekStart, ["weeks"]).toObject().weeks!;
 
-      return await commitPasteOnce(ButtonContextType.Week, newWeekStart, () => {
-        // update each slot with new date and set up for firestore dispatching
-        const slotsCollRef = collection(db, getSlotsPath(getOrganization()));
-        const batch = writeBatch(db);
-
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        slots.forEach(({ id, date: oldDate, ...slotData }) => {
-          const luxonDate = fromISO(oldDate).plus({ weeks: jump });
-          const date = luxon2ISODate(luxonDate);
-          const newSlotRef = doc(slotsCollRef);
-          batch.set(newSlotRef, { ...slotData, date });
-        });
-
-        return batch;
-      });
+      return await pasteSlots(
+        ButtonContextType.Week,
+        newWeekStart,
+        slots.map((slot) => ({
+          ...slot,
+          date: luxon2ISODate(fromISO(slot.date).plus({ weeks: jump })),
+        })),
+        db,
+        dispatch,
+        getState,
+      );
     } catch (err) {
       dispatch(
         enqueueNotification({

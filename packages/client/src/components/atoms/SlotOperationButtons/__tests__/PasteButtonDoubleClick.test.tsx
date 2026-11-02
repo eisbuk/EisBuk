@@ -21,20 +21,22 @@ import { ButtonContextType } from "@/enums/components";
 import SlotOperationButtons from "../SlotOperationButtons";
 import PasteButton from "../PasteButton";
 
-const { writeBatch, date } = vi.hoisted(() => ({
-  writeBatch: vi.fn(),
+const { createMissingDocs, date, slotsByDay } = vi.hoisted(() => ({
+  createMissingDocs: vi.fn(),
   date: { current: null as any },
+  slotsByDay: { current: undefined as any },
 }));
 
 vi.mock("@/utils/firestore", () => ({
-  writeBatch,
+  createMissingDocs,
   collection: () => ({}),
-  doc: () => ({}),
+  doc: (_: unknown, id: string) => ({ id }),
   getSlotsPath: () => "slots",
 }));
 vi.mock("@/lib/getters", () => ({ getOrganization: () => "org" }));
 
 const state = () => ({
+  firestore: { data: { slotsByDay: slotsByDay.current } },
   copyPaste: {
     day: { "slot-0": { ...baseSlot, id: "slot-0" } },
     week: { weekStart: date.current, slots: [{ ...baseSlot, id: "slot-0" }] },
@@ -69,7 +71,7 @@ describe("PasteButton: disabled", () => {
     const button = screen.getByTestId(testId("paste-button"));
     expect(button).toHaveProperty("disabled", true);
     fireEvent.click(button);
-    expect(writeBatch).not.toHaveBeenCalled();
+    expect(createMissingDocs).not.toHaveBeenCalled();
     expect(onPaste).not.toHaveBeenCalled();
   });
 
@@ -86,7 +88,7 @@ describe("PasteButton: disabled", () => {
     const button = screen.getByTestId(testId("paste-button"));
     expect(button).toHaveProperty("disabled", true);
     fireEvent.click(button);
-    expect(writeBatch).not.toHaveBeenCalled();
+    expect(createMissingDocs).not.toHaveBeenCalled();
   });
 });
 
@@ -112,22 +114,38 @@ describe("PasteButton: paste outcome", () => {
     return onPasteAborted;
   };
 
-  test("should call 'onPasteAborted' if the commit fails", async () => {
-    writeBatch.mockReturnValue({
-      set: vi.fn(),
-      commit: () => Promise.reject(new Error("test")),
-    });
+  test("should call 'onPasteAborted' if the write fails", async () => {
+    createMissingDocs.mockRejectedValue(new Error("test"));
     const onPasteAborted = clickPaste("2026-11-30");
     await waitFor(() => expect(onPasteAborted).toHaveBeenCalledTimes(1));
   });
 
-  test("should not call 'onPasteAborted' if the commit succeeds: the buttons wait for the slots to change", async () => {
-    const commit = vi.fn(async () => {});
-    writeBatch.mockReturnValue({ set: vi.fn(), commit });
+  test("should not call 'onPasteAborted' if the write succeeds: the buttons wait for the slots to change", async () => {
+    createMissingDocs.mockResolvedValue(1);
     const onPasteAborted = clickPaste("2026-12-07");
-    await waitFor(() => expect(commit).toHaveBeenCalled());
+    await waitFor(() => expect(createMissingDocs).toHaveBeenCalled());
     await new Promise((resolve) => setTimeout(resolve));
     expect(onPasteAborted).not.toHaveBeenCalled();
+  });
+
+  test("should call 'onPasteAborted', without writing, if all the slots are already on the target", async () => {
+    // The clipboard week starts on the target date, so the slot keeps its date
+    slotsByDay.current = {
+      [baseSlot.date.substring(0, 7)]: {
+        [baseSlot.date]: { existing: { ...baseSlot, id: "existing" } },
+      },
+    };
+    createMissingDocs.mockResolvedValue(0);
+    const onPasteAborted = clickPaste("2027-01-04");
+    await waitFor(() => expect(onPasteAborted).toHaveBeenCalledTimes(1));
+    expect(createMissingDocs).toHaveBeenCalledWith([]);
+    slotsByDay.current = undefined;
+  });
+
+  test("should call 'onPasteAborted' if the transaction found all of the slots to exist", async () => {
+    createMissingDocs.mockResolvedValue(0);
+    const onPasteAborted = clickPaste("2027-01-11");
+    await waitFor(() => expect(onPasteAborted).toHaveBeenCalledTimes(1));
   });
 });
 
@@ -144,8 +162,7 @@ describe("PasteButton: double click", () => {
     "contextType=%s: should paste and call 'onPaste' only once",
     async (contextType, dateISO) => {
       date.current = DateTime.fromISO(dateISO);
-      const commit = vi.fn(() => new Promise<void>(() => {}));
-      writeBatch.mockReturnValue({ set: vi.fn(), commit });
+      createMissingDocs.mockReturnValue(new Promise<number>(() => {}));
       const onPaste = vi.fn();
       render(
         <SlotOperationButtons
@@ -159,7 +176,7 @@ describe("PasteButton: double click", () => {
       const button = screen.getByTestId(testId("paste-button"));
       fireEvent.click(button);
       fireEvent.click(button);
-      expect(commit).toHaveBeenCalledTimes(1);
+      expect(createMissingDocs).toHaveBeenCalledTimes(1);
       expect(onPaste).toHaveBeenCalledTimes(1);
     },
   );
