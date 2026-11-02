@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Field, Form, useField } from "formik";
 
+import { normalizeAdminEntry } from "@eisbuk/shared";
 import {
   Button,
   ButtonColor,
@@ -19,6 +20,9 @@ const AdminsField: React.FC<{
   currentUser: string;
 }> = ({ currentUser }) => {
   const [{ value: admins }, , { setValue }] = useField<string[]>("admins");
+  const [{ value: defaultCountryCode }] = useField<string | undefined>(
+    "defaultCountryCode",
+  );
 
   const { t } = useTranslation();
 
@@ -35,10 +39,11 @@ const AdminsField: React.FC<{
 
   const addAdmin = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const newAdmin = normalizeAdminEntry(admin, defaultCountryCode);
     // should not add empty strings or duplicate entries
-    if (admins.includes(admin) || admin === "") return;
+    if (admins.includes(newAdmin) || newAdmin === "") return;
 
-    const newAdmins = [...admins, admin];
+    const newAdmins = [...admins, newAdmin];
     setValue(newAdmins);
     setAdmin("");
   };

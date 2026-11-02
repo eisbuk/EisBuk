@@ -6,6 +6,7 @@ import { Formik, Form, FormikHelpers } from "formik";
 import {
   defaultEmailTemplates as emailTemplates,
   defaultSMSTemplates as smsTemplates,
+  normalizeAdminEntry,
   OrganizationData,
 } from "@eisbuk/shared";
 import i18n, {
@@ -67,7 +68,7 @@ const OrganizationSettings: React.FC = () => {
     [View.PrivacyPolicy]: PrivacyPolicy,
   };
   const [view, setView] = useState<keyof typeof viewsLookup>(
-    View.GeneralSettings
+    View.GeneralSettings,
   );
 
   const dispatch = useDispatch();
@@ -78,11 +79,16 @@ const OrganizationSettings: React.FC = () => {
 
   const handleSubmit = (
     orgData: OrganizationData,
-    actions: FormikHelpers<OrganizationData>
+    actions: FormikHelpers<OrganizationData>,
   ) => {
     Object.keys(orgData).forEach((item) => {
       if (item.match("preview")) delete orgData[item];
     });
+    // Admin entries are matched exactly against the user's email / phone number,
+    // so a stray space or a missing dial code would silently prevent the admin from being recognised
+    orgData.admins = orgData.admins
+      .map((admin) => normalizeAdminEntry(admin, orgData.defaultCountryCode))
+      .filter((admin, i, admins) => admin && admins.indexOf(admin) === i);
     dispatch(updateOrganization(orgData, actions.setSubmitting));
   };
 
