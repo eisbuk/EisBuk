@@ -1,4 +1,4 @@
-import { defineConfig } from "vitest/config";
+import { configDefaults, defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react";
 import path from "path";
 
@@ -7,6 +7,12 @@ const __isCI__ = Boolean(process.env.CI);
 export default defineConfig({
   plugins: [react()],
   test: {
+    exclude: [
+      ...configDefaults.exclude,
+      "html/**",
+      "instrumented/**",
+      "storybook-static/**",
+    ],
     coverage: {
       provider: "c8",
       reporter: ["lcov"],

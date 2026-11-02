@@ -5,4 +5,5 @@
 
 # Test result files
 junit.xml
+/html
 coverage

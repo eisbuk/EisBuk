@@ -1,7 +1,7 @@
 #! YAML library files must be named *.lib.yml
 #@ load("setup.lib.yml", "checkout")
 #@ load("cache.lib.yml", "cache_node", "cache_cypress")
-#@ load("rush.lib.yml", "rush_add_path", "rush_update", "rush_build")
+#@ load("rush.lib.yml", "rush_add_path", "rush_install", "rush_build")
 
 name: Deploy to production
 
@@ -38,17 +38,22 @@ jobs:
       - name: Test the deploy wrapper
         run: common/scripts/test-deploy-firebase-expect.sh
         timeout-minutes: 3
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-java@v5
         with:
-          node-version: "18"
+          distribution: temurin
+          java-version: "21"
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
       - name: Test the deployment verifier and preflight
         run: node --test common/scripts/verify-deployment.test.js common/scripts/preflight-deploy.test.js
         timeout-minutes: 3
       -  #@ cache_node()
       -  #@ rush_add_path()
-      -  #@ rush_update()
+      -  #@ rush_install()
       #! Stop here, before anything is built or released, if the deploy would not
-      #! use firebase-tools 13 (>= 13.11) and Node 22 functions (#986).
+      #! use the pinned Firebase CLI and Node 22 functions (#986).
       - name: Preflight, deploy toolchain
         run: node common/scripts/preflight-deploy.js
         timeout-minutes: 3

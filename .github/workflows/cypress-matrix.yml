@@ -29,15 +29,20 @@ jobs:
         - 5
         - 6
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
         submodules: recursive
         fetch-depth: 1
-    - uses: actions/setup-node@v4
+    - uses: actions/setup-java@v5
       with:
-        node-version: "18"
+        distribution: temurin
+        java-version: "21"
+    - uses: actions/setup-node@v6
+      with:
+        node-version-file: .nvmrc
+        package-manager-cache: false
     - name: Cache node modules, firebase emulators and cypress
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: |
           ~/.rush
@@ -46,11 +51,11 @@ jobs:
           **/node_modules
           ~/.cache/firebase/emulators
           ~/.cache/Cypress
-        key: ${{ runner.os }}-modules-emulators-cypress-node18-v2-${{ hashFiles('**/pnpm-lock.yaml', '**/package.json', 'common/config/rush/repo-state.json') }}
+        key: ${{ runner.os }}-modules-emulators-cypress-node24-pnpm10-v1-${{ hashFiles('rush.json', 'common/config/rush/pnpm-config.json', 'common/config/rush/.npmrc', '**/pnpm-lock.yaml', '**/package.json', 'common/config/rush/repo-state.json') }}
     - name: Add rush directory to PATH
       run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
     - name: Install dependencies
-      run: rush update
+      run: rush install
     - name: Build eisbuk packages
       run: rush build
     - name: Build app

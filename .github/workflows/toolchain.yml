@@ -1,0 +1,46 @@
+name: Node 22 compatibility
+"on":
+  push:
+    branches:
+    - master
+  pull_request:
+    branches:
+    - master
+  workflow_dispatch: null
+env:
+  BROWSERSLIST_IGNORE_OLD_DATA: "1"
+jobs:
+  node22:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+    - uses: actions/checkout@v6
+      with:
+        submodules: recursive
+        fetch-depth: 1
+    - uses: actions/setup-java@v5
+      with:
+        distribution: temurin
+        java-version: "21"
+    - uses: actions/setup-node@v6
+      with:
+        node-version: "22"
+        package-manager-cache: false
+    - name: Add rush directory to PATH
+      run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
+    - name: Install dependencies
+      run: rush install
+    - name: Check deployment tooling
+      run: |
+        node common/scripts/preflight-deploy.js
+        node --test common/scripts/preflight-deploy.test.js common/scripts/verify-deployment.test.js
+    - name: Build eisbuk packages
+      run: rush build
+    - name: Typecheck packages
+      run: rush typecheck
+    - name: Build client
+      working-directory: packages/client
+      run: rushx build:prod
+    - name: Run emulator tests
+      working-directory: packages/client
+      run: npm run test:emulators:run

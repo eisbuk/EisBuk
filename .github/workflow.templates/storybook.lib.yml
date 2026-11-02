@@ -1,6 +1,6 @@
 #@ load("setup.lib.yml", "checkout")
 #@ load("cache.lib.yml", "cache_node", "cache_cypress")
-#@ load("rush.lib.yml", "rush_add_path", "rush_update", "rush_build")
+#@ load("rush.lib.yml", "rush_add_path", "rush_install", "rush_build")
 #@ load("secrets.lib.yml", "check_secrets")
 #@ load("rclone.lib.yml", "install_rclone")
 #@ load("rclone.lib.yml", "install_gcloud_credentials")
@@ -12,12 +12,17 @@ runs-on: ubuntu-latest
 timeout-minutes: 10
 steps:
   -  #@ checkout(0)
-  - uses: actions/setup-node@v4
+  - uses: actions/setup-java@v5
     with:
-      node-version: "18"
+      distribution: temurin
+      java-version: "21"
+  - uses: actions/setup-node@v6
+    with:
+      node-version-file: .nvmrc
+      package-manager-cache: false
   -  #@ cache_node()
   -  #@ rush_add_path()
-  -  #@ rush_update()
+  -  #@ rush_install()
   -  #@ rush_build()
   -  #@ check_secrets()
   - name: #@ "Build %s storybook" % (package_name)
