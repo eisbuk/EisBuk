@@ -292,17 +292,11 @@ export const copySlotsWeek =
 
     // get week start and date keys
     const weekStart = state.app.calendarDay.startOf("week");
-    const weekStartISO = luxon2ISODate(weekStart);
-    const monthStr = weekStartISO.substr(0, 7);
 
     // get slots week to copy from store
     const slotsByDay = state.firestore.data.slotsByDay;
     // exit if no slots in store
     if (!slotsByDay) return;
-
-    const slotsMonth = slotsByDay[monthStr];
-    // exit if no slots for given month
-    if (!slotsMonth) return;
 
     // process slots month to return an array of slots for given week
     const slots = Array(7)
@@ -310,7 +304,9 @@ export const copySlotsWeek =
       .reduce((acc, baseDate, i) => {
         const dateISO = luxon2ISODate(baseDate.plus({ days: i }));
         // get slots for a given day of the week (if any)
-        const slotsInADay = slotsMonth[dateISO] || {};
+        // (a week can span two months, so each day is read from its own month)
+        const slotsInADay =
+          slotsByDay[dateISO.substring(0, 7)]?.[dateISO] || {};
         // return slots in a day flattened with acc array
         return [...acc, ...Object.values(slotsInADay)];
       }, [] as SlotInterface[]);
