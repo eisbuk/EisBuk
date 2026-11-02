@@ -1,3 +1,4 @@
+import { isDeepStrictEqual } from "util";
 import { DocumentReference, DocumentData } from "@google-cloud/firestore";
 
 import {
@@ -31,8 +32,8 @@ export const updateCustomers = async (
 export const updateSlots = async (
   orgRef: DocumentReference<DocumentData>,
   documents: Record<string, SlotInterface>
-) =>
-  Promise.all(
+) => {
+  await Promise.all(
     Object.entries(documents).map(([docId, docData]) =>
       orgRef
         .collection(OrgSubCollection.Slots)
@@ -40,6 +41,34 @@ export const updateSlots = async (
         .set(docData, { merge: true })
     )
   );
+  // The source write finishes before its triggers. Wait for the complete fixture
+  // so browser actions cannot race partial calendar renders or missing attendance.
+  await waitFor(async () => {
+    await Promise.all(
+      Object.keys(documents).map(async (docId) => {
+        const source = await orgRef
+          .collection(OrgSubCollection.Slots)
+          .doc(docId)
+          .get();
+        const slot = source.data() as SlotInterface;
+        const [aggregate, attendance] = await Promise.all([
+          orgRef
+            .collection(OrgSubCollection.SlotsByDay)
+            .doc(slot.date.substring(0, 7))
+            .get(),
+          orgRef.collection(OrgSubCollection.Attendance).doc(docId).get(),
+        ]);
+        if (
+          slot.id !== docId ||
+          !attendance.exists ||
+          !isDeepStrictEqual(aggregate.data()?.[slot.date]?.[docId], slot)
+        ) {
+          throw new Error("Slot fixture is still synchronizing");
+        }
+      })
+    );
+  }, 10000);
+};
 
 export const updateBookings = async (
   orgRef: DocumentReference<DocumentData>,
@@ -55,9 +84,7 @@ export const updateBookings = async (
         // We're running 'update' instead of 'set' as that gives us the assurence that the bookings doc
         // has been created (by customer creation data trigger), before update, and, in effect, it gives us the assurence
         // that the customer exists.
-        await waitFor(() => {
-          bookingRef.update(bookingsDoc);
-        });
+        await waitFor(() => bookingRef.update(bookingsDoc));
 
         // Save booked slots
         if (bookedSlots) {
@@ -106,34 +133,39 @@ export const updateAttendance = async (
 /**
  * Runs the callback with 50 ms interval until the assertion is fulfilled or it times out.
  * If it times out, it rejects with the latest error.
- * @param {Function} cb The callback to run (this would normally hold assertions)
+ * @param {Function} assertion The callback to run (this would normally hold assertions)
  * @param {number} [timeout] The timeout in ms
  */
-export const waitFor = (cb: () => any | Promise<any>, timeout = 2000) => {
+export const waitFor = (
+  assertion: () => any | Promise<any>,
+  timeout = 10000
+) => {
   return new Promise<void>((resolve, reject) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let error: any = null;
+    let finished = false;
+    let retry: ReturnType<typeof setTimeout>;
 
-    // Retry the assertion every 50ms
-    const interval = setInterval(() => {
-      // Run callback as a promise (this way we're able to .then/.catch regardless of the 'cb' being sync or async)
-      (async () => cb())()
-        .then(() => {
-          if (interval) {
-            clearInterval(interval);
-          }
-          return resolve();
-        })
-        .catch((err) => {
-          // Store the error to reject with later (if timed out)
-          error = err;
-        });
-    }, 50);
+    // Run one attempt at a time, including when the callback is asynchronous.
+    const attempt = async () => {
+      try {
+        await assertion();
+        if (finished) return;
+        finished = true;
+        clearTimeout(deadline);
+        resolve();
+      } catch (err) {
+        if (finished) return;
+        error = err;
+        retry = setTimeout(attempt, 50);
+      }
+    };
 
-    // When timed out, reject with the latest error
-    setTimeout(() => {
-      clearInterval(interval);
-      reject(error);
+    const deadline = setTimeout(() => {
+      finished = true;
+      clearTimeout(retry);
+      reject(error || new Error("Timed out waiting for emulator data"));
     }, timeout);
+    attempt();
   });
 };
