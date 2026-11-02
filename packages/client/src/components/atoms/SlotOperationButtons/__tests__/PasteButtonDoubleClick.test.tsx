@@ -21,20 +21,22 @@ import { ButtonContextType } from "@/enums/components";
 import SlotOperationButtons from "../SlotOperationButtons";
 import PasteButton from "../PasteButton";
 
-const { writeBatch, date } = vi.hoisted(() => ({
+const { writeBatch, date, slotsByDay } = vi.hoisted(() => ({
   writeBatch: vi.fn(),
   date: { current: null as any },
+  slotsByDay: { current: undefined as any },
 }));
 
 vi.mock("@/utils/firestore", () => ({
   writeBatch,
   collection: () => ({}),
-  doc: () => ({}),
+  doc: (_: unknown, id: string) => ({ id }),
   getSlotsPath: () => "slots",
 }));
 vi.mock("@/lib/getters", () => ({ getOrganization: () => "org" }));
 
 const state = () => ({
+  firestore: { data: { slotsByDay: slotsByDay.current } },
   copyPaste: {
     day: { "slot-0": { ...baseSlot, id: "slot-0" } },
     week: { weekStart: date.current, slots: [{ ...baseSlot, id: "slot-0" }] },
@@ -128,6 +130,19 @@ describe("PasteButton: paste outcome", () => {
     await waitFor(() => expect(commit).toHaveBeenCalled());
     await new Promise((resolve) => setTimeout(resolve));
     expect(onPasteAborted).not.toHaveBeenCalled();
+  });
+
+  test("should call 'onPasteAborted', without committing, if all the slots are already on the target", async () => {
+    // The clipboard week starts on the target date, so the slot keeps its date
+    slotsByDay.current = {
+      [baseSlot.date.substring(0, 7)]: {
+        [baseSlot.date]: { existing: { ...baseSlot, id: "existing" } },
+      },
+    };
+    const onPasteAborted = clickPaste("2027-01-04");
+    await waitFor(() => expect(onPasteAborted).toHaveBeenCalledTimes(1));
+    expect(writeBatch).not.toHaveBeenCalled();
+    slotsByDay.current = undefined;
   });
 });
 

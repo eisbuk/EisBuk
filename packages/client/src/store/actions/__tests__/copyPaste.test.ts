@@ -54,6 +54,7 @@ export const testDay = {
   ["slot-1"]: {
     ...baseSlot,
     id: "slot-1",
+    notes: "slot-1",
   },
 };
 
@@ -70,11 +71,13 @@ const testWeekWednesday = {
     ...baseSlot,
     id: "slot-3",
     date: newDateISO,
+    notes: "slot-3",
   },
   ["slot-4"]: {
     ...baseSlot,
     id: "slot-4",
     date: newDateISO,
+    notes: "slot-4",
   },
 };
 
@@ -156,7 +159,7 @@ describe("Copy Paste actions", () => {
         expect(getDayFromClipboard(store.getState())).toEqual(testDay);
         // check that week slots have been removed from the clipboard
         expect(getWeekFromClipboard(store.getState())).toEqual(null);
-      }
+      },
     );
   });
 
@@ -199,13 +202,13 @@ describe("Copy Paste actions", () => {
         expect(getWeekFromClipboard(store.getState())).toEqual(expectedWeek);
         // check that day slots have been removed from the clipboard
         expect(getDayFromClipboard(store.getState())).toEqual(null);
-      }
+      },
     );
   });
 
   describe("pasteSlotsDay", () => {
     testWithEmulator(
-      "should update firestore with slots day from clipboard pasted to new day (with new slots having uuid generated ids and without messing up the new day)",
+      "should update firestore with slots day from clipboard pasted to new day (with new slots having ids generated from the date and source slot, and without messing up the new day)",
       async () => {
         // set up test state
         const store = getNewStore();
@@ -235,8 +238,8 @@ describe("Copy Paste actions", () => {
           const slotsInStore = await getDocs(
             collection(
               FirestoreVariant.server({ instance: context.firestore() }),
-              getSlotsPath(organization)
-            )
+              getSlotsPath(organization),
+            ),
           );
           expect(slotsInStore.docs.length).toEqual(numSlotsToPaste);
           slotsInStore.forEach((slot) => {
@@ -244,7 +247,7 @@ describe("Copy Paste actions", () => {
             expect(data.date).toEqual(newDateISO);
           });
         });
-      }
+      },
     );
 
     testWithEmulator("should display error message on fail", async () => {
@@ -255,7 +258,7 @@ describe("Copy Paste actions", () => {
       };
       // run the faulty thunk
       const testThunk = pasteSlotsDay(testDateLuxon);
-      runThunk(testThunk, mockDispatch, () => ({} as any), {
+      runThunk(testThunk, mockDispatch, () => ({}) as any, {
         getFirestore,
       });
       // check the error message being enqueued
@@ -264,7 +267,7 @@ describe("Copy Paste actions", () => {
           message: i18n.t(NotificationMessage.CopyPasteErrorDay),
           variant: NotifVariant.Error,
           error: testError,
-        })
+        }),
       );
     });
   });
@@ -311,7 +314,7 @@ describe("Copy Paste actions", () => {
           .sort((a, b) => (a < b ? -1 : 1));
         // if sorted dates match, the update was successful
         expect(updatedDates).toEqual(slotsDates);
-      }
+      },
     );
 
     testWithEmulator(
@@ -324,7 +327,7 @@ describe("Copy Paste actions", () => {
         };
         // run the failing thunk
         const testThunk = pasteSlotsWeek(testDateLuxon);
-        await runThunk(testThunk, mockDispatch, () => ({} as any), {
+        await runThunk(testThunk, mockDispatch, () => ({}) as any, {
           getFirestore,
         });
         // check the error message being enqueued
@@ -333,9 +336,9 @@ describe("Copy Paste actions", () => {
             message: i18n.t(NotificationMessage.CopyPasteErrorWeek),
             variant: NotifVariant.Error,
             error: testError,
-          })
+          }),
         );
-      }
+      },
     );
   });
 });
