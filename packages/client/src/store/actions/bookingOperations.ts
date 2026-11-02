@@ -24,6 +24,7 @@ import {
   setDoc,
 } from "@/utils/firestore";
 import { getOrganization } from "@/lib/getters";
+import { handleWriteError } from "@/lib/storageRecovery";
 
 interface UpdateBooking<
   P extends Record<string, any> = Record<string, unknown>
@@ -37,6 +38,20 @@ interface UpdateBooking<
     } & P
   ): FirestoreThunk;
 }
+
+/**
+ * Returns a function showing an error notice (used by `handleWriteError`)
+ */
+const notifyError =
+  (dispatch: Parameters<FirestoreThunk>[0], error: unknown) =>
+  (message: string) =>
+    dispatch(
+      enqueueNotification({
+        message,
+        variant: NotifVariant.Error,
+        error: error as Error,
+      })
+    );
 
 /**
  * Dispatches booked interval to firestore.
@@ -65,6 +80,9 @@ export const bookInterval: UpdateBooking =
         })
       );
     } catch (err) {
+      if (handleWriteError(err, "bookInterval", notifyError(dispatch, err))) {
+        return;
+      }
       dispatch(
         enqueueNotification({
           message: i18n.t(NotificationMessage.BookingError, {
@@ -103,6 +121,9 @@ export const cancelBooking: UpdateBooking =
         })
       );
     } catch (err) {
+      if (handleWriteError(err, "cancelBooking", notifyError(dispatch, err))) {
+        return;
+      }
       dispatch(
         enqueueNotification({
           message: i18n.t(NotificationMessage.BookingCanceledError, {
@@ -140,6 +161,11 @@ export const updateBookingNotes: UpdateBooking<{ bookingNotes: string }> =
         })
       );
     } catch (err) {
+      if (
+        handleWriteError(err, "updateBookingNotes", notifyError(dispatch, err))
+      ) {
+        return;
+      }
       dispatch(
         enqueueNotification({
           variant: NotifVariant.Error,

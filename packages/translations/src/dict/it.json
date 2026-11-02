@@ -291,6 +291,8 @@
     "BookingCanceledError": "Errore nel rimuovere la prenotazione: {{ date, EEEE d MMMM }}, {{ interval }}",
     "BookingNotesUpdated": "Nota della prenotazione aggiornata",
     "BookingNotesError": "Errore durante l'aggiornamento della nota alla prenotazione",
+    "StorageReloading": "Si è verificato un problema con il browser: ricarico la pagina, poi riprova.",
+    "StorageReloadNeeded": "Si è verificato un problema con il browser: ricarica la pagina e riprova.",
 
     "CopyPasteErrorWeek": "Errore nella copia della settimana",
     "CopyPasteErrorDay": "Errore nella copia del giorno",
